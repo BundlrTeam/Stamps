@@ -1,0 +1,65 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home" text="" icon="arrow-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ business?.name }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="business">
+  <div class="hero-image">
+    <img [src]="business.image" [alt]="business.name" />
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+      <ion-badge class="hero-category">{{ business.category }}</ion-badge>
+      <h1>{{ business.name }}</h1>
+    </div>
+  </div>
+
+  <div class="detail-content">
+    <div class="description-section">
+      <h3>Sobre nós</h3>
+      <p>{{ business.description }}</p>
+    </div>
+
+    <div class="services-section">
+      <h3>Serviços</h3>
+      <ion-list lines="none" class="services-list">
+        <ion-item *ngFor="let service of business.services" class="service-item">
+          <ion-icon name="checkmark-circle" color="primary" slot="start"></ion-icon>
+          <ion-label>{{ service }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div class="reward-preview">
+      <ion-icon name="gift-outline"></ion-icon>
+      <div>
+        <span class="reward-label">Prémio de fidelidade</span>
+        <span class="reward-value">{{ business.reward }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button
+      *ngIf="!isFollowing"
+      (click)="followBusiness()"
+      class="follow-fab"
+      color="primary"
+    >
+      <ion-icon name="add"></ion-icon>
+      <span class="fab-text">Seguir</span>
+    </ion-fab-button>
+    <ion-fab-button
+      *ngIf="isFollowing"
+      class="follow-fab following"
+      color="success"
+      disabled
+    >
+      <ion-icon name="checkmark"></ion-icon>
+      <span class="fab-text">A Seguir</span>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

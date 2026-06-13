@@ -1,0 +1,117 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ stampCard?.businessName }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="stampCard">
+  <div class="card-hero">
+    <img [src]="stampCard.businessImage" [alt]="stampCard.businessName" />
+    <div class="hero-overlay">
+      <h1>{{ stampCard.businessName }}</h1>
+      <p>Cartão de Fidelidade</p>
+    </div>
+  </div>
+
+  <div class="stamp-card-container">
+    <div class="stamp-card">
+      <div class="stamp-card-header">
+        <span class="stamp-progress-text">{{ stampCard.stamps }} / 10 carimbos</span>
+      </div>
+
+      <!-- Row 1: stamps 1-3 -->
+      <div class="stamp-row">
+        <div
+          *ngFor="let slot of getRowSlots(1)"
+          class="stamp-slot"
+          [class.stamped]="isStamped(slot)"
+          [class.has-reward]="hasReward(slot)"
+          [class.reward-unlocked]="isRewardUnlocked(slot)"
+        >
+          <div class="stamp-circle">
+            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
+            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
+          </div>
+          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
+            {{ getRewardLabel(slot) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 2: stamps 4-6 -->
+      <div class="stamp-row">
+        <div
+          *ngFor="let slot of getRowSlots(2)"
+          class="stamp-slot"
+          [class.stamped]="isStamped(slot)"
+          [class.has-reward]="hasReward(slot)"
+          [class.reward-unlocked]="isRewardUnlocked(slot)"
+        >
+          <div class="stamp-circle">
+            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
+            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
+          </div>
+          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
+            {{ getRewardLabel(slot) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 3: stamps 7-9 -->
+      <div class="stamp-row">
+        <div
+          *ngFor="let slot of getRowSlots(3)"
+          class="stamp-slot"
+          [class.stamped]="isStamped(slot)"
+          [class.has-reward]="hasReward(slot)"
+          [class.reward-unlocked]="isRewardUnlocked(slot)"
+        >
+          <div class="stamp-circle">
+            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
+            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
+          </div>
+          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
+            {{ getRewardLabel(slot) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 4: stamp 10 (centered) -->
+      <div class="stamp-row stamp-row-center">
+        <div
+          *ngFor="let slot of getRowSlots(4)"
+          class="stamp-slot stamp-slot-final"
+          [class.stamped]="isStamped(slot)"
+          [class.has-reward]="hasReward(slot)"
+          [class.reward-unlocked]="isRewardUnlocked(slot)"
+        >
+          <div class="stamp-circle stamp-circle-final">
+            <ion-icon *ngIf="isStamped(slot)" name="trophy" class="stamp-check trophy"></ion-icon>
+            <ion-icon *ngIf="!isStamped(slot)" name="gift-outline" class="stamp-gift"></ion-icon>
+          </div>
+          <span class="reward-tag reward-tag-final" [class.unlocked]="isRewardUnlocked(slot)">
+            {{ getRewardLabel(slot) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo button -->
+  <div class="demo-section">
+    <ion-button
+      expand="block"
+      shape="round"
+      (click)="addStamp()"
+      [disabled]="stampCard.stamps >= 10"
+      class="add-stamp-btn"
+    >
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      {{ stampCard.stamps >= 10 ? 'Cartão Completo! 🎉' : 'Adicionar Carimbo' }}
+    </ion-button>
+    <p class="demo-hint">Simulação para demonstração</p>
+  </div>
+</ion-content>

@@ -1,0 +1,263 @@
+// Perfil Header
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 30px;
+}
+
+.photo-container {
+  position: relative;
+  margin-bottom: 16px;
+
+  .profile-photo {
+    width: 120px;
+    height: 120px;
+    border: 4px solid var(--ion-color-light);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .edit-photo-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0;
+    --border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+}
+
+.profile-info {
+  text-align: center;
+  width: 100%;
+
+  .name-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+
+    .profile-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--ion-text-color);
+    }
+
+    ion-button {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      height: 32px;
+    }
+  }
+
+  .name-edit-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+
+    .name-input {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      --background: var(--ion-color-light);
+      border-radius: 8px;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      max-width: 250px;
+    }
+
+    ion-button {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      height: 32px;
+    }
+  }
+
+  .profile-email {
+    font-size: 0.95rem;
+    color: var(--ion-color-medium);
+    margin: 4px 0;
+  }
+
+  .profile-phone {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    margin: 4px 0;
+  }
+}
+
+// Lista de Definições
+.settings-list {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+
+  ion-list-header {
+    padding-left: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ion-color-medium);
+
+    ion-label {
+      margin-bottom: 8px;
+    }
+  }
+
+  ion-item {
+    --background: var(--ion-card-background, var(--ion-item-background));
+    --border-radius: 12px;
+    margin: 8px 16px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      margin: 2px 0 0;
+    }
+
+    ion-icon[slot='start'] {
+      margin-right: 16px;
+      font-size: 1.3rem;
+    }
+  }
+}
+
+// Secção Adicionar Negócio
+.add-business-section {
+  margin-top: 40px;
+  padding: 0 16px 20px;
+  text-align: center;
+
+  .add-business-btn {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+    --border-width: 1.5px;
+    --border-style: dashed;
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 500;
+
+    ion-icon {
+      margin-right: 8px;
+    }
+
+    &:hover {
+      --background: rgba(var(--ion-color-primary-rgb), 0.1);
+    }
+  }
+
+  .add-business-hint {
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+    margin-top: 12px;
+  }
+}
+
+// Modal de Adicionar Negócio
+.add-business-modal {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+
+  ion-header ion-toolbar {
+    --background: var(--ion-background-color);
+  }
+}
+
+.business-form {
+  padding-top: 8px;
+
+  .form-item {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    margin-bottom: 16px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    ion-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    ion-input,
+    ion-textarea,
+    ion-select {
+      --background: transparent;
+      --padding-start: 0;
+      --padding-end: 0;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+    }
+  }
+}
+
+.services-section {
+  margin: 16px 0;
+  padding: 0 16px;
+
+  .services-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 12px;
+    color: var(--ion-text-color);
+  }
+
+  .service-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .service-input {
+      flex: 1;
+      --background: var(--ion-color-light);
+      --border-radius: 10px;
+      --padding-start: 12px;
+      --padding-end: 12px;
+    }
+
+    ion-button {
+      margin: 0;
+    }
+  }
+
+  .add-service-btn {
+    margin-top: 8px;
+    --color: var(--ion-color-primary);
+  }
+}
+
+.form-actions {
+  margin-top: 24px;
+  padding: 0 16px 20px;
+
+  .submit-btn {
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+  }
+}

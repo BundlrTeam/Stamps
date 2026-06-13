@@ -1,0 +1,92 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <span class="app-logo">🎫 Stamp Me</span>
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Pesquisar negócios..."
+      debounce="300"
+      (ionInput)="onSearchChange($event)"
+      animated="true"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="section-header">
+    <h2>Negócios em Destaque</h2>
+    <p>Descubra e siga os seus favoritos</p>
+  </div>
+
+  <!-- Carrossel de Destaque -->
+  <div class="featured-carousel">
+    <ion-card
+      *ngFor="let business of featuredBusinesses"
+      [routerLink]="['/tabs/home/business', business.id]"
+      class="featured-card"
+      button
+    >
+      <div class="featured-image-wrapper">
+        <img [src]="business.image" [alt]="business.name" />
+        <div class="featured-overlay">
+          <ion-badge class="featured-category-badge">{{ business.category }}</ion-badge>
+        </div>
+      </div>
+      <ion-card-header>
+        <ion-card-title>{{ business.name }}</ion-card-title>
+        <ion-card-subtitle>{{ business.description | slice:0:60 }}...</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+  </div>
+
+  <!-- Categorias em Círculos -->
+  <div class="categories-section">
+    <h3 class="categories-title">Categorias</h3>
+    <div class="categories-grid">
+      <div
+        class="category-circle-item"
+        *ngFor="let category of categories"
+        (click)="filterByCategory(category.name)"
+        [class.active]="selectedCategory === category.name"
+      >
+        <div class="category-circle">
+          <ion-icon [name]="category.icon"></ion-icon>
+        </div>
+        <span class="category-label">{{ category.name }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Negócios Filtrados -->
+  <div class="section-header" *ngIf="selectedCategory">
+    <h2>{{ selectedCategory }}</h2>
+    <p (click)="clearFilter()" class="clear-filter">Ver todos</p>
+  </div>
+
+  <div class="business-grid">
+    <ion-card
+      *ngFor="let business of filteredBusinesses"
+      [routerLink]="['/tabs/home/business', business.id]"
+      class="business-card"
+      button
+    >
+      <div class="card-image-wrapper">
+        <img [src]="business.image" [alt]="business.name" />
+        <div class="card-overlay">
+          <ion-badge class="category-badge">{{ business.category }}</ion-badge>
+        </div>
+      </div>
+      <ion-card-header>
+        <ion-card-title>{{ business.name }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+  </div>
+
+  <div *ngIf="filteredBusinesses.length === 0" class="empty-state">
+    <ion-icon name="search-outline"></ion-icon>
+    <p>Nenhum negócio encontrado</p>
+  </div>
+</ion-content>

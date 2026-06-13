@@ -1,0 +1,230 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Secção do Perfil -->
+  <div class="profile-header">
+    <div class="photo-container">
+      <ion-avatar class="profile-photo">
+        <img [src]="user.photoUrl" alt="Foto de perfil" />
+      </ion-avatar>
+      <ion-button
+        fill="solid"
+        size="small"
+        class="edit-photo-btn"
+        (click)="changePhoto()"
+      >
+        <ion-icon name="camera-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="profile-info">
+      <div class="name-section" *ngIf="!isEditingName">
+        <h1 class="profile-name">{{ user.name }}</h1>
+        <ion-button fill="clear" size="small" (click)="startEditingName()">
+          <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="name-edit-section" *ngIf="isEditingName">
+        <ion-input
+          [(ngModel)]="tempName"
+          class="name-input"
+          placeholder="Nome"
+          (keyup.enter)="saveName()"
+        ></ion-input>
+        <ion-button fill="clear" size="small" color="success" (click)="saveName()">
+          <ion-icon name="checkmark-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="small" color="danger" (click)="cancelEditingName()">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <p class="profile-email">{{ user.email }}</p>
+      <p class="profile-phone">{{ user.phone }}</p>
+    </div>
+  </div>
+
+  <!-- Secção de Definições -->
+  <ion-list class="settings-list" lines="full">
+    <ion-list-header>
+      <ion-label>Definições</ion-label>
+    </ion-list-header>
+
+    <!-- Tema -->
+    <ion-item>
+      <ion-icon name="moon-outline" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h3>Modo Escuro</h3>
+        <p>Alternar entre tema claro e escuro</p>
+      </ion-label>
+      <ion-toggle
+        [checked]="isDarkMode"
+        (ionChange)="toggleTheme()"
+        slot="end"
+      ></ion-toggle>
+    </ion-item>
+
+    <!-- Logout -->
+    <ion-item button (click)="logout()" detail="false">
+      <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+      <ion-label>
+        <h3>Terminar Sessão</h3>
+        <p>Sair da conta atual</p>
+      </ion-label>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <!-- Botão discreto para adicionar negócio -->
+  <div class="add-business-section">
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="add-business-btn"
+      (click)="openAddBusinessModal()"
+    >
+      <ion-icon name="storefront-outline" slot="start"></ion-icon>
+      Adiciona o teu negócio
+    </ion-button>
+    <p class="add-business-hint">Tens um estabelecimento? Junta-te à Stamp Me!</p>
+  </div>
+</ion-content>
+
+<!-- Modal para Adicionar Negócio -->
+<ion-modal
+  [isOpen]="showAddBusinessModal"
+  (didDismiss)="closeAddBusinessModal()"
+  class="add-business-modal"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Adicionar Negócio</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeAddBusinessModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="submitBusiness()" class="business-form">
+        <ion-list lines="none">
+          <!-- Nome -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">Nome do negócio *</ion-label>
+            <ion-input
+              [(ngModel)]="newBusiness.name"
+              name="businessName"
+              placeholder="Ex: Pizzaria Bella"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <!-- Morada -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">Morada</ion-label>
+            <ion-input
+              [(ngModel)]="newBusiness.address"
+              name="businessAddress"
+              placeholder="Rua, número, cidade"
+            ></ion-input>
+          </ion-item>
+
+          <!-- Categoria -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">Categoria *</ion-label>
+            <ion-select
+              [(ngModel)]="newBusiness.category"
+              name="businessCategory"
+              placeholder="Seleciona uma categoria"
+              interface="popover"
+              required
+            >
+              <ion-select-option value="Pizzaria">Pizzaria</ion-select-option>
+              <ion-select-option value="Barbearia">Barbearia</ion-select-option>
+              <ion-select-option value="Cafetaria">Cafetaria</ion-select-option>
+              <ion-select-option value="Bar">Bar</ion-select-option>
+              <ion-select-option value="Hostel">Hostel</ion-select-option>
+              <ion-select-option value="Restaurante">Restaurante</ion-select-option>
+              <ion-select-option value="Loja">Loja</ion-select-option>
+              <ion-select-option value="Outro">Outro</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Descrição -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">Descrição</ion-label>
+            <ion-textarea
+              [(ngModel)]="newBusiness.description"
+              name="businessDescription"
+              placeholder="Descreve o teu negócio..."
+              rows="4"
+            ></ion-textarea>
+          </ion-item>
+
+          <!-- Serviços -->
+          <div class="services-section">
+            <ion-label class="services-label">Serviços</ion-label>
+            <div
+              class="service-input-row"
+              *ngFor="let service of newBusiness.services; let i = index; trackBy: trackByIndex"
+            >
+              <ion-input
+                [(ngModel)]="newBusiness.services[i]"
+                [name]="'service' + i"
+                placeholder="Serviço {{ i + 1 }}"
+                class="service-input"
+              ></ion-input>
+              <ion-button
+                *ngIf="newBusiness.services.length > 1"
+                fill="clear"
+                color="danger"
+                size="small"
+                (click)="removeServiceField(i)"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="addServiceField()"
+              class="add-service-btn"
+            >
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Adicionar serviço
+            </ion-button>
+          </div>
+
+          <!-- URL da Foto -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">URL da foto</ion-label>
+            <ion-input
+              [(ngModel)]="newBusiness.photoUrl"
+              name="businessPhotoUrl"
+              type="url"
+              placeholder="https://..."
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="form-actions">
+          <ion-button
+            expand="block"
+            type="submit"
+            class="submit-btn"
+          >
+            Submeter para aprovação
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

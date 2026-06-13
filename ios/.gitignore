@@ -1,0 +1,41 @@
+# ─── iOS / Xcode ────────────────────────────────────────────────────────────
+
+# Build outputs
+App/build/
+App/output/
+DerivedData/
+
+# CocoaPods
+App/Pods/
+Podfile.lock
+
+# User-specific Xcode state
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Xcode schemes (personal, not shared)
+*.xcscheme
+
+# Xcode workspace settings
+contents.xcworkspacedata
+
+# Instruments
+timeline.xctimeline
+playground.xcworkspace
+
+# SPM
+.build/
+.swiftpm/
+
+# ─── Capacitor generated ────────────────────────────────────────────────────
+
+# Cordova plugins for Capacitor
+capacitor-cordova-ios-plugins/
+
+# Copied web assets
+App/App/public/
+
+# Generated Config files
+App/App/capacitor.config.json
+App/App/config.xml

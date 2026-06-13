@@ -1,0 +1,7 @@
+{
+  "name": "stamp-me",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
