@@ -1,0 +1,612 @@
+{
+  "C:\\Git\\Stamps\\.eslintrc.json": {
+    "mtime": 1781467003.2547188,
+    "ast_hash": "f8e30ab2ec70a0edce14f33d7f1361ca",
+    "semantic_hash": "f8e30ab2ec70a0edce14f33d7f1361ca"
+  },
+  "C:\\Git\\Stamps\\.vscode\\extensions.json": {
+    "mtime": 1781467003.2547188,
+    "ast_hash": "8ce2b4b6a8efd336af07ebcfaca3048a",
+    "semantic_hash": "8ce2b4b6a8efd336af07ebcfaca3048a"
+  },
+  "C:\\Git\\Stamps\\.vscode\\settings.json": {
+    "mtime": 1781467003.2557201,
+    "ast_hash": "0a5763c3d5de90c1d9511b8158278dfc",
+    "semantic_hash": "0a5763c3d5de90c1d9511b8158278dfc"
+  },
+  "C:\\Git\\Stamps\\android\\app\\build.gradle": {
+    "mtime": 1781467003.2577217,
+    "ast_hash": "6aa3710b589837cfdd4d05c38526a14e",
+    "semantic_hash": "6aa3710b589837cfdd4d05c38526a14e"
+  },
+  "C:\\Git\\Stamps\\android\\app\\capacitor.build.gradle": {
+    "mtime": 1781467003.2577217,
+    "ast_hash": "d60a846b22e8df43633c27644a43bb14",
+    "semantic_hash": "d60a846b22e8df43633c27644a43bb14"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\androidTest\\java\\com\\getcapacitor\\myapp\\ExampleInstrumentedTest.java": {
+    "mtime": 1781467003.2597184,
+    "ast_hash": "c777a4127ae7213f7da22c4105bdfeab",
+    "semantic_hash": "c777a4127ae7213f7da22c4105bdfeab"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\java\\com\\stampme\\app\\MainActivity.java": {
+    "mtime": 1781467003.2622383,
+    "ast_hash": "875be8009d712ebaceacaceba69392c0",
+    "semantic_hash": "875be8009d712ebaceacaceba69392c0"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\test\\java\\com\\getcapacitor\\myapp\\ExampleUnitTest.java": {
+    "mtime": 1781467003.28712,
+    "ast_hash": "3f8a2768101e4de10f606ea4516fd339",
+    "semantic_hash": "3f8a2768101e4de10f606ea4516fd339"
+  },
+  "C:\\Git\\Stamps\\android\\build.gradle": {
+    "mtime": 1781467003.28712,
+    "ast_hash": "ca5f0fa0ea4c3997363777d8a2b6467b",
+    "semantic_hash": "ca5f0fa0ea4c3997363777d8a2b6467b"
+  },
+  "C:\\Git\\Stamps\\android\\capacitor.settings.gradle": {
+    "mtime": 1781467003.2881207,
+    "ast_hash": "b6591def1515e054f27a4d6fd07de298",
+    "semantic_hash": "b6591def1515e054f27a4d6fd07de298"
+  },
+  "C:\\Git\\Stamps\\android\\gradlew": {
+    "mtime": 1781467003.2901204,
+    "ast_hash": "f2d3d383787f61a4a99710ee8d780434",
+    "semantic_hash": "f2d3d383787f61a4a99710ee8d780434"
+  },
+  "C:\\Git\\Stamps\\android\\settings.gradle": {
+    "mtime": 1781467003.2911205,
+    "ast_hash": "c609df618dbeec637255380c9f707ccf",
+    "semantic_hash": "c609df618dbeec637255380c9f707ccf"
+  },
+  "C:\\Git\\Stamps\\android\\variables.gradle": {
+    "mtime": 1781467003.2911205,
+    "ast_hash": "32293aeff620cc10298866858c22ddc9",
+    "semantic_hash": "32293aeff620cc10298866858c22ddc9"
+  },
+  "C:\\Git\\Stamps\\angular.json": {
+    "mtime": 1781467003.2911205,
+    "ast_hash": "e0b477c963a50c37d2ad9c19db31677f",
+    "semantic_hash": "e0b477c963a50c37d2ad9c19db31677f"
+  },
+  "C:\\Git\\Stamps\\capacitor.config.json": {
+    "mtime": 1781467003.2922401,
+    "ast_hash": "c443b04d0fc26b0a5a4573a78e0082a1",
+    "semantic_hash": "c443b04d0fc26b0a5a4573a78e0082a1"
+  },
+  "C:\\Git\\Stamps\\capacitor.config.ts": {
+    "mtime": 1781467003.2922401,
+    "ast_hash": "377d514cebfd9d9779e8ee24ecbd3feb",
+    "semantic_hash": "377d514cebfd9d9779e8ee24ecbd3feb"
+  },
+  "C:\\Git\\Stamps\\ionic.config.json": {
+    "mtime": 1781467003.2922401,
+    "ast_hash": "f9119bd12f89841b2531ac793e0e71fa",
+    "semantic_hash": "f9119bd12f89841b2531ac793e0e71fa"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\AppDelegate.swift": {
+    "mtime": 1781467003.2958114,
+    "ast_hash": "6ae84c36899a7275ffb6ff34ebb8e262",
+    "semantic_hash": "6ae84c36899a7275ffb6ff34ebb8e262"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\AppIcon.appiconset\\Contents.json": {
+    "mtime": 1781467003.2988298,
+    "ast_hash": "98635c3f8c7b80695b155f1120e158fb",
+    "semantic_hash": "98635c3f8c7b80695b155f1120e158fb"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\Contents.json": {
+    "mtime": 1781467003.2988298,
+    "ast_hash": "29ca0117626aed5febd79b50e69fed8d",
+    "semantic_hash": "29ca0117626aed5febd79b50e69fed8d"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\Splash.imageset\\Contents.json": {
+    "mtime": 1781467003.3191533,
+    "ast_hash": "faf0a707bc5aca0dcb36f1f8e2de784c",
+    "semantic_hash": "faf0a707bc5aca0dcb36f1f8e2de784c"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\CapApp-SPM\\Package.swift": {
+    "mtime": 1781467003.323684,
+    "ast_hash": "20465cb78bfd6d93eaa50acc1d8e1d16",
+    "semantic_hash": "20465cb78bfd6d93eaa50acc1d8e1d16"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\CapApp-SPM\\Sources\\CapApp-SPM\\CapApp-SPM.swift": {
+    "mtime": 1781467003.3251925,
+    "ast_hash": "31ca8359f78dc6e1a32c4b411b744993",
+    "semantic_hash": "31ca8359f78dc6e1a32c4b411b744993"
+  },
+  "C:\\Git\\Stamps\\karma.conf.js": {
+    "mtime": 1781467003.3261993,
+    "ast_hash": "416c0b74cbeef07dabc63a939d41bf4e",
+    "semantic_hash": "416c0b74cbeef07dabc63a939d41bf4e"
+  },
+  "C:\\Git\\Stamps\\package.json": {
+    "mtime": 1781467003.3302028,
+    "ast_hash": "3aa325357d4553e1efe0437a76208547",
+    "semantic_hash": "3aa325357d4553e1efe0437a76208547"
+  },
+  "C:\\Git\\Stamps\\src\\app\\app-routing.module.ts": {
+    "mtime": 1781467003.3312101,
+    "ast_hash": "219f1019ab229b0ea9f53a454533c31b",
+    "semantic_hash": "219f1019ab229b0ea9f53a454533c31b"
+  },
+  "C:\\Git\\Stamps\\src\\app\\app.component.spec.ts": {
+    "mtime": 1781467003.3332062,
+    "ast_hash": "98f912d0e64b6272e748ae28655bdde1",
+    "semantic_hash": "98f912d0e64b6272e748ae28655bdde1"
+  },
+  "C:\\Git\\Stamps\\src\\app\\app.component.ts": {
+    "mtime": 1781467003.3332062,
+    "ast_hash": "23baed9fc81e1a3be363751ec787b799",
+    "semantic_hash": "23baed9fc81e1a3be363751ec787b799"
+  },
+  "C:\\Git\\Stamps\\src\\app\\app.module.ts": {
+    "mtime": 1781467003.3332062,
+    "ast_hash": "a7495a246217ab204526f22b9d5f99d8",
+    "semantic_hash": "a7495a246217ab204526f22b9d5f99d8"
+  },
+  "C:\\Git\\Stamps\\src\\app\\explore-container\\explore-container.component.spec.ts": {
+    "mtime": 1781467003.3353713,
+    "ast_hash": "a967b8b2c786b4347d2c3e57c590086e",
+    "semantic_hash": "a967b8b2c786b4347d2c3e57c590086e"
+  },
+  "C:\\Git\\Stamps\\src\\app\\explore-container\\explore-container.component.ts": {
+    "mtime": 1781467003.3353713,
+    "ast_hash": "ea48425c067a784576937297ee12bd0f",
+    "semantic_hash": "ea48425c067a784576937297ee12bd0f"
+  },
+  "C:\\Git\\Stamps\\src\\app\\explore-container\\explore-container.module.ts": {
+    "mtime": 1781467003.3363698,
+    "ast_hash": "780bcefa957524af940381ac7c704d29",
+    "semantic_hash": "780bcefa957524af940381ac7c704d29"
+  },
+  "C:\\Git\\Stamps\\src\\app\\mocks\\businesses.mock.ts": {
+    "mtime": 1781467003.3363698,
+    "ast_hash": "e190c55136a1c67faa943b4b85776900",
+    "semantic_hash": "e190c55136a1c67faa943b4b85776900"
+  },
+  "C:\\Git\\Stamps\\src\\app\\models\\business.model.ts": {
+    "mtime": 1781467003.3373804,
+    "ast_hash": "7a839ac48ad241a6aa03fc36564ba0c3",
+    "semantic_hash": "7a839ac48ad241a6aa03fc36564ba0c3"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\business-detail\\business-detail-routing.module.ts": {
+    "mtime": 1781467003.3373804,
+    "ast_hash": "d923f983d8e4083d92e3c833ce5cab21",
+    "semantic_hash": "d923f983d8e4083d92e3c833ce5cab21"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\business-detail\\business-detail.module.ts": {
+    "mtime": 1781467003.33841,
+    "ast_hash": "60a7f51bd961e1ab562dff40f48bcca3",
+    "semantic_hash": "60a7f51bd961e1ab562dff40f48bcca3"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\business-detail\\business-detail.page.ts": {
+    "mtime": 1781467003.3393953,
+    "ast_hash": "b895c8dbad798dff35412782195feec3",
+    "semantic_hash": "b895c8dbad798dff35412782195feec3"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\home\\home-routing.module.ts": {
+    "mtime": 1781467003.3393953,
+    "ast_hash": "19e2bc02e35c84dfa9280b5fb6e4b3d8",
+    "semantic_hash": "19e2bc02e35c84dfa9280b5fb6e4b3d8"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\home\\home.module.ts": {
+    "mtime": 1781467003.3403966,
+    "ast_hash": "03149727e6f7288c487a1be3de3ee017",
+    "semantic_hash": "03149727e6f7288c487a1be3de3ee017"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\home\\home.page.ts": {
+    "mtime": 1781467003.342161,
+    "ast_hash": "a14989250b3ae9ca9240913be77cfd29",
+    "semantic_hash": "a14989250b3ae9ca9240913be77cfd29"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\profile\\profile-routing.module.ts": {
+    "mtime": 1781467003.342161,
+    "ast_hash": "22fd8002ab6f090260be1a1f03c3df87",
+    "semantic_hash": "22fd8002ab6f090260be1a1f03c3df87"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\profile\\profile.module.ts": {
+    "mtime": 1781467003.342161,
+    "ast_hash": "f59146f8d444593d8679719d1515a469",
+    "semantic_hash": "f59146f8d444593d8679719d1515a469"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\profile\\profile.page.ts": {
+    "mtime": 1781467003.3437595,
+    "ast_hash": "68e99d385af6c6c5df7c5d57b2b41ac1",
+    "semantic_hash": "68e99d385af6c6c5df7c5d57b2b41ac1"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\stamp-card\\stamp-card-routing.module.ts": {
+    "mtime": 1781467003.3446853,
+    "ast_hash": "3acb7d229f4e4b618146a880d16770a4",
+    "semantic_hash": "3acb7d229f4e4b618146a880d16770a4"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\stamp-card\\stamp-card.module.ts": {
+    "mtime": 1781467003.3446853,
+    "ast_hash": "8f15bec289273266707126a495d7457c",
+    "semantic_hash": "8f15bec289273266707126a495d7457c"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\stamp-card\\stamp-card.page.ts": {
+    "mtime": 1781467003.346684,
+    "ast_hash": "5e30883a94081c332e60c0cc21b024c9",
+    "semantic_hash": "5e30883a94081c332e60c0cc21b024c9"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\wallet\\wallet-routing.module.ts": {
+    "mtime": 1781467003.3476875,
+    "ast_hash": "dafd2b05221a8c3a975b3a96194ec9f8",
+    "semantic_hash": "dafd2b05221a8c3a975b3a96194ec9f8"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\wallet\\wallet.module.ts": {
+    "mtime": 1781467003.3486905,
+    "ast_hash": "645fe66da8a90eb40350dc10228ce6e6",
+    "semantic_hash": "645fe66da8a90eb40350dc10228ce6e6"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\wallet\\wallet.page.ts": {
+    "mtime": 1781467003.349688,
+    "ast_hash": "f204b8cc676c5d4daf460195239b49ac",
+    "semantic_hash": "f204b8cc676c5d4daf460195239b49ac"
+  },
+  "C:\\Git\\Stamps\\src\\app\\services\\business.service.ts": {
+    "mtime": 1781467003.3506854,
+    "ast_hash": "bf003cc258a8157f1e0f3ede88e9a3fe",
+    "semantic_hash": "bf003cc258a8157f1e0f3ede88e9a3fe"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab1\\tab1-routing.module.ts": {
+    "mtime": 1781467003.351685,
+    "ast_hash": "336340ce6795fa34b57dade7b45ceaf3",
+    "semantic_hash": "336340ce6795fa34b57dade7b45ceaf3"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab1\\tab1.module.ts": {
+    "mtime": 1781467003.351685,
+    "ast_hash": "26b3fbef498cd9590de792726e177d85",
+    "semantic_hash": "26b3fbef498cd9590de792726e177d85"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab1\\tab1.page.spec.ts": {
+    "mtime": 1781467003.352684,
+    "ast_hash": "880cfab2f654c9c443249d29cd2dfefc",
+    "semantic_hash": "880cfab2f654c9c443249d29cd2dfefc"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab1\\tab1.page.ts": {
+    "mtime": 1781467003.352684,
+    "ast_hash": "d37edb873499c326f2f7b49146834388",
+    "semantic_hash": "d37edb873499c326f2f7b49146834388"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab2\\tab2-routing.module.ts": {
+    "mtime": 1781467003.3541894,
+    "ast_hash": "043cb1933603b589279ffb0be6b1220e",
+    "semantic_hash": "043cb1933603b589279ffb0be6b1220e"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab2\\tab2.module.ts": {
+    "mtime": 1781467003.3541894,
+    "ast_hash": "26cac6e7f0a5e29201a467480432cdee",
+    "semantic_hash": "26cac6e7f0a5e29201a467480432cdee"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab2\\tab2.page.spec.ts": {
+    "mtime": 1781467003.3551984,
+    "ast_hash": "d1bd27065a9cd334fe2c902f41637053",
+    "semantic_hash": "d1bd27065a9cd334fe2c902f41637053"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab2\\tab2.page.ts": {
+    "mtime": 1781467003.3551984,
+    "ast_hash": "14174da64179a8e70bee63f0c9924b08",
+    "semantic_hash": "14174da64179a8e70bee63f0c9924b08"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab3\\tab3-routing.module.ts": {
+    "mtime": 1781467003.3561976,
+    "ast_hash": "459ffbd6082eaca3a69ae5b07ef08693",
+    "semantic_hash": "459ffbd6082eaca3a69ae5b07ef08693"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab3\\tab3.module.ts": {
+    "mtime": 1781467003.3561976,
+    "ast_hash": "3cbdb44d1155743348e3b6ae8f3d9425",
+    "semantic_hash": "3cbdb44d1155743348e3b6ae8f3d9425"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab3\\tab3.page.spec.ts": {
+    "mtime": 1781467003.357387,
+    "ast_hash": "6f9fcfc29c223a384830c79205ea8953",
+    "semantic_hash": "6f9fcfc29c223a384830c79205ea8953"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab3\\tab3.page.ts": {
+    "mtime": 1781467003.3583868,
+    "ast_hash": "a340b8641a53bac6de7816625b1c759f",
+    "semantic_hash": "a340b8641a53bac6de7816625b1c759f"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tabs\\tabs-routing.module.ts": {
+    "mtime": 1781467003.3583868,
+    "ast_hash": "2c3283040adff5c12d3327d67ba265a5",
+    "semantic_hash": "2c3283040adff5c12d3327d67ba265a5"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tabs\\tabs.module.ts": {
+    "mtime": 1781467003.3583868,
+    "ast_hash": "eb824eb5a0176a523fb06fbb41e0fad1",
+    "semantic_hash": "eb824eb5a0176a523fb06fbb41e0fad1"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tabs\\tabs.page.spec.ts": {
+    "mtime": 1781467003.3593867,
+    "ast_hash": "c211acf60de6c41d09d5a5958d13ae18",
+    "semantic_hash": "c211acf60de6c41d09d5a5958d13ae18"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tabs\\tabs.page.ts": {
+    "mtime": 1781467003.3603876,
+    "ast_hash": "614ee843e2c55c2fde016d8f31ae15d6",
+    "semantic_hash": "614ee843e2c55c2fde016d8f31ae15d6"
+  },
+  "C:\\Git\\Stamps\\src\\environments\\environment.prod.ts": {
+    "mtime": 1781467003.3622015,
+    "ast_hash": "dbbaafb5412a4ec40c3b60625551c76d",
+    "semantic_hash": "dbbaafb5412a4ec40c3b60625551c76d"
+  },
+  "C:\\Git\\Stamps\\src\\environments\\environment.ts": {
+    "mtime": 1781467003.3622015,
+    "ast_hash": "f034bb350ac2bb396539b69cf6a2da41",
+    "semantic_hash": "f034bb350ac2bb396539b69cf6a2da41"
+  },
+  "C:\\Git\\Stamps\\src\\main.ts": {
+    "mtime": 1781467003.3632174,
+    "ast_hash": "e080ad36f040cac9f01f530ff08bc2cb",
+    "semantic_hash": "e080ad36f040cac9f01f530ff08bc2cb"
+  },
+  "C:\\Git\\Stamps\\src\\polyfills.ts": {
+    "mtime": 1781467003.3632174,
+    "ast_hash": "21861acc82b2086f74a9f520e76b31cf",
+    "semantic_hash": "21861acc82b2086f74a9f520e76b31cf"
+  },
+  "C:\\Git\\Stamps\\src\\test.ts": {
+    "mtime": 1781467003.3632174,
+    "ast_hash": "f676abeac7b043b8fddf11cb56d9506b",
+    "semantic_hash": "f676abeac7b043b8fddf11cb56d9506b"
+  },
+  "C:\\Git\\Stamps\\src\\zone-flags.ts": {
+    "mtime": 1781467003.365746,
+    "ast_hash": "1d7b7bfc49db4e1c6e4e96363808c111",
+    "semantic_hash": "1d7b7bfc49db4e1c6e4e96363808c111"
+  },
+  "C:\\Git\\Stamps\\tsconfig.app.json": {
+    "mtime": 1781467003.365746,
+    "ast_hash": "12a5ec1094c07c36b0940bac81ad6be2",
+    "semantic_hash": "12a5ec1094c07c36b0940bac81ad6be2"
+  },
+  "C:\\Git\\Stamps\\tsconfig.json": {
+    "mtime": 1781467003.3667467,
+    "ast_hash": "817b572d7e5ff869a1192e35eb45106c",
+    "semantic_hash": "817b572d7e5ff869a1192e35eb45106c"
+  },
+  "C:\\Git\\Stamps\\tsconfig.spec.json": {
+    "mtime": 1781467003.3667467,
+    "ast_hash": "573e22e238bb1c55296d4108780045bf",
+    "semantic_hash": "573e22e238bb1c55296d4108780045bf"
+  },
+  "C:\\Git\\Stamps\\README.md": {
+    "mtime": 1781467003.2557201,
+    "ast_hash": "c26fa0c600baebaf353f2d02071dd512",
+    "semantic_hash": "c26fa0c600baebaf353f2d02071dd512"
+  },
+  "C:\\Git\\Stamps\\Readme.txt": {
+    "mtime": 1781467003.2557201,
+    "ast_hash": "ad899a4655f9cfc718920531e7b36e3f",
+    "semantic_hash": "ad899a4655f9cfc718920531e7b36e3f"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\CapApp-SPM\\README.md": {
+    "mtime": 1781467003.3246844,
+    "ast_hash": "81d3d8ffa9ac7ac7322bb1c93f69efeb",
+    "semantic_hash": "81d3d8ffa9ac7ac7322bb1c93f69efeb"
+  },
+  "C:\\Git\\Stamps\\src\\app\\app.component.html": {
+    "mtime": 1781467003.3312101,
+    "ast_hash": "607ee8b9d6db9c64a8e24e7911568a71",
+    "semantic_hash": "607ee8b9d6db9c64a8e24e7911568a71"
+  },
+  "C:\\Git\\Stamps\\src\\app\\explore-container\\explore-container.component.html": {
+    "mtime": 1781467003.334368,
+    "ast_hash": "35efbfd51dfc2036a63fef2122295c04",
+    "semantic_hash": "35efbfd51dfc2036a63fef2122295c04"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\business-detail\\business-detail.page.html": {
+    "mtime": 1781467003.33841,
+    "ast_hash": "5a3f09221e7a96dba1815d89917c53d0",
+    "semantic_hash": "5a3f09221e7a96dba1815d89917c53d0"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\home\\home.page.html": {
+    "mtime": 1781467003.3403966,
+    "ast_hash": "0aebc607b41a505a159173d6ecbede36",
+    "semantic_hash": "0aebc607b41a505a159173d6ecbede36"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\profile\\profile.page.html": {
+    "mtime": 1781467003.3437595,
+    "ast_hash": "a63b2d6b33c4f98f9ddb93c7da90e1cb",
+    "semantic_hash": "a63b2d6b33c4f98f9ddb93c7da90e1cb"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\stamp-card\\stamp-card.page.html": {
+    "mtime": 1781467003.3456833,
+    "ast_hash": "1c8f3f3cd527a7a92e085751066a6736",
+    "semantic_hash": "1c8f3f3cd527a7a92e085751066a6736"
+  },
+  "C:\\Git\\Stamps\\src\\app\\pages\\wallet\\wallet.page.html": {
+    "mtime": 1781467003.3486905,
+    "ast_hash": "e39f5f064b577a0669b35cf7e871dcbb",
+    "semantic_hash": "e39f5f064b577a0669b35cf7e871dcbb"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab1\\tab1.page.html": {
+    "mtime": 1781467003.351685,
+    "ast_hash": "55b0f676ae818fedea771d262bbf5a9b",
+    "semantic_hash": "55b0f676ae818fedea771d262bbf5a9b"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab2\\tab2.page.html": {
+    "mtime": 1781467003.3541894,
+    "ast_hash": "e5f0dd29846242df8d1db3b8e73dd1b2",
+    "semantic_hash": "e5f0dd29846242df8d1db3b8e73dd1b2"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tab3\\tab3.page.html": {
+    "mtime": 1781467003.3561976,
+    "ast_hash": "5604d75b4784b52f80f4667cb29d561e",
+    "semantic_hash": "5604d75b4784b52f80f4667cb29d561e"
+  },
+  "C:\\Git\\Stamps\\src\\app\\tabs\\tabs.page.html": {
+    "mtime": 1781467003.3593867,
+    "ast_hash": "a504a190da707a9a68609139d5f5a95b",
+    "semantic_hash": "a504a190da707a9a68609139d5f5a95b"
+  },
+  "C:\\Git\\Stamps\\src\\index.html": {
+    "mtime": 1781467003.3632174,
+    "ast_hash": "025448c1e951679cfd6ccd0bb8eadd37",
+    "semantic_hash": "025448c1e951679cfd6ccd0bb8eadd37"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-land-hdpi\\splash.png": {
+    "mtime": 1781467003.263746,
+    "ast_hash": "f7a80786dd355bd39014e58027aa6e19",
+    "semantic_hash": "f7a80786dd355bd39014e58027aa6e19"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-land-mdpi\\splash.png": {
+    "mtime": 1781467003.2647562,
+    "ast_hash": "acc976d4a36479233371a53021525c0c",
+    "semantic_hash": "acc976d4a36479233371a53021525c0c"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-land-xhdpi\\splash.png": {
+    "mtime": 1781467003.265759,
+    "ast_hash": "b8c72969bc1f78aab71a76035360d4af",
+    "semantic_hash": "b8c72969bc1f78aab71a76035360d4af"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-land-xxhdpi\\splash.png": {
+    "mtime": 1781467003.2667563,
+    "ast_hash": "f87e988387b07d843905f38b084929fb",
+    "semantic_hash": "f87e988387b07d843905f38b084929fb"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-land-xxxhdpi\\splash.png": {
+    "mtime": 1781467003.2667563,
+    "ast_hash": "055a69553b16b0bf5f72094a2e459fc7",
+    "semantic_hash": "055a69553b16b0bf5f72094a2e459fc7"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-port-hdpi\\splash.png": {
+    "mtime": 1781467003.2677555,
+    "ast_hash": "5eb10d16c81338abe8bbc033d49638a8",
+    "semantic_hash": "5eb10d16c81338abe8bbc033d49638a8"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-port-mdpi\\splash.png": {
+    "mtime": 1781467003.2687538,
+    "ast_hash": "d855a76a5070c8e6fcfd83a27549bdce",
+    "semantic_hash": "d855a76a5070c8e6fcfd83a27549bdce"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-port-xhdpi\\splash.png": {
+    "mtime": 1781467003.2697568,
+    "ast_hash": "df100b2a36bdb98b711cca58941728de",
+    "semantic_hash": "df100b2a36bdb98b711cca58941728de"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-port-xxhdpi\\splash.png": {
+    "mtime": 1781467003.2707577,
+    "ast_hash": "2c1b668364e815256f67b71dcdfa4d6e",
+    "semantic_hash": "2c1b668364e815256f67b71dcdfa4d6e"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable-port-xxxhdpi\\splash.png": {
+    "mtime": 1781467003.271899,
+    "ast_hash": "b5b1b22b59abe686c1df0d74a423d034",
+    "semantic_hash": "b5b1b22b59abe686c1df0d74a423d034"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\drawable\\splash.png": {
+    "mtime": 1781467003.2729142,
+    "ast_hash": "acc976d4a36479233371a53021525c0c",
+    "semantic_hash": "acc976d4a36479233371a53021525c0c"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png": {
+    "mtime": 1781467003.2759047,
+    "ast_hash": "1956941339dd5fe36d5c66601c89a08d",
+    "semantic_hash": "1956941339dd5fe36d5c66601c89a08d"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_foreground.png": {
+    "mtime": 1781467003.2759047,
+    "ast_hash": "73b1e06d769fa08a9c3b8328cc15fd75",
+    "semantic_hash": "73b1e06d769fa08a9c3b8328cc15fd75"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png": {
+    "mtime": 1781467003.2759047,
+    "ast_hash": "f43e5674865a00186dd76183cf1f2f8e",
+    "semantic_hash": "f43e5674865a00186dd76183cf1f2f8e"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png": {
+    "mtime": 1781467003.276904,
+    "ast_hash": "7ed1b3739b83215d0c4a0b4a7f2dcab4",
+    "semantic_hash": "7ed1b3739b83215d0c4a0b4a7f2dcab4"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_foreground.png": {
+    "mtime": 1781467003.2775855,
+    "ast_hash": "5b77e8aec8b17eed320a97567c7cb8bf",
+    "semantic_hash": "5b77e8aec8b17eed320a97567c7cb8bf"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png": {
+    "mtime": 1781467003.2775855,
+    "ast_hash": "a49547a32c7d9b529af607b033811d81",
+    "semantic_hash": "a49547a32c7d9b529af607b033811d81"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png": {
+    "mtime": 1781467003.2786005,
+    "ast_hash": "5689511ee4e41a367d0342f37ac48bdf",
+    "semantic_hash": "5689511ee4e41a367d0342f37ac48bdf"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_foreground.png": {
+    "mtime": 1781467003.2786005,
+    "ast_hash": "15cdded29b9877ac98c5931024c5da5d",
+    "semantic_hash": "15cdded29b9877ac98c5931024c5da5d"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_round.png": {
+    "mtime": 1781467003.2786005,
+    "ast_hash": "c890fa4af62a63486d5dea62441ce7ab",
+    "semantic_hash": "c890fa4af62a63486d5dea62441ce7ab"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher.png": {
+    "mtime": 1781467003.2795992,
+    "ast_hash": "a3285eeaedda8201f04e7737b9df8421",
+    "semantic_hash": "a3285eeaedda8201f04e7737b9df8421"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_foreground.png": {
+    "mtime": 1781467003.280602,
+    "ast_hash": "4e9584ecc16d1fc75afb798688ce576f",
+    "semantic_hash": "4e9584ecc16d1fc75afb798688ce576f"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_round.png": {
+    "mtime": 1781467003.280602,
+    "ast_hash": "14cde87848553e24d7106f56eb8ceb6f",
+    "semantic_hash": "14cde87848553e24d7106f56eb8ceb6f"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png": {
+    "mtime": 1781467003.280602,
+    "ast_hash": "9e029293ab1ae8e3a6a7b7d0b7177e46",
+    "semantic_hash": "9e029293ab1ae8e3a6a7b7d0b7177e46"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_foreground.png": {
+    "mtime": 1781467003.2821803,
+    "ast_hash": "ed3696b7c52d9747411a475dbe3fa34a",
+    "semantic_hash": "ed3696b7c52d9747411a475dbe3fa34a"
+  },
+  "C:\\Git\\Stamps\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_round.png": {
+    "mtime": 1781467003.28312,
+    "ast_hash": "85addb4159ecd3f76f02fbacd5ec86de",
+    "semantic_hash": "85addb4159ecd3f76f02fbacd5ec86de"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\AppIcon.appiconset\\AppIcon-512@2x.png": {
+    "mtime": 1781467003.2978263,
+    "ast_hash": "0ac741c9e1701ee14dd05ea131f7cfd8",
+    "semantic_hash": "0ac741c9e1701ee14dd05ea131f7cfd8"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\Splash.imageset\\splash-2732x2732-1.png": {
+    "mtime": 1781467003.320173,
+    "ast_hash": "958532b95c3e7d4997327dc977b80600",
+    "semantic_hash": "958532b95c3e7d4997327dc977b80600"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\Splash.imageset\\splash-2732x2732-2.png": {
+    "mtime": 1781467003.320173,
+    "ast_hash": "958532b95c3e7d4997327dc977b80600",
+    "semantic_hash": "958532b95c3e7d4997327dc977b80600"
+  },
+  "C:\\Git\\Stamps\\ios\\App\\App\\Assets.xcassets\\Splash.imageset\\splash-2732x2732.png": {
+    "mtime": 1781467003.321171,
+    "ast_hash": "958532b95c3e7d4997327dc977b80600",
+    "semantic_hash": "958532b95c3e7d4997327dc977b80600"
+  },
+  "C:\\Git\\Stamps\\src\\assets\\icon\\favicon.png": {
+    "mtime": 1781467003.3603876,
+    "ast_hash": "988be98f12b400c41a22b59b82cfeab6",
+    "semantic_hash": "988be98f12b400c41a22b59b82cfeab6"
+  },
+  "C:\\Git\\Stamps\\src\\assets\\shapes.svg": {
+    "mtime": 1781467003.3613875,
+    "ast_hash": "721967fb901ccf0910b3cdf7b77ba078",
+    "semantic_hash": "721967fb901ccf0910b3cdf7b77ba078"
+  }
+}
