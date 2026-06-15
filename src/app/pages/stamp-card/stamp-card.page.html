@@ -1,38 +1,44 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Go back"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ stampCard?.businessName }}</ion-title>
+    <ion-title>{{ stampCard?.businessName || 'Card' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="stampCard">
-  <div class="card-hero">
-    <img [src]="stampCard.businessImage" [alt]="stampCard.businessName" />
-    <div class="hero-overlay">
-      <h1>{{ stampCard.businessName }}</h1>
-      <p>Cartão de Fidelidade</p>
-    </div>
-  </div>
+<ion-content *ngIf="stampCard; else missingCard">
+  <main class="app-page stamp-page">
+    <section class="stamp-hero" aria-labelledby="stamp-title">
+      <img [src]="stampCard.businessImage" [alt]="stampCard.businessName" />
+      <div>
+        <span class="app-status-pill is-muted">{{ stampCard.category }}</span>
+        <h1 id="stamp-title">{{ stampCard.businessName }}</h1>
+        <p>{{ getNextRewardText() }}</p>
+      </div>
+    </section>
 
-  <div class="stamp-card-container">
-    <div class="stamp-card">
-      <div class="stamp-card-header">
-        <span class="stamp-progress-text">{{ stampCard.stamps }} / 10 carimbos</span>
+    <section class="loyalty-card" aria-label="Loyalty Card">
+      <div class="loyalty-card-header">
+        <div>
+          <span>Loyalty Card</span>
+          <strong>{{ stampCard.stamps }} / 10 stamps</strong>
+        </div>
+        <ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon>
       </div>
 
-      <!-- Row 1: stamps 1-3 -->
-      <div class="stamp-row">
+      <div class="stamp-grid">
         <div
-          *ngFor="let slot of getRowSlots(1)"
+          *ngFor="let slot of stampSlots"
           class="stamp-slot"
           [class.stamped]="isStamped(slot)"
           [class.has-reward]="hasReward(slot)"
           [class.reward-unlocked]="isRewardUnlocked(slot)"
+          [class.final-slot]="slot === 10"
         >
           <div class="stamp-circle">
-            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
+            <ion-icon *ngIf="isStamped(slot) && slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
+            <ion-icon *ngIf="isStamped(slot) && slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
             <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
           </div>
           <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
@@ -40,78 +46,96 @@
           </span>
         </div>
       </div>
+    </section>
 
-      <!-- Row 2: stamps 4-6 -->
-      <div class="stamp-row">
-        <div
-          *ngFor="let slot of getRowSlots(2)"
-          class="stamp-slot"
-          [class.stamped]="isStamped(slot)"
-          [class.has-reward]="hasReward(slot)"
-          [class.reward-unlocked]="isRewardUnlocked(slot)"
-        >
-          <div class="stamp-circle">
-            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
-            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
-          </div>
-          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
-            {{ getRewardLabel(slot) }}
-          </span>
-        </div>
+    <section class="app-reward-panel">
+      <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+      <div>
+        <span>Next reward milestone</span>
+        <strong>{{ stampCard.reward }}</strong>
+        <p>{{ business?.rewardDescription || 'Complete the card to unlock the final reward.' }}</p>
       </div>
+    </section>
 
-      <!-- Row 3: stamps 7-9 -->
-      <div class="stamp-row">
-        <div
-          *ngFor="let slot of getRowSlots(3)"
-          class="stamp-slot"
-          [class.stamped]="isStamped(slot)"
-          [class.has-reward]="hasReward(slot)"
-          [class.reward-unlocked]="isRewardUnlocked(slot)"
+    <section class="actions-section" aria-label="Ações do cartão">
+      <ion-button
+        expand="block"
+        shape="round"
+        color="primary"
+        (click)="startScanning()"
+        [disabled]="stampCard.stamps >= 10"
+        class="scan-qr-btn"
+      >
+        <ion-icon name="qr-code-outline" slot="start" aria-hidden="true"></ion-icon>
+        Validate visit
+      </ion-button>
+
+      <div class="presentation-action">
+        <span>Presentation Mode</span>
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="addStamp()"
+          [disabled]="stampCard.stamps >= 10"
+          class="add-stamp-btn"
         >
-          <div class="stamp-circle">
-            <ion-icon *ngIf="isStamped(slot)" name="checkmark" class="stamp-check"></ion-icon>
-            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
-          </div>
-          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
-            {{ getRewardLabel(slot) }}
-          </span>
-        </div>
+          <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+          Simulate visit
+        </ion-button>
       </div>
+    </section>
+  </main>
 
-      <!-- Row 4: stamp 10 (centered) -->
-      <div class="stamp-row stamp-row-center">
-        <div
-          *ngFor="let slot of getRowSlots(4)"
-          class="stamp-slot stamp-slot-final"
-          [class.stamped]="isStamped(slot)"
-          [class.has-reward]="hasReward(slot)"
-          [class.reward-unlocked]="isRewardUnlocked(slot)"
-        >
-          <div class="stamp-circle stamp-circle-final">
-            <ion-icon *ngIf="isStamped(slot)" name="trophy" class="stamp-check trophy"></ion-icon>
-            <ion-icon *ngIf="!isStamped(slot)" name="gift-outline" class="stamp-gift"></ion-icon>
-          </div>
-          <span class="reward-tag reward-tag-final" [class.unlocked]="isRewardUnlocked(slot)">
-            {{ getRewardLabel(slot) }}
-          </span>
+  <ion-modal [isOpen]="showScanner" (didDismiss)="cancelScanning()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Validate visit</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cancelScanning()" aria-label="Close validation">
+              <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding scanner-content">
+        <div class="scanner-preview">
+          <div class="scanner-corners"></div>
+          <div class="scanner-laser"></div>
+          <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
+          <p>Frame the merchant's QR code</p>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Demo button -->
-  <div class="demo-section">
-    <ion-button
-      expand="block"
-      shape="round"
-      (click)="addStamp()"
-      [disabled]="stampCard.stamps >= 10"
-      class="add-stamp-btn"
-    >
-      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-      {{ stampCard.stamps >= 10 ? 'Cartão Completo! 🎉' : 'Adicionar Carimbo' }}
-    </ion-button>
-    <p class="demo-hint">Simulação para demonstração</p>
-  </div>
+        <ion-button expand="block" fill="outline" shape="round" (click)="useDemoCode()">
+          Use demo code
+        </ion-button>
+
+        <ion-list class="scanner-form">
+          <ion-item>
+            <ion-input
+              label="Validation code"
+              labelPlacement="floating"
+              placeholder="Ex: STAMP_QR_BARBER123"
+              [(ngModel)]="scannedCode"
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <ion-button expand="block" shape="round" class="confirm-scan-btn" (click)="submitScannedCode(scannedCode)">
+          Confirm visit
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
+
+<ng-template #missingCard>
+  <ion-content>
+    <div class="app-empty-state">
+      <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+      <h2>Card not found</h2>
+      <p>Follow this business first to create a card in your wallet.</p>
+      <ion-button routerLink="/tabs/home" shape="round">Explore businesses</ion-button>
+    </div>
+  </ion-content>
+</ng-template>

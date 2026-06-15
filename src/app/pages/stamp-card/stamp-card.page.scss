@@ -1,198 +1,381 @@
-.card-hero {
-  position: relative;
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
+.stamp-page {
+  padding-top: 12px;
+}
+
+.stamp-hero {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--app-color-line);
+  border-radius: var(--app-radius-xl);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-shadow-card);
 
   img {
-    width: 100%;
-    height: 100%;
+    width: 96px;
+    height: 96px;
+    border-radius: var(--app-radius-lg);
     object-fit: cover;
   }
 
-  .hero-overlay {
+  h1 {
+    margin: 9px 0 5px;
+    color: var(--ion-text-color);
+    font-size: 1.35rem;
+    line-height: 1.08;
+    font-weight: 950;
+  }
+
+  p {
+    margin: 0;
+    color: var(--app-color-muted);
+    font-size: 0.88rem;
+    line-height: 1.36;
+    font-weight: 750;
+  }
+}
+
+.loyalty-card {
+  position: relative;
+  margin: 18px 0 14px;
+  padding: 22px 18px;
+  border: none;
+  border-radius: 28px;
+  background: var(--app-gradient-brand);
+  box-shadow: var(--app-shadow-3);
+  overflow: hidden;
+
+  &::before {
+    content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-    color: #fff;
-
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    p {
-      font-size: 0.85rem;
-      margin: 4px 0 0;
-      opacity: 0.85;
-    }
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 75%);
+    pointer-events: none;
   }
 }
 
-.stamp-card-container {
-  padding: 20px 16px;
-}
-
-.stamp-card {
-  background: var(--ion-card-background, #fff);
-  border-radius: 20px;
-  padding: 24px 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.15);
-
-  .stamp-card-header {
-    text-align: center;
-    margin-bottom: 24px;
-
-    .stamp-progress-text {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ion-color-primary);
-    }
-  }
-}
-
-.stamp-row {
+.loyalty-card-header {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
   margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
 
-  &.stamp-row-center {
-    justify-content: center;
-    margin-bottom: 0;
+  span,
+  strong {
+    display: block;
   }
+
+  span {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.82rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  strong {
+    margin-top: 4px;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 950;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-icon {
+    color: #ffffff;
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  }
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .stamp-slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: 80px;
-
-  .stamp-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 3px dashed var(--ion-color-medium-tint);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    background: var(--ion-color-light);
-
-    .stamp-number {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ion-color-medium);
-    }
-
-    .stamp-check {
-      font-size: 1.4rem;
-      color: #fff;
-    }
-
-    .stamp-gift {
-      font-size: 1.4rem;
-      color: var(--ion-color-medium);
-    }
-  }
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
 
   &.stamped .stamp-circle {
-    border: 3px solid var(--ion-color-primary);
-    background: var(--ion-color-primary);
-    animation: stampPop 0.3s ease;
+    border-color: #ffffff;
+    background: #ffffff;
+    color: var(--ion-color-primary);
+    box-shadow: var(--app-shadow-2);
+    animation: stampPop 0.36s var(--app-easing-spring) both;
+
+    .stamp-check {
+      color: var(--ion-color-primary);
+      font-size: 1.45rem;
+      animation: checkmarkRotate 0.45s var(--app-easing-spring) both;
+    }
   }
 
   &.has-reward .stamp-circle {
-    border-color: var(--ion-color-warning);
+    border-color: rgba(255, 255, 255, 0.6);
   }
 
-  &.has-reward.stamped .stamp-circle {
-    background: var(--ion-color-warning);
-    border-color: var(--ion-color-warning);
+  &.reward-unlocked .stamp-circle {
+    color: var(--app-color-reward);
+    background: #ffffff;
+    border-color: #ffffff;
   }
 
-  .reward-tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--ion-color-medium);
-    background: var(--ion-color-light);
-    padding: 2px 8px;
-    border-radius: 10px;
-    text-align: center;
-    white-space: nowrap;
-    transition: all 0.3s ease;
+  &.final-slot {
+    grid-column: 2;
 
-    &.unlocked {
-      color: var(--ion-color-warning-contrast);
-      background: var(--ion-color-warning);
+    .stamp-circle {
+      width: 68px;
+      height: 68px;
+      border: 3px double rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+    }
+
+    &.stamped .stamp-circle {
+      border-color: #ffffff;
+      background: var(--app-gradient-reward);
+      color: #ffffff;
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.25), var(--app-shadow-3);
+
+      .stamp-check {
+        color: #ffffff;
+        font-size: 1.8rem;
+      }
     }
   }
 }
 
-.stamp-slot-final {
-  width: auto;
+.stamp-circle {
+  width: 54px;
+  height: 54px;
+  border: 2px dashed rgba(255, 255, 255, 0.38);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all var(--app-motion-normal) var(--app-easing);
 
-  .stamp-circle-final {
-    width: 68px;
-    height: 68px;
-    border-width: 3px;
+  &:hover, &:active {
+    border-color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.06);
+  }
+}
 
-    .trophy {
-      font-size: 1.8rem;
-      color: #fff;
-    }
+.stamp-number {
+  font-size: 0.98rem;
+  font-weight: 950;
+  color: #ffffff;
+}
 
-    .stamp-gift {
-      font-size: 1.6rem;
-    }
+.stamp-check {
+  color: #fff;
+  font-size: 1.35rem;
+}
+
+.reward-tag {
+  max-width: 96px;
+  min-height: 20px;
+  padding: 4px 8px;
+  border-radius: var(--app-radius-pill);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.65rem;
+  line-height: 1.12;
+  font-weight: 900;
+  text-align: center;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  &.unlocked {
+    color: var(--ion-color-warning-contrast);
+    background: #ffffff;
+    box-shadow: var(--app-shadow-1);
+  }
+}
+
+.actions-section {
+  margin-top: 20px;
+}
+
+.scan-qr-btn {
+  --box-shadow: var(--app-shadow-3);
+  --background: var(--app-gradient-brand);
+}
+
+.presentation-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 8px 2px;
+  color: var(--app-color-muted);
+
+  > span {
+    font-size: 0.78rem;
+    font-weight: 850;
+  }
+}
+
+.add-stamp-btn {
+  --color: var(--app-color-brand-deep);
+  font-weight: 850;
+}
+
+ion-modal {
+  --height: auto;
+  --border-radius: 28px 28px 0 0;
+  
+  &::part(backdrop) {
+    background: rgba(23, 33, 31, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+.scanner-content {
+  --background: var(--ion-background-color);
+  padding-bottom: calc(20px + var(--ion-safe-area-bottom));
+}
+
+.scanner-preview {
+  position: relative;
+  height: 244px;
+  margin-bottom: 20px;
+  border: 2px solid rgba(var(--ion-color-primary-rgb), 0.3);
+  border-radius: var(--app-radius-xl);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  overflow: hidden;
+  background: rgba(var(--ion-color-primary-rgb), 0.04);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+
+  ion-icon {
+    color: var(--ion-color-primary);
+    font-size: 3.5rem;
+    animation: pulseScale 2s infinite ease-in-out;
   }
 
-  .reward-tag-final {
-    font-size: 0.75rem;
-    padding: 4px 12px;
-    max-width: 160px;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.3;
+  p {
+    margin: 0;
+    color: var(--app-color-muted);
+    font-weight: 850;
+    font-size: 0.95rem;
   }
+}
+
+.scanner-laser {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 4px;
+  border-radius: var(--app-radius-pill);
+  background: var(--ion-color-danger);
+  box-shadow: 0 0 16px var(--ion-color-danger);
+  animation: scan 2.5s ease-in-out infinite;
+}
+
+.scanner-corners {
+  position: absolute;
+  inset: 20px;
+  border: 3px solid rgba(var(--ion-color-primary-rgb), 0.45);
+  border-radius: var(--app-radius-lg);
+  pointer-events: none;
+  -webkit-mask: 
+    linear-gradient(to right, red 20px, transparent 20px) 0 0 / 100% 100% no-repeat,
+    linear-gradient(to right, red 20px, transparent 20px) 0 100% / 100% 100% no-repeat,
+    linear-gradient(to left, red 20px, transparent 20px) 100% 0 / 100% 100% no-repeat,
+    linear-gradient(to left, red 20px, transparent 20px) 100% 100% / 100% 100% no-repeat,
+    linear-gradient(to bottom, red 20px, transparent 20px) 0 0 / 100% 100% no-repeat,
+    linear-gradient(to bottom, red 20px, transparent 20px) 100% 0 / 100% 100% no-repeat,
+    linear-gradient(to top, red 20px, transparent 20px) 0 100% / 100% 100% no-repeat,
+    linear-gradient(to top, red 20px, transparent 20px) 100% 100% / 100% 100% no-repeat;
+}
+
+.scanner-form {
+  margin-top: 16px;
+  padding: 0;
+  background: transparent;
+
+  ion-item {
+    --background: var(--app-color-surface);
+    --border-radius: var(--app-radius-md);
+    --padding-start: 14px;
+    --inner-padding-end: 14px;
+  }
+}
+
+.confirm-scan-btn {
+  margin-top: 16px;
 }
 
 @keyframes stampPop {
   0% {
-    transform: scale(0.7);
-    opacity: 0.5;
+    transform: scale(0.6) rotate(-15deg);
+    opacity: 0;
   }
-  50% {
-    transform: scale(1.15);
+  70% {
+    transform: scale(1.15) rotate(5deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0);
     opacity: 1;
   }
 }
 
-.demo-section {
-  padding: 8px 20px 32px;
-  text-align: center;
+@keyframes checkmarkRotate {
+  0% {
+    transform: scale(0.3) rotate(-45deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.15) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
 
-  .add-stamp-btn {
-    --border-radius: 28px;
-    --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb), 0.3);
-    font-weight: 600;
-    font-size: 1rem;
-    height: 52px;
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes scan {
+  0% {
+    top: 24px;
+  }
+  50% {
+    top: calc(100% - 28px);
+  }
+  100% {
+    top: 24px;
+  }
+}
+
+@media (min-width: 700px) {
+  .stamp-page {
+    max-width: 720px;
   }
 
-  .demo-hint {
-    font-size: 0.75rem;
-    color: var(--ion-color-medium);
-    margin-top: 8px;
+  .loyalty-card {
+    padding: 26px 22px;
   }
 }
