@@ -30,7 +30,7 @@ export class HomePage implements OnInit {
   categories: Category[] = [
     { name: 'Restaurantes', icon: 'restaurant-outline', match: 'Restaurante' },
     { name: 'Pizzarias', icon: 'pizza-outline', match: 'Pizzaria' },
-    { name: 'Cafes', icon: 'cafe-outline', match: 'Cafe' },
+    { name: 'Cafés', icon: 'cafe-outline', match: 'Café' },
     { name: 'Beleza', icon: 'cut-outline', match: 'Beleza' },
     { name: 'Bares', icon: 'wine-outline', match: 'Bar' },
     { name: 'Estadias', icon: 'bed-outline', match: 'Hostel,Hotel' },
@@ -52,9 +52,9 @@ export class HomePage implements OnInit {
 
   private computeGreeting(): string {
     const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (h < 12) return 'Bom dia';
+    if (h < 18) return 'Boa tarde';
+    return 'Boa noite';
   }
 
   onSearchChange(event: any) {

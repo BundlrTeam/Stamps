@@ -44,13 +44,19 @@ export class ProfilePage implements OnInit {
     category: '',
     description: '',
     services: [''],
-    photoUrl: '',
+    googleBusinessProfileUrl: '',
+    businessPhotos: [
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600',
+      'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600'
+    ],
     contactName: '',
     contactEmail: '',
     contactPhone: ''
   };
 
   showAddBusinessModal: boolean = false;
+  currentStep = 1;
   merchantLeadSubmitted = false;
 
   ngOnInit() {
@@ -64,10 +70,12 @@ export class ProfilePage implements OnInit {
     }
 
     const savedTheme = localStorage.getItem('darkMode');
-    if (savedTheme) {
+    if (savedTheme !== null) {
       this.isDarkMode = savedTheme === 'true';
-      document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
+    } else {
+      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
+    document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
 
     this.merchantLeadSubmitted = Boolean(localStorage.getItem(this.leadStorageKey));
   }
@@ -81,7 +89,7 @@ export class ProfilePage implements OnInit {
     if (this.tempName.trim()) {
       this.user.name = this.tempName.trim();
       this.persistProfile();
-      this.showToast('Name updated successfully');
+      this.showToast('Nome atualizado com sucesso');
     }
     this.isEditingName = false;
   }
@@ -93,17 +101,17 @@ export class ProfilePage implements OnInit {
 
   async changePhoto() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Change profile picture',
+      header: 'Alterar foto de perfil',
       buttons: [
         {
-          text: 'Choose from gallery',
+          text: 'Escolher da galeria',
           icon: 'images-outline',
           handler: () => {
             this.showPhotoUrlPrompt();
           }
         },
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           icon: 'close-outline',
           role: 'cancel'
         }
@@ -114,8 +122,8 @@ export class ProfilePage implements OnInit {
 
   async showPhotoUrlPrompt() {
     const alert = await this.alertController.create({
-      header: 'Picture URL',
-      message: 'Enter your picture URL',
+      header: 'URL da foto',
+      message: 'Digite a URL da sua foto',
       inputs: [
         {
           name: 'url',
@@ -126,16 +134,16 @@ export class ProfilePage implements OnInit {
       ],
       buttons: [
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Save',
+          text: 'Salvar',
           handler: (data) => {
             if (data.url && data.url.trim()) {
               this.user.photoUrl = data.url.trim();
               this.persistProfile();
-              this.showToast('Photo updated successfully');
+              this.showToast('Foto atualizada com sucesso');
             }
           }
         }
@@ -148,24 +156,24 @@ export class ProfilePage implements OnInit {
     this.isDarkMode = !this.isDarkMode;
     document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
     localStorage.setItem('darkMode', String(this.isDarkMode));
-    this.showToast(this.isDarkMode ? 'Dark mode enabled' : 'Light mode enabled');
+    this.showToast(this.isDarkMode ? 'Modo escuro ativado' : 'Modo claro ativado');
   }
 
   async logout() {
     const alert = await this.alertController.create({
-      header: 'Log out',
-      message: 'Are you sure you want to log out?',
+      header: 'Sair',
+      message: 'Tem certeza de que deseja sair?',
       buttons: [
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Log out',
+          text: 'Sair',
           role: 'destructive',
           handler: () => {
             localStorage.removeItem(this.sessionStorageKey);
-            this.showToast('Logged out');
+            this.showToast('Sessão encerrada');
             this.router.navigate(['/login']);
           }
         }
@@ -176,11 +184,43 @@ export class ProfilePage implements OnInit {
 
   openAddBusinessModal() {
     this.showAddBusinessModal = true;
+    this.currentStep = 1;
     this.resetBusinessForm();
   }
 
   closeAddBusinessModal() {
     this.showAddBusinessModal = false;
+    this.currentStep = 1;
+  }
+
+  nextStep() {
+    if (this.currentStep < 3 && this.isStepValid(this.currentStep)) {
+      this.currentStep++;
+    }
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  isStepValid(step: number): boolean {
+    if (step === 1) {
+      return !!(this.newBusiness.name?.trim() && this.newBusiness.category?.trim());
+    }
+    if (step === 2) {
+      const validPhotos = this.newBusiness.businessPhotos.filter(p => p?.trim());
+      return validPhotos.length >= 3 && validPhotos.length <= 5;
+    }
+    if (step === 3) {
+      return !!(this.newBusiness.contactName?.trim() && this.newBusiness.contactEmail?.trim());
+    }
+    return false;
+  }
+
+  getProgressPercentage(): number {
+    return (this.currentStep / 3) * 100;
   }
 
   resetBusinessForm() {
@@ -190,7 +230,12 @@ export class ProfilePage implements OnInit {
       category: '',
       description: '',
       services: [''],
-      photoUrl: '',
+      googleBusinessProfileUrl: '',
+      businessPhotos: [
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600',
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600'
+      ],
       contactName: '',
       contactEmail: '',
       contactPhone: ''
@@ -207,6 +252,18 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  addPhotoField() {
+    if (this.newBusiness.businessPhotos.length < 5) {
+      this.newBusiness.businessPhotos.push('');
+    }
+  }
+
+  removePhotoField(index: number) {
+    if (this.newBusiness.businessPhotos.length > 3) {
+      this.newBusiness.businessPhotos.splice(index, 1);
+    }
+  }
+
   trackByIndex(index: number): number {
     return index;
   }
@@ -218,35 +275,42 @@ export class ProfilePage implements OnInit {
       !this.newBusiness.contactName.trim() ||
       !this.newBusiness.contactEmail.trim()
     ) {
-      this.showToast('Name, category, and contact details are required');
+      this.showToast('Nome, categoria e dados de contato são obrigatórios');
       return;
     }
 
     const validServices = this.newBusiness.services.filter(s => s.trim());
+    const validPhotos = this.newBusiness.businessPhotos.filter(p => p.trim());
+
+    if (validPhotos.length < 3) {
+      this.showToast('Por favor, adicione no mínimo 3 fotos do seu negócio');
+      return;
+    }
 
     const businessData: MerchantLead = {
       ...this.newBusiness,
-      services: validServices.length > 0 ? validServices : ['General service']
+      services: validServices.length > 0 ? validServices : ['Serviço geral'],
+      businessPhotos: validPhotos
     };
 
     localStorage.setItem(this.leadStorageKey, JSON.stringify(businessData));
     this.merchantLeadSubmitted = true;
-    this.showToast('Request received. We will contact you soon.');
+    this.showToast('Solicitação recebida. Entraremos em contato em breve.');
     this.closeAddBusinessModal();
   }
 
   async resetDemoState() {
     const alert = await this.alertController.create({
-      header: 'Reset demo',
-      message: 'This restores the sample cards and stamps.',
+      header: 'Redefinir demo',
+      message: 'Isso restaurará os cartões e selos de demonstração.',
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Reset',
+          text: 'Redefinir',
           role: 'destructive',
           handler: () => {
             this.businessService.resetDemoState();
-            this.showToast('Demo data reset');
+            this.showToast('Dados de demonstração redefinidos');
           }
         }
       ]

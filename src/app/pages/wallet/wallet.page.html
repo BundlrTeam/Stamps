@@ -3,48 +3,139 @@
      <ion-title>
        <span class="wallet-title">
          <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
-         Wallet
+         Carteira
        </span>
      </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
+  <!-- ─── Confetti Canvas ─── -->
+  <canvas #walletConfettiCanvas class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- ─── Badge Celebration Overlay (reuses global .celebration-* classes) ─── -->
+  <div
+    class="celebration-overlay"
+    [class.is-active]="showCelebration"
+    (click)="dismissCelebration()"
+    aria-live="polite"
+    role="status"
+  >
+    <!-- Falling badge icons -->
+    <ng-container *ngIf="newBadge">
+      <span
+        *ngFor="let icon of [0,1,2,3,4,5,6,7,8,9,10,11]; let i = index"
+        class="falling-icon"
+        [class]="'falling-icon ' + badgeFallingIconClass"
+        [style.--i]="i"
+        aria-hidden="true"
+      >
+        <ion-icon [name]="newBadge.icon"></ion-icon>
+      </span>
+    </ng-container>
+
+    <!-- Main badge card -->
+    <div class="celebration-card" [class]="badgeTierClass" *ngIf="newBadge">
+      <div class="celebration-icon-wrap" [class]="badgeIconWrapClass">
+        <ion-icon [name]="newBadge.icon" class="celebration-main-icon" aria-hidden="true"></ion-icon>
+      </div>
+
+      <!-- Tier pill -->
+      <div class="celebration-badge-tier" [class]="badgeTierPillClass">
+        <ion-icon [name]="newBadge.tier === 'gold' ? 'star' : 'medal-outline'"></ion-icon>
+        {{ badgeTierLabel }}
+      </div>
+
+      <h2 class="celebration-heading">{{ newBadge.name }}</h2>
+      <p class="celebration-sub">{{ newBadge.description }}</p>
+      <button
+        class="celebration-dismiss-btn"
+        [class]="badgeDismissBtnClass"
+        (click)="dismissCelebration()"
+        aria-label="Fechar celebração"
+      >
+        Ver conquistas
+      </button>
+    </div>
+  </div>
+
   <main class="app-page wallet-page">
+
+    <!-- ── Page heading ── -->
     <section class="app-section-header wallet-heading">
       <div class="wallet-header-flex">
         <div class="wallet-title-row">
-          <h1>My cards</h1>
-          <div class="wallet-action-btn" *ngIf="stampCards.length > 0">
-            <ion-button *ngIf="!isSelecting" fill="clear" (click)="startSelection()" aria-label="Select cards to remove">
+          <h1>
+            <span class="stamp-count-hero">{{ totalStamps }}</span>
+            carimbos
+          </h1>
+          <div class="wallet-action-btn" *ngIf="stampCards.length > 0 && activeTab === 'cards'">
+            <ion-button *ngIf="!isSelecting" fill="clear" (click)="startSelection()" aria-label="Selecionar cartões para remover">
               <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button *ngIf="isSelecting" fill="clear" (click)="cancelSelection()">
-              Cancel
+              Cancelar
             </ion-button>
           </div>
         </div>
-        <p>Keep visiting the businesses you follow.</p>
+        <p>Continue visitando os seus estabelecimentos favoritos.</p>
       </div>
     </section>
 
-    <section class="wallet-summary app-slide-up" *ngIf="stampCards.length > 0" aria-label="Wallet summary">
-      <div>
-        <span>Active cards</span>
+    <!-- ── 3 clickable tab tiles ── -->
+    <section
+      class="wallet-summary app-slide-up"
+      *ngIf="stampCards.length > 0 || badges.length > 0"
+      aria-label="Resumo da carteira"
+      role="tablist"
+    >
+      <!-- Cartões ativos -->
+      <button
+        class="wallet-summary-tile"
+        [class.is-active]="activeTab === 'cards'"
+        (click)="setTab('cards')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'cards'"
+        id="tab-cards"
+      >
+        <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
         <strong>{{ stampCards.length }}</strong>
-      </div>
-      <div>
-        <span>Stamps</span>
-        <strong>{{ totalStamps }}</strong>
-      </div>
-      <div>
-        <span>Rewards</span>
-        <strong>{{ unlockedRewards }}</strong>
-      </div>
+        <span>Cartões ativos</span>
+      </button>
+
+      <!-- Selos / Badges -->
+      <button
+        class="wallet-summary-tile"
+        [class.is-active]="activeTab === 'stamps'"
+        (click)="setTab('stamps')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'stamps'"
+        id="tab-stamps"
+      >
+        <ion-icon name="medal-outline" aria-hidden="true"></ion-icon>
+        <strong>{{ unlockedBadgesCount }}</strong>
+        <span>Selos</span>
+      </button>
+
+      <!-- Recompensas -->
+      <button
+        class="wallet-summary-tile"
+        [class.is-active]="activeTab === 'rewards'"
+        (click)="setTab('rewards')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'rewards'"
+        id="tab-rewards"
+      >
+        <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+        <strong>{{ unlockedRewardsCount }}</strong>
+        <span>Recompensas</span>
+      </button>
     </section>
 
-    <section class="selection-toolbar" *ngIf="isSelecting" aria-live="polite">
-      <span>{{ selectedCardIds.size }} selected</span>
+    <!-- ── Selection toolbar (cards tab) ── -->
+    <section class="selection-toolbar" *ngIf="isSelecting && activeTab === 'cards'" aria-live="polite">
+      <span>{{ selectedCardIds.size }} {{ selectedCardIds.size === 1 ? 'selecionado' : 'selecionados' }}</span>
       <ion-button
         color="danger"
         fill="solid"
@@ -54,11 +145,19 @@
         (click)="confirmDeleteSelected()"
       >
         <ion-icon name="trash-outline" slot="start" aria-hidden="true"></ion-icon>
-        Remove
+        Remover
       </ion-button>
     </section>
 
-    <section class="wallet-cards" *ngIf="stampCards.length > 0">
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: CARTÕES ATIVOS                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section
+      class="wallet-cards"
+      *ngIf="activeTab === 'cards' && stampCards.length > 0"
+      role="tabpanel"
+      aria-labelledby="tab-cards"
+    >
       <ion-card
         *ngFor="let card of stampCards; trackBy: trackByCardId"
         [routerLink]="isSelecting ? null : ['/tabs/wallet/stamp-card', card.businessId]"
@@ -77,7 +176,7 @@
         </div>
 
         <div class="wallet-card-image">
-          <img [src]="card.businessImage" [alt]="card.businessName" />
+          <img [src]="card.businessLogo" [alt]="card.businessName" />
           <span class="app-status-pill is-muted">{{ card.category }}</span>
         </div>
 
@@ -107,11 +206,134 @@
       </ion-card>
     </section>
 
-    <div *ngIf="stampCards.length === 0" class="app-empty-state">
+    <!-- Empty state — cards -->
+    <div *ngIf="activeTab === 'cards' && stampCards.length === 0" class="app-empty-state">
       <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
-      <h3>Your wallet is empty</h3>
-      <p>Follow businesses to receive loyalty cards and track rewards.</p>
-      <ion-button routerLink="/tabs/home" fill="outline" shape="round">Explore businesses</ion-button>
+      <h3>Carteira vazia</h3>
+      <p>Siga estabelecimentos para receber cartões de fidelidade.</p>
+      <ion-button routerLink="/tabs/home" fill="outline" shape="round">Explorar estabelecimentos</ion-button>
     </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: SELOS / BADGES                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section
+      class="badges-section"
+      *ngIf="activeTab === 'stamps'"
+      role="tabpanel"
+      aria-labelledby="tab-stamps"
+    >
+      <p class="badges-intro">
+        Completa cartões em diferentes categorias para desbloquear conquistas.
+      </p>
+
+      <div class="badges-grid">
+        <div
+          *ngFor="let badge of badges; trackBy: trackByBadgeId"
+          class="badge-card"
+          [class.is-unlocked]="badge.unlocked"
+          [class.is-silver]="badge.tier === 'silver'"
+          [class.is-gold]="badge.tier === 'gold'"
+        >
+          <!-- Badge icon circle -->
+          <div class="badge-icon-wrap" aria-hidden="true">
+            <div class="badge-icon-ring"></div>
+            <ion-icon [name]="badge.icon" class="badge-icon"></ion-icon>
+            <div class="badge-tier-dot">
+              <ion-icon
+                [name]="badge.tier === 'gold' ? 'star' : 'star-outline'"
+                class="badge-tier-star"
+              ></ion-icon>
+            </div>
+          </div>
+
+          <!-- Badge info -->
+          <div class="badge-info">
+            <strong class="badge-name">{{ badge.name }}</strong>
+            <p class="badge-desc">{{ badge.description }}</p>
+          </div>
+
+          <!-- Progress bar (when locked) -->
+          <div class="badge-progress-wrap" *ngIf="!badge.unlocked" aria-hidden="true">
+            <div class="badge-progress-track">
+              <div
+                class="badge-progress-fill"
+                [style.width.%]="getBadgeProgressPercent(badge)"
+                [class.is-gold-fill]="badge.tier === 'gold'"
+              ></div>
+            </div>
+            <span class="badge-progress-label">{{ badge.progress }}/{{ badge.goal }}</span>
+          </div>
+
+          <!-- Unlocked check -->
+          <div class="badge-unlocked-check" *ngIf="badge.unlocked" aria-label="Desbloqueado">
+            <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: RECOMPENSAS                           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section
+      class="rewards-section"
+      *ngIf="activeTab === 'rewards'"
+      role="tabpanel"
+      aria-labelledby="tab-rewards"
+    >
+      <div class="rewards-list" *ngIf="unlockedRewards.length > 0">
+        <ion-card
+          *ngFor="let reward of unlockedRewards; trackBy: trackByRewardId"
+          [routerLink]="['/tabs/wallet/reward', reward.id]"
+          class="app-card reward-card app-slide-up"
+          [class.is-expired]="isRewardExpired(reward)"
+          [class.is-prize]="reward.rewardType === 'prize'"
+          button
+        >
+          <!-- Reward type icon -->
+          <div class="reward-card-icon-wrap">
+            <ion-icon [name]="getRewardIcon(reward)" class="reward-card-icon" aria-hidden="true"></ion-icon>
+          </div>
+
+          <!-- Info -->
+          <div class="reward-card-info">
+            <div class="reward-card-top">
+              <div>
+                <span class="reward-card-business">{{ reward.businessName }}</span>
+                <strong class="reward-card-label">{{ reward.rewardLabel }}</strong>
+              </div>
+              <span
+                class="reward-card-expiry"
+                [class.is-expired-label]="isRewardExpired(reward)"
+              >
+                {{ getRewardExpiryLabel(reward) }}
+              </span>
+            </div>
+
+            <div class="reward-card-meta">
+              <span class="reward-card-category">{{ reward.businessCategory }}</span>
+              <span
+                class="reward-card-type-pill"
+                [class.is-prize]="reward.rewardType === 'prize'"
+              >
+                {{ reward.rewardType === 'prize' ? '🏆 Prémio' : '🏷️ Desconto' }}
+              </span>
+            </div>
+          </div>
+
+          <ion-icon name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
+        </ion-card>
+      </div>
+
+      <!-- Empty state — rewards -->
+      <div *ngIf="unlockedRewards.length === 0" class="app-empty-state">
+        <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+        <h3>Sem recompensas ainda</h3>
+        <p>Complete 3 selos num cartão para desbloquear o primeiro desconto.</p>
+        <ion-button (click)="setTab('cards')" fill="outline" shape="round">Ver cartões ativos</ion-button>
+      </div>
+    </section>
+
   </main>
 </ion-content>

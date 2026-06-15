@@ -10,9 +10,40 @@
 <ion-content *ngIf="business; else missingBusiness">
   <main class="app-page--flush detail-page">
     <section class="detail-hero" aria-labelledby="business-title">
-      <img [src]="business.image" [alt]="business.name" />
+      <div class="hero-carousel-container">
+        <div 
+          #carouselTrack
+          class="hero-carousel-track" 
+          (scroll)="onScroll($event)"
+          (touchstart)="stopAutoPlay()"
+          (touchend)="startAutoPlay()"
+          (mousedown)="stopAutoPlay()"
+          (mouseup)="startAutoPlay()"
+        >
+          <img 
+            *ngFor="let img of getBusinessImages()" 
+            [src]="img" 
+            [alt]="business.name" 
+            class="carousel-slide" 
+          />
+        </div>
+        <!-- Dot Indicators -->
+        <div class="carousel-dots" *ngIf="getBusinessImages().length > 1">
+          <button 
+            type="button"
+            *ngFor="let img of getBusinessImages(); let i = index" 
+            class="carousel-dot"
+            [class.active]="activeImageIndex === i"
+            (click)="scrollToSlide(i, carouselTrack)"
+            [attr.aria-label]="'Ir para imagem ' + (i + 1)"
+          ></button>
+        </div>
+      </div>
       <div class="hero-gradient"></div>
       <div class="hero-content">
+        <div class="hero-logo-badge">
+          <img [src]="business.logo" [alt]="business.name" />
+        </div>
         <div class="hero-badges">
           <ion-badge>{{ business.category }}</ion-badge>
           <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
@@ -47,7 +78,7 @@
       </section>
 
       <section class="app-reward-panel detail-reward" aria-labelledby="reward-title">
-        <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+        <ion-icon [name]="getRewardIcon()" aria-hidden="true"></ion-icon>
         <div>
           <span>Recompensa final</span>
           <strong id="reward-title">{{ business.reward }}</strong>
@@ -68,7 +99,7 @@
         <div class="info-row">
           <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
           <div>
-            <span>Morada</span>
+            <span>Endereço</span>
             <strong>{{ business.address }}</strong>
             <small>{{ business.city }}</small>
           </div>
@@ -87,7 +118,7 @@
         <div class="app-section-header">
           <div>
             <h2 id="services-title">Serviços</h2>
-            <p>O que pode encontrar neste negócio.</p>
+            <p>O que você pode encontrar neste negócio.</p>
           </div>
         </div>
 

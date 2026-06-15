@@ -1,0 +1,109 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recompensa</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="reward; else notFound">
+  <main class="app-page reward-detail-page">
+
+    <!-- Hero badge visual -->
+    <div class="reward-hero" [class.is-expired]="isExpired" [class.is-used]="isUsed">
+      <div class="reward-glow-ring" aria-hidden="true"></div>
+      <div class="reward-badge-wrap">
+        <ion-icon [name]="getRewardIcon()" class="reward-badge-icon" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="reward-type-pill" [class.is-prize]="reward.rewardType === 'prize'">
+        {{ reward.rewardType === 'prize' ? '🏆 Prémio' : '🏷️ Desconto' }}
+      </div>
+    </div>
+
+    <!-- Reward label -->
+    <div class="reward-label-section">
+      <h1 class="reward-label-title">{{ reward.rewardLabel }}</h1>
+      <p class="reward-label-sub">Recompensa disponível para usar</p>
+    </div>
+
+    <!-- Business info card -->
+    <div class="reward-business-card" [routerLink]="['/tabs/wallet/stamp-card', reward.businessId]">
+      <img [src]="reward.businessLogo" [alt]="reward.businessName" class="reward-business-logo" />
+      <div class="reward-business-info">
+        <span class="reward-business-category">{{ reward.businessCategory }}</span>
+        <strong class="reward-business-name">{{ reward.businessName }}</strong>
+        <span class="reward-business-hint">
+          <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+          Ver cartão de fidelidade
+        </span>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="reward-business-arrow" aria-hidden="true"></ion-icon>
+    </div>
+
+    <!-- Validity info -->
+    <div class="reward-validity-section">
+      <div class="reward-validity-item">
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        <div>
+          <span>Desbloqueada em</span>
+          <strong>{{ getUnlockedLabel() }}</strong>
+        </div>
+      </div>
+      <div class="reward-validity-item" [class.expiring-soon]="getDaysLeft() <= 7 && !isExpired">
+        <ion-icon [name]="isExpired ? 'time-outline' : 'hourglass-outline'" aria-hidden="true"></ion-icon>
+        <div>
+          <span>{{ isExpired ? 'Expirou em' : 'Válida até' }}</span>
+          <strong>{{ getExpiryLabel() }}</strong>
+          <em *ngIf="!isExpired && getDaysLeft() <= 7" class="expiry-warning">
+            Faltam {{ getDaysLeft() }} {{ getDaysLeft() === 1 ? 'dia' : 'dias' }}!
+          </em>
+        </div>
+      </div>
+    </div>
+
+    <!-- Used / Expired status -->
+    <div class="reward-used-banner" *ngIf="isUsed" role="status">
+      <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+      <span>Recompensa utilizada! Obrigado pela sua visita.</span>
+    </div>
+    <div class="reward-expired-banner" *ngIf="isExpired && !isUsed" role="status">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>Esta recompensa expirou. Continue a visitar para desbloquear novas.</span>
+    </div>
+
+    <!-- QR / Use button -->
+    <div class="reward-action-section" *ngIf="!isExpired && !isUsed">
+      <!-- Simulated QR code -->
+      <div class="reward-qr-block" aria-label="QR code simulado da recompensa">
+        <div class="reward-qr-grid" aria-hidden="true">
+          <div *ngFor="let opacity of qrCells" class="qr-cell" [style.opacity]="opacity"></div>
+        </div>
+        <ion-icon name="qr-code-outline" class="reward-qr-overlay-icon" aria-hidden="true"></ion-icon>
+        <p class="reward-qr-hint">Apresente ao estabelecimento</p>
+      </div>
+
+      <ion-button
+        expand="block"
+        shape="round"
+        (click)="useReward()"
+        class="reward-use-btn"
+      >
+        <ion-icon name="checkmark-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+        Usar recompensa
+      </ion-button>
+    </div>
+
+  </main>
+</ion-content>
+
+<ng-template #notFound>
+  <ion-content>
+    <div class="app-empty-state">
+      <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+      <h2>Recompensa não encontrada</h2>
+      <p>Esta recompensa não existe ou ainda não foi desbloqueada.</p>
+      <ion-button routerLink="/tabs/wallet" shape="round">Voltar à carteira</ion-button>
+    </div>
+  </ion-content>
+</ng-template>

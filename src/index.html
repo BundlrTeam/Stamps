@@ -13,6 +13,10 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
 
   <!-- Add to homescreen for iOS -->
@@ -24,6 +28,15 @@
   <meta property="og:title" content="Stamp Me" />
   <meta property="og:description" content="Cartões de fidelidade digitais - Siga os seus negócios favoritos" />
   <meta property="og:type" content="website" />
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = savedTheme === 'true' || (savedTheme === null && prefersDark);
+      document.documentElement.classList.toggle('ion-palette-dark', isDark);
+    })();
+  </script>
 </head>
 
 <body>

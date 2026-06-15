@@ -83,7 +83,7 @@
   --ion-color-danger-shade: #bf4236;
   --ion-color-danger-tint: #dd5d50;
 
-  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ion-font-family: 'Outfit', sans-serif;
   --ion-background-color: #fbf7f1;
   --ion-background-color-rgb: 251, 247, 241;
   --ion-text-color: var(--app-color-ink);
@@ -95,43 +95,6 @@
   --ion-tab-bar-background: rgba(255, 255, 255, 0.94);
   --ion-tab-bar-border-color: var(--app-color-line);
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --app-color-ink: #f7f4ef;
-    --app-color-muted: #aeb9b5;
-    --app-color-surface: #17211f;
-    --app-color-surface-soft: #101816;
-    --app-color-surface-warm: #211a16;
-    --app-color-line: rgba(247, 244, 239, 0.12);
-    --app-color-brand: #ff8a55;
-    --app-color-brand-deep: #ffb08b;
-    --app-color-brand-soft: rgba(232, 101, 43, 0.16);
-    --app-color-success: #3fd3aa;
-    --app-color-reward: #f1bd52;
-    --app-color-reward-soft: rgba(217, 154, 33, 0.17);
-    --app-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
-    --app-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
-    --app-shadow-3: 0 10px 28px rgba(0, 0, 0, 0.28), 0 4px 8px rgba(0, 0, 0, 0.16);
-    --app-shadow-4: 0 18px 42px rgba(0, 0, 0, 0.38), 0 6px 14px rgba(0, 0, 0, 0.22);
-    --app-shadow-focus: 0 0 0 3px rgba(232, 101, 43, 0.32);
-    --app-shadow-card: var(--app-shadow-3);
-    --app-shadow-raised: var(--app-shadow-4);
-    --app-gradient-brand-soft: linear-gradient(135deg, rgba(232,101,43,0.18) 0%, rgba(217,75,61,0.10) 100%);
-
-    --ion-background-color: #0e1513;
-    --ion-background-color-rgb: 14, 21, 19;
-    --ion-text-color: #f7f4ef;
-    --ion-text-color-rgb: 247, 244, 239;
-    --ion-card-background: #17211f;
-    --ion-item-background: #17211f;
-    --ion-toolbar-background: rgba(14, 21, 19, 0.94);
-    --ion-toolbar-color: #f7f4ef;
-    --ion-tab-bar-background: rgba(23, 33, 31, 0.94);
-    --ion-tab-bar-border-color: rgba(247, 244, 239, 0.12);
-  }
-}
-
 html.ion-palette-dark {
   --app-color-ink: #f7f4ef;
   --app-color-muted: #aeb9b5;

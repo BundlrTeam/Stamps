@@ -8,7 +8,7 @@
   align-items: center;
   gap: 10px;
   font-size: 1.2rem;
-  font-weight: 900;
+  font-weight: 700;
 
   img {
     width: 30px;
@@ -45,7 +45,7 @@
   &__name {
     margin: 0 0 14px;
     font-size: 1.9rem;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1.1;
     color: var(--ion-text-color);
     letter-spacing: -0.03em;
@@ -128,7 +128,7 @@
   color: var(--app-color-muted);
   background: var(--app-color-surface);
   box-shadow: 0 4px 14px rgba(23, 33, 31, 0.04);
-  font-weight: 850;
+  font-weight: 600;
   transition: background var(--app-motion-fast) var(--app-easing),
               border-color var(--app-motion-fast) var(--app-easing),
               color var(--app-motion-fast) var(--app-easing),
@@ -208,14 +208,44 @@
 
 .featured-card ion-card-header,
 .business-card ion-card-header {
-  padding: 14px 15px 16px;
+  padding: 30px 15px 16px;
+  position: relative;
+}
+
+.card-logo-badge {
+  position: absolute;
+  top: -26px;
+  left: 15px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid var(--app-color-surface);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-shadow-2);
+  overflow: hidden;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--app-motion-normal) var(--app-easing);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.featured-card:hover .card-logo-badge,
+.business-card:hover .card-logo-badge {
+  transform: scale(1.05);
 }
 
 ion-card-title {
   color: var(--ion-text-color);
   font-size: 1.05rem;
   line-height: 1.2;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 ion-card-subtitle {
@@ -223,7 +253,7 @@ ion-card-subtitle {
   color: var(--app-color-brand-deep);
   font-size: 0.84rem;
   line-height: 1.28;
-  font-weight: 850;
+  font-weight: 600;
 }
 
 .business-grid {

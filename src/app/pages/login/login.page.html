@@ -1,15 +1,15 @@
 <ion-content fullscreen>
   <main class="login-page">
     <!-- Splash Welcome Screen -->
-    <div class="splash-view app-fade-in" *ngIf="showSplash" (click)="goToLoginForm()" aria-label="Welcome screen. Click to sign in.">
+    <div class="splash-view app-fade-in" *ngIf="showSplash" (click)="goToLoginForm()" aria-label="Tela de boas-vindas. Clique para entrar.">
       <div class="splash-content">
         <div class="brand-lockup large">
-          <img src="assets/brand/stamp-me-mark.svg" alt="Stamp Me logo" />
+          <img src="assets/brand/stamp-me-mark.svg" alt="Logo do Stamp Me" />
           <span>Stamp Me</span>
         </div>
-        <p class="splash-tagline">Your digital loyalty cards in one place</p>
+        <p class="splash-tagline">Seus cartões de fidelidade digitais em um só lugar</p>
         <div class="splash-action">
-          <span>Tap anywhere to start</span>
+          <span>Toque em qualquer lugar para começar</span>
           <ion-icon name="arrow-forward-outline" class="pulse-arrow"></ion-icon>
         </div>
       </div>
@@ -23,9 +23,9 @@
       </div>
 
       <div class="login-copy">
-        <p>Demo</p>
-        <h1 id="login-title">Sign in to your reward wallet.</h1>
-        <span>Use admin / admin to test the mockup.</span>
+        <p>Demonstração</p>
+        <h1 id="login-title">Entre na sua carteira de recompensas.</h1>
+        <span>Use admin / admin para testar o protótipo.</span>
       </div>
 
       <form (ngSubmit)="login()" class="login-form">
@@ -34,7 +34,7 @@
             <ion-input
               [(ngModel)]="username"
               name="username"
-              label="Username"
+              label="Usuário"
               labelPlacement="stacked"
               autocomplete="username"
               required
@@ -46,7 +46,7 @@
               [(ngModel)]="password"
               name="password"
               type="password"
-              label="Password"
+              label="Senha"
               labelPlacement="stacked"
               autocomplete="current-password"
               required
@@ -57,7 +57,7 @@
         <p class="login-error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
         <ion-button expand="block" shape="round" type="submit">
-          Sign In
+          Entrar
         </ion-button>
       </form>
     </section>

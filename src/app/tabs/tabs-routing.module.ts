@@ -30,6 +30,10 @@ const routes: Routes = [
           {
             path: 'stamp-card/:businessId',
             loadChildren: () => import('../pages/stamp-card/stamp-card.module').then(m => m.StampCardPageModule)
+          },
+          {
+            path: 'reward/:rewardId',
+            loadChildren: () => import('../pages/reward-detail/reward-detail.module').then(m => m.RewardDetailPageModule)
           }
         ]
       },

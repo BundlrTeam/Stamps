@@ -38,6 +38,6 @@ export class LoginPage {
       return;
     }
 
-    this.errorMessage = 'Use admin / admin to sign in to the demo.';
+    this.errorMessage = 'Use admin / admin para entrar na demonstração.';
   }
 }

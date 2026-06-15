@@ -1,16 +1,55 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Go back"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ stampCard?.businessName || 'Card' }}</ion-title>
+    <ion-title>{{ stampCard?.businessName || 'Cartão' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="stampCard; else missingCard">
+
+  <!-- ─── Confetti Canvas (fixed, full-screen, pointer-events none) ─── -->
+  <canvas #confettiCanvas class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- ─── Celebration Overlay Banner ─── -->
+  <div
+    class="celebration-overlay"
+    [class.is-active]="showCelebration"
+    [class.is-prize]="celebrationType === 'prize'"
+    [class.is-step]="celebrationType === 'step'"
+    (click)="dismissCelebration()"
+    aria-live="polite"
+    role="status"
+  >
+    <!-- Prize icon rain (only for prize) -->
+    <ng-container *ngIf="celebrationType === 'prize'">
+      <span
+        *ngFor="let icon of celebrationPrizeIcons; let i = index"
+        class="falling-icon"
+        [style.--i]="i"
+        aria-hidden="true"
+      >
+        <ion-icon [name]="celebrationIcon"></ion-icon>
+      </span>
+    </ng-container>
+
+    <!-- Main celebration card -->
+    <div class="celebration-card" [class.prize-card]="celebrationType === 'prize'">
+      <div class="celebration-icon-wrap" [class.pulse-glow]="celebrationType === 'prize'">
+        <ion-icon [name]="celebrationIcon" class="celebration-main-icon" aria-hidden="true"></ion-icon>
+      </div>
+      <h2 class="celebration-heading">{{ celebrationMessage }}</h2>
+      <p class="celebration-sub">{{ celebrationSubMessage }}</p>
+      <button class="celebration-dismiss-btn" (click)="dismissCelebration()" aria-label="Fechar celebração">
+        Continuar
+      </button>
+    </div>
+  </div>
+
   <main class="app-page stamp-page">
     <section class="stamp-hero" aria-labelledby="stamp-title">
-      <img [src]="stampCard.businessImage" [alt]="stampCard.businessName" />
+      <img [src]="stampCard.businessLogo" [alt]="stampCard.businessName" />
       <div>
         <span class="app-status-pill is-muted">{{ stampCard.category }}</span>
         <h1 id="stamp-title">{{ stampCard.businessName }}</h1>
@@ -18,11 +57,41 @@
       </div>
     </section>
 
-    <section class="loyalty-card" aria-label="Loyalty Card">
+    <div class="hero-actions-row" *ngIf="stampCard">
+      <ion-button
+        fill="outline"
+        shape="round"
+        size="small"
+        [routerLink]="['/tabs/home/business', stampCard.businessId]"
+        class="action-btn"
+      >
+        <ion-icon name="storefront-outline" slot="start" aria-hidden="true"></ion-icon>
+        Ver perfil
+      </ion-button>
+      <ion-button
+        fill="outline"
+        shape="round"
+        size="small"
+        (click)="openDirections()"
+        class="action-btn"
+      >
+        <ion-icon name="navigate-outline" slot="start" aria-hidden="true"></ion-icon>
+        Obter direções
+      </ion-button>
+    </div>
+
+    <!-- ─── Loyalty Card (with #ref for scroll target) ─── -->
+    <section
+      #loyaltyCardRef
+      class="loyalty-card"
+      [class.card-celebrate]="showCelebration"
+      [class.card-celebrate-prize]="showCelebration && celebrationType === 'prize'"
+      aria-label="Cartão de Fidelidade"
+    >
       <div class="loyalty-card-header">
         <div>
-          <span>Loyalty Card</span>
-          <strong>{{ stampCard.stamps }} / 10 stamps</strong>
+          <span>Cartão de Fidelidade</span>
+          <strong>{{ stampCard.stamps }} / 10 selos</strong>
         </div>
         <ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon>
       </div>
@@ -35,25 +104,41 @@
           [class.has-reward]="hasReward(slot)"
           [class.reward-unlocked]="isRewardUnlocked(slot)"
           [class.final-slot]="slot === 10"
+          [class.just-stamped]="showCelebration && slot === stampCard.stamps"
         >
           <div class="stamp-circle">
-            <ion-icon *ngIf="isStamped(slot) && slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
-            <ion-icon *ngIf="isStamped(slot) && slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
-            <span *ngIf="!isStamped(slot)" class="stamp-number">{{ slot }}</span>
+            <ng-container *ngIf="isStamped(slot); else unstampedContent">
+              <ion-icon *ngIf="slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
+              <ion-icon *ngIf="slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
+            </ng-container>
+            <ng-template #unstampedContent>
+              <ng-container *ngIf="hasReward(slot); else numberOnly">
+                <ion-icon [name]="getRewardIcon(slot)" class="stamp-reward-icon" aria-hidden="true"></ion-icon>
+              </ng-container>
+              <ng-template #numberOnly>
+                <span class="stamp-number">{{ slot }}</span>
+              </ng-template>
+            </ng-template>
           </div>
           <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
             {{ getRewardLabel(slot) }}
           </span>
         </div>
       </div>
+
+      <!-- Inline celebration banner inside the card -->
+      <div class="card-celebration-banner" *ngIf="showCelebration" role="status">
+        <ion-icon [name]="celebrationType === 'prize' ? 'trophy' : 'star'" aria-hidden="true"></ion-icon>
+        <span>{{ celebrationType === 'prize' ? '🎉 Obá! Ganhaste um prémio!' : '✨ Top! Mais um passo!' }}</span>
+      </div>
     </section>
 
     <section class="app-reward-panel">
-      <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+      <ion-icon [name]="getNextRewardIcon()" aria-hidden="true"></ion-icon>
       <div>
-        <span>Next reward milestone</span>
+        <span>Próxima recompensa</span>
         <strong>{{ stampCard.reward }}</strong>
-        <p>{{ business?.rewardDescription || 'Complete the card to unlock the final reward.' }}</p>
+        <p>{{ business?.rewardDescription || 'Complete o cartão para desbloquear a recompensa final.' }}</p>
       </div>
     </section>
 
@@ -67,11 +152,11 @@
         class="scan-qr-btn"
       >
         <ion-icon name="qr-code-outline" slot="start" aria-hidden="true"></ion-icon>
-        Validate visit
+        Validar visita
       </ion-button>
 
       <div class="presentation-action">
-        <span>Presentation Mode</span>
+        <span>Modo de demonstração</span>
         <ion-button
           fill="clear"
           size="small"
@@ -80,7 +165,7 @@
           class="add-stamp-btn"
         >
           <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
-          Simulate visit
+          Simular visita
         </ion-button>
       </div>
     </section>
@@ -90,9 +175,9 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Validate visit</ion-title>
+          <ion-title>Validar visita</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="cancelScanning()" aria-label="Close validation">
+            <ion-button (click)="cancelScanning()" aria-label="Fechar validação">
               <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -103,17 +188,17 @@
           <div class="scanner-corners"></div>
           <div class="scanner-laser"></div>
           <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
-          <p>Frame the merchant's QR code</p>
+          <p>Aponte a câmera para o QR code do estabelecimento</p>
         </div>
 
         <ion-button expand="block" fill="outline" shape="round" (click)="useDemoCode()">
-          Use demo code
+          Usar código de teste
         </ion-button>
 
         <ion-list class="scanner-form">
           <ion-item>
             <ion-input
-              label="Validation code"
+              label="Código de validação"
               labelPlacement="floating"
               placeholder="Ex: STAMP_QR_BARBER123"
               [(ngModel)]="scannedCode"
@@ -122,7 +207,7 @@
         </ion-list>
 
         <ion-button expand="block" shape="round" class="confirm-scan-btn" (click)="submitScannedCode(scannedCode)">
-          Confirm visit
+          Confirmar visita
         </ion-button>
       </ion-content>
     </ng-template>
@@ -133,9 +218,9 @@
   <ion-content>
     <div class="app-empty-state">
       <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
-      <h2>Card not found</h2>
-      <p>Follow this business first to create a card in your wallet.</p>
-      <ion-button routerLink="/tabs/home" shape="round">Explore businesses</ion-button>
+      <h2>Cartão não encontrado</h2>
+      <p>Adicione este estabelecimento à sua carteira primeiro para criar um cartão.</p>
+      <ion-button routerLink="/tabs/home" shape="round">Explorar estabelecimentos</ion-button>
     </div>
   </ion-content>
 </ng-template>
