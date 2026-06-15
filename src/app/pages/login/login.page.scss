@@ -1,0 +1,202 @@
+.login-page {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(circle at top right, rgba(var(--ion-color-primary-rgb), 0.18), transparent 36%),
+    var(--ion-background-color);
+}
+
+.login-card {
+  width: min(100%, 420px);
+  padding: 32px 24px;
+  border: 1px solid var(--app-color-line);
+  border-radius: var(--app-radius-xl);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-shadow-3);
+  transition: box-shadow var(--app-motion-normal) var(--app-easing);
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  color: var(--ion-text-color);
+  font-size: 1.35rem;
+  font-weight: 950;
+  animation: fadeIn var(--app-motion-slow) var(--app-easing) both;
+
+  img {
+    width: 36px;
+    height: 36px;
+    animation: scaleIn var(--app-motion-slow) var(--app-easing-spring) both;
+  }
+}
+
+.login-copy {
+  margin-bottom: 24px;
+
+  p {
+    margin: 0 0 6px;
+    color: var(--app-color-brand-deep);
+    font-size: 0.76rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--ion-text-color);
+    font-size: 1.8rem;
+    line-height: 1.15;
+    font-weight: 950;
+    letter-spacing: -0.03em;
+  }
+
+  span {
+    display: block;
+    margin-top: 10px;
+    color: var(--app-color-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+.login-form {
+  ion-list {
+    display: grid;
+    gap: 14px;
+    padding: 0;
+    margin-bottom: 20px;
+    background: transparent;
+  }
+
+  ion-item {
+    --min-height: 68px;
+    --background: var(--app-color-surface-soft);
+    --border-radius: var(--app-radius-md);
+    --padding-start: 14px;
+    --inner-padding-end: 14px;
+    border: 1px solid var(--app-color-line);
+    border-radius: var(--app-radius-md);
+    transition: border-color var(--app-motion-fast) var(--app-easing),
+                box-shadow var(--app-motion-fast) var(--app-easing),
+                transform var(--app-motion-fast) var(--app-easing);
+
+    &:hover {
+      border-color: rgba(var(--ion-color-primary-rgb), 0.3);
+    }
+
+    &.ion-focused {
+      border-color: var(--ion-color-primary);
+      box-shadow: var(--app-shadow-focus);
+      transform: translateY(-1px);
+    }
+
+    ion-input {
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: left;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  ion-button {
+    margin-top: 24px;
+    --box-shadow: var(--app-shadow-2);
+    --transition: transform var(--app-motion-fast) var(--app-easing),
+                  box-shadow var(--app-motion-fast) var(--app-easing);
+
+    &:active {
+      transform: translateY(1px);
+      --box-shadow: var(--app-shadow-1);
+    }
+  }
+}
+
+.login-error {
+  margin: 8px 0 14px;
+  color: var(--ion-color-danger);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+/* Splash Welcome Screen */
+.splash-view {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: min(100%, 420px);
+  min-height: 380px;
+  padding: 40px 24px;
+  transition: transform var(--app-motion-normal) var(--app-easing);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.brand-lockup.large {
+  flex-direction: column;
+  gap: 16px;
+  font-size: 2rem;
+  margin-bottom: 8px;
+
+  img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.splash-tagline {
+  margin: 0;
+  color: var(--app-color-muted);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+  max-width: 280px;
+}
+
+.splash-action {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ion-color-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  .pulse-arrow {
+    font-size: 1.4rem;
+    animation: bounceRight 1.5s infinite var(--app-easing);
+  }
+}
+
+@keyframes bounceRight {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+

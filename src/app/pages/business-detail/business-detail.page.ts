@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { Business } from '../../models/business.model';
@@ -10,19 +10,19 @@ import { Business } from '../../models/business.model';
   standalone: false,
 })
 export class BusinessDetailPage implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly businessService = inject(BusinessService);
+
   business: Business | undefined;
   isFollowing: boolean = false;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private businessService: BusinessService
-  ) {}
+  notFound = false;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.business = this.businessService.getBusinessById(id);
+      this.notFound = !this.business;
       this.isFollowing = this.businessService.isFollowing(id);
     }
   }
@@ -38,5 +38,10 @@ export class BusinessDetailPage implements OnInit {
     this.businessService.followBusiness(this.business.id);
     this.isFollowing = true;
     this.router.navigate(['/tabs/wallet']);
+  }
+
+  openStampCard() {
+    if (!this.business) return;
+    this.router.navigate(['/tabs/wallet/stamp-card', this.business.id]);
   }
 }

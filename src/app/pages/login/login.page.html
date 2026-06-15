@@ -1,0 +1,65 @@
+<ion-content fullscreen>
+  <main class="login-page">
+    <!-- Splash Welcome Screen -->
+    <div class="splash-view app-fade-in" *ngIf="showSplash" (click)="goToLoginForm()" aria-label="Welcome screen. Click to sign in.">
+      <div class="splash-content">
+        <div class="brand-lockup large">
+          <img src="assets/brand/stamp-me-mark.svg" alt="Stamp Me logo" />
+          <span>Stamp Me</span>
+        </div>
+        <p class="splash-tagline">Your digital loyalty cards in one place</p>
+        <div class="splash-action">
+          <span>Tap anywhere to start</span>
+          <ion-icon name="arrow-forward-outline" class="pulse-arrow"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actual Login Form Screen -->
+    <section class="login-card app-scale-in" *ngIf="!showSplash" aria-labelledby="login-title">
+      <div class="brand-lockup">
+        <img src="assets/brand/stamp-me-mark.svg" alt="" />
+        <span>Stamp Me</span>
+      </div>
+
+      <div class="login-copy">
+        <p>Demo</p>
+        <h1 id="login-title">Sign in to your reward wallet.</h1>
+        <span>Use admin / admin to test the mockup.</span>
+      </div>
+
+      <form (ngSubmit)="login()" class="login-form">
+        <ion-list lines="none">
+          <ion-item>
+            <ion-input
+              [(ngModel)]="username"
+              name="username"
+              label="Username"
+              labelPlacement="stacked"
+              autocomplete="username"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              label="Password"
+              labelPlacement="stacked"
+              autocomplete="current-password"
+              required
+            ></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <p class="login-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+        <ion-button expand="block" shape="round" type="submit">
+          Sign In
+        </ion-button>
+      </form>
+    </section>
+  </main>
+</ion-content>

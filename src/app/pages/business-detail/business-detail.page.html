@@ -1,65 +1,125 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home" text="" icon="arrow-back"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ business?.name }}</ion-title>
+    <ion-title>{{ business?.name || 'Negócio' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="business">
-  <div class="hero-image">
-    <img [src]="business.image" [alt]="business.name" />
-    <div class="hero-gradient"></div>
-    <div class="hero-content">
-      <ion-badge class="hero-category">{{ business.category }}</ion-badge>
-      <h1>{{ business.name }}</h1>
-    </div>
-  </div>
-
-  <div class="detail-content">
-    <div class="description-section">
-      <h3>Sobre nós</h3>
-      <p>{{ business.description }}</p>
-    </div>
-
-    <div class="services-section">
-      <h3>Serviços</h3>
-      <ion-list lines="none" class="services-list">
-        <ion-item *ngFor="let service of business.services" class="service-item">
-          <ion-icon name="checkmark-circle" color="primary" slot="start"></ion-icon>
-          <ion-label>{{ service }}</ion-label>
-        </ion-item>
-      </ion-list>
-    </div>
-
-    <div class="reward-preview">
-      <ion-icon name="gift-outline"></ion-icon>
-      <div>
-        <span class="reward-label">Prémio de fidelidade</span>
-        <span class="reward-value">{{ business.reward }}</span>
+<ion-content *ngIf="business; else missingBusiness">
+  <main class="app-page--flush detail-page">
+    <section class="detail-hero" aria-labelledby="business-title">
+      <img [src]="business.image" [alt]="business.name" />
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <div class="hero-badges">
+          <ion-badge>{{ business.category }}</ion-badge>
+          <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
+            {{ business.isOpen ? 'Aberto' : 'Fechado' }}
+          </span>
+        </div>
+        <h1 id="business-title">{{ business.name }}</h1>
+        <div class="app-meta-row hero-meta">
+          <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }} ({{ business.reviewCount }})</span>
+          <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button
-      *ngIf="!isFollowing"
-      (click)="followBusiness()"
-      class="follow-fab"
-      color="primary"
-    >
-      <ion-icon name="add"></ion-icon>
-      <span class="fab-text">Seguir</span>
-    </ion-fab-button>
-    <ion-fab-button
-      *ngIf="isFollowing"
-      class="follow-fab following"
-      color="success"
-      disabled
-    >
-      <ion-icon name="checkmark"></ion-icon>
-      <span class="fab-text">A Seguir</span>
-    </ion-fab-button>
-  </ion-fab>
+    <div class="detail-body">
+      <section class="quick-facts" aria-label="Resumo do negócio">
+        <div>
+          <ion-icon name="star-outline" aria-hidden="true"></ion-icon>
+          <span>Avaliação</span>
+          <strong>{{ business.rating }} / 5</strong>
+        </div>
+        <div>
+          <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+          <span>Distância</span>
+          <strong>{{ business.distanceKm }} km</strong>
+        </div>
+        <div>
+          <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+          <span>{{ business.isOpen ? 'Aberto agora' : 'Fechado agora' }}</span>
+          <strong>Até {{ business.closesAt }}</strong>
+        </div>
+      </section>
+
+      <section class="app-reward-panel detail-reward" aria-labelledby="reward-title">
+        <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+        <div>
+          <span>Recompensa final</span>
+          <strong id="reward-title">{{ business.reward }}</strong>
+          <p>{{ business.rewardDescription }}</p>
+        </div>
+      </section>
+
+      <section class="app-section about-section" aria-labelledby="about-title">
+        <div class="app-section-header">
+          <div>
+            <h2 id="about-title">Sobre</h2>
+            <p>{{ business.description }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-list" aria-label="Informação prática">
+        <div class="info-row">
+          <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+          <div>
+            <span>Morada</span>
+            <strong>{{ business.address }}</strong>
+            <small>{{ business.city }}</small>
+          </div>
+        </div>
+        <div class="info-row">
+          <ion-icon name="map-outline" aria-hidden="true"></ion-icon>
+          <div>
+            <span>Direções</span>
+            <strong>Pré-visualização de mapa</strong>
+            <small>Disponível na demonstração comercial.</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="app-section services-section" aria-labelledby="services-title">
+        <div class="app-section-header">
+          <div>
+            <h2 id="services-title">Serviços</h2>
+            <p>O que pode encontrar neste negócio.</p>
+          </div>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-chip" *ngFor="let service of business.services">
+            <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+            <span>{{ service }}</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="app-fixed-action">
+    <ion-button *ngIf="!isFollowing" expand="block" shape="round" color="primary" (click)="followBusiness()">
+      <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+      Adicionar à carteira
+    </ion-button>
+    <ion-button *ngIf="isFollowing" expand="block" shape="round" color="secondary" (click)="openStampCard()">
+      <ion-icon name="albums-outline" slot="start" aria-hidden="true"></ion-icon>
+      Ver cartão
+    </ion-button>
+  </div>
 </ion-content>
+
+<ng-template #missingBusiness>
+  <ion-content>
+    <div class="app-empty-state">
+      <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
+      <h2>Negócio não encontrado</h2>
+      <p>Este cartão pode ter sido removido ou ainda não está disponível.</p>
+      <ion-button routerLink="/tabs/home" shape="round">Voltar aos negócios</ion-button>
+    </div>
+  </ion-content>
+</ng-template>

@@ -1,135 +1,342 @@
 .wallet-title {
-  font-size: 1.4rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: 900;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
 }
 
-.section-header {
-  padding: 20px 20px 8px;
+ion-button[slot='end'],
+ion-buttons ion-button {
+  --color: var(--app-color-brand-deep);
+}
 
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
+.wallet-page {
+  padding-top: 12px;
+}
+
+.wallet-heading {
+  margin-bottom: 16px;
+  
+  p {
+    margin: 5px 0 0;
+  }
+}
+
+.wallet-header-flex {
+  display: block;
+}
+
+.wallet-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wallet-action-btn {
+  display: inline-flex;
+  align-items: center;
+  ion-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    height: 32px;
+    min-height: 32px;
     margin: 0;
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+.wallet-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+
+  div {
+    min-width: 0;
+    padding: 16px 12px;
+    border: 1px solid var(--app-color-line);
+    border-radius: var(--app-radius-lg);
+    background: var(--app-color-surface);
+    box-shadow: var(--app-shadow-1);
+    transition: transform var(--app-motion-normal) var(--app-easing), box-shadow var(--app-motion-normal) var(--app-easing);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--app-gradient-brand-soft);
+      opacity: 0.8;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--app-shadow-2);
+    }
   }
 
-  p {
-    font-size: 0.9rem;
-    color: var(--ion-color-medium);
-    margin: 4px 0 0;
+  span {
+    display: block;
+    color: var(--app-color-muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+  }
+
+  strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--ion-text-color);
+    font-size: 1.5rem;
+    line-height: 1;
+    font-weight: 900;
+  }
+}
+
+.selection-toolbar {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--ion-color-danger-rgb), 0.2);
+  border-radius: var(--app-radius-lg);
+  color: var(--ion-text-color);
+  background: rgba(var(--ion-color-danger-rgb), 0.08);
+
+  span {
+    font-size: 0.86rem;
+    font-weight: 900;
   }
 }
 
 .wallet-cards {
-  padding: 8px 12px;
+  display: grid;
+  gap: 16px;
 }
 
 .wallet-card {
-  margin: 0 0 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: relative;
+  min-height: 132px;
+  padding: 12px 34px 12px 114px;
+  border-left: 4px solid var(--ion-color-primary);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-1);
+  transition: transform var(--app-motion-normal) var(--app-easing),
+              box-shadow var(--app-motion-normal) var(--app-easing),
+              border-color var(--app-motion-normal) var(--app-easing);
 
-  .wallet-card-inner {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    gap: 14px;
-  }
+  &:hover {
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: var(--app-shadow-3);
 
-  .wallet-card-image {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
+    .nav-arrow {
+      transform: translateY(-50%) translateX(3px);
+      color: var(--ion-color-primary);
+    }
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .wallet-card-image img {
+      transform: scale(1.05) rotate(1deg);
     }
   }
 
-  .wallet-card-info {
-    flex: 1;
-    min-width: 0;
-
-    h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 0 0 6px;
-      color: var(--ion-text-color);
-    }
-
-    .stamp-progress {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-
-      .progress-bar {
-        flex: 1;
-        height: 6px;
-        background: var(--ion-color-light);
-        border-radius: 3px;
-        overflow: hidden;
-
-        .progress-fill {
-          height: 100%;
-          background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-primary-shade));
-          border-radius: 3px;
-          transition: width 0.3s ease;
-        }
-      }
-
-      .stamp-count {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--ion-color-primary);
-        white-space: nowrap;
-      }
-    }
-
-    .reward-hint {
-      font-size: 0.75rem;
-      color: var(--ion-color-medium);
-    }
+  &.is-near-reward {
+    border-left-color: var(--ion-color-warning);
   }
 
-  .nav-arrow {
-    color: var(--ion-color-medium);
-    font-size: 1.2rem;
-    flex-shrink: 0;
+  &.is-complete {
+    border-left-color: var(--ion-color-secondary);
+    background: linear-gradient(135deg, var(--app-color-surface), rgba(var(--ion-color-secondary-rgb), 0.06));
+  }
+
+  &.is-selecting {
+    padding-right: 46px;
+  }
+
+  &.is-selected {
+    border-color: rgba(var(--ion-color-danger-rgb), 0.46);
+    box-shadow: 0 0 0 2px rgba(var(--ion-color-danger-rgb), 0.13), var(--app-shadow-card);
   }
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 32px;
-  text-align: center;
+.selection-indicator {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  color: var(--ion-color-danger);
+  font-size: 1.35rem;
+  z-index: 2;
+}
 
-  .empty-icon {
-    font-size: 4rem;
-    margin-bottom: 16px;
+.wallet-card-image {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  background: var(--app-color-surface-soft);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--app-motion-normal) var(--app-easing);
   }
 
-  h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0 0 8px;
+  .app-status-pill {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    min-height: 22px;
+    padding-inline: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.6rem;
+  }
+}
+
+.wallet-card-info {
+  min-width: 0;
+}
+
+.wallet-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  h2 {
+    margin: 0;
     color: var(--ion-text-color);
+    font-size: 1rem;
+    line-height: 1.18;
+    font-weight: 950;
   }
 
   p {
-    font-size: 0.9rem;
-    color: var(--ion-color-medium);
-    margin: 0 0 24px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 4px 0 0;
+    color: var(--app-color-muted);
+    font-size: 0.78rem;
+    line-height: 1.25;
   }
+}
 
-  ion-button {
-    --border-radius: 24px;
+.stamp-count {
+  flex-shrink: 0;
+  color: var(--ion-color-primary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--app-gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.progress-track {
+  height: 8px;
+  margin-top: 12px;
+  border-radius: var(--app-radius-pill);
+  overflow: hidden;
+  background: var(--app-color-surface-soft);
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--app-gradient-brand);
+  background-size: 200% 200%;
+  animation: progress-glow 3s ease infinite;
+  box-shadow: 0 0 8px rgba(var(--ion-color-primary-rgb), 0.4);
+}
+
+.is-complete .progress-fill {
+  background: var(--app-gradient-reward);
+  box-shadow: 0 0 8px rgba(var(--ion-color-secondary-rgb), 0.4);
+}
+
+@keyframes progress-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.wallet-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.progress-label,
+.last-stamp {
+  color: var(--app-color-muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.progress-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+
+  ion-icon {
+    flex-shrink: 0;
+    color: var(--app-color-reward);
+  }
+}
+
+.last-stamp {
+  flex-shrink: 0;
+}
+
+.nav-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--app-color-muted);
+  font-size: 1.2rem;
+  transition: transform var(--app-motion-normal) var(--app-easing), color var(--app-motion-normal) var(--app-easing);
+  pointer-events: none;
+}
+
+@media (min-width: 760px) {
+  .wallet-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

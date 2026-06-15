@@ -1,49 +1,117 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      <span class="wallet-title">💳 Carteira</span>
-    </ion-title>
+     <ion-title>
+       <span class="wallet-title">
+         <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+         Wallet
+       </span>
+     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="section-header" *ngIf="stampCards.length > 0">
-    <h2>Os meus cartões</h2>
-    <p>{{ stampCards.length }} negócio{{ stampCards.length > 1 ? 's' : '' }} seguido{{ stampCards.length > 1 ? 's' : '' }}</p>
-  </div>
+  <main class="app-page wallet-page">
+    <section class="app-section-header wallet-heading">
+      <div class="wallet-header-flex">
+        <div class="wallet-title-row">
+          <h1>My cards</h1>
+          <div class="wallet-action-btn" *ngIf="stampCards.length > 0">
+            <ion-button *ngIf="!isSelecting" fill="clear" (click)="startSelection()" aria-label="Select cards to remove">
+              <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="isSelecting" fill="clear" (click)="cancelSelection()">
+              Cancel
+            </ion-button>
+          </div>
+        </div>
+        <p>Keep visiting the businesses you follow.</p>
+      </div>
+    </section>
 
-  <div class="wallet-cards">
-    <ion-card
-      *ngFor="let card of stampCards"
-      [routerLink]="['/tabs/wallet/stamp-card', card.businessId]"
-      class="wallet-card"
-      button
-    >
-      <div class="wallet-card-inner">
+    <section class="wallet-summary app-slide-up" *ngIf="stampCards.length > 0" aria-label="Wallet summary">
+      <div>
+        <span>Active cards</span>
+        <strong>{{ stampCards.length }}</strong>
+      </div>
+      <div>
+        <span>Stamps</span>
+        <strong>{{ totalStamps }}</strong>
+      </div>
+      <div>
+        <span>Rewards</span>
+        <strong>{{ unlockedRewards }}</strong>
+      </div>
+    </section>
+
+    <section class="selection-toolbar" *ngIf="isSelecting" aria-live="polite">
+      <span>{{ selectedCardIds.size }} selected</span>
+      <ion-button
+        color="danger"
+        fill="solid"
+        size="small"
+        shape="round"
+        [disabled]="selectedCardIds.size === 0"
+        (click)="confirmDeleteSelected()"
+      >
+        <ion-icon name="trash-outline" slot="start" aria-hidden="true"></ion-icon>
+        Remove
+      </ion-button>
+    </section>
+
+    <section class="wallet-cards" *ngIf="stampCards.length > 0">
+      <ion-card
+        *ngFor="let card of stampCards; trackBy: trackByCardId"
+        [routerLink]="isSelecting ? null : ['/tabs/wallet/stamp-card', card.businessId]"
+        class="app-card wallet-card app-slide-up"
+        [class.is-complete]="isComplete(card)"
+        [class.is-near-reward]="isNearReward(card)"
+        [class.is-selecting]="isSelecting"
+        [class.is-selected]="isSelected(card)"
+        (click)="toggleCardSelection(card)"
+        button
+        [attr.role]="isSelecting ? 'checkbox' : null"
+        [attr.aria-checked]="isSelecting ? isSelected(card) : null"
+      >
+        <div class="selection-indicator" *ngIf="isSelecting" aria-hidden="true">
+          <ion-icon [name]="isSelected(card) ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
+        </div>
+
         <div class="wallet-card-image">
           <img [src]="card.businessImage" [alt]="card.businessName" />
+          <span class="app-status-pill is-muted">{{ card.category }}</span>
         </div>
+
         <div class="wallet-card-info">
-          <h3>{{ card.businessName }}</h3>
-          <div class="stamp-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="(card.stamps / 10) * 100"></div>
+          <div class="wallet-card-heading">
+            <div>
+              <h2>{{ card.businessName }}</h2>
+              <p>{{ card.reward }}</p>
             </div>
             <span class="stamp-count">{{ card.stamps }}/10</span>
           </div>
-          <span class="reward-hint">{{ card.reward }}</span>
-        </div>
-        <ion-icon name="chevron-forward-outline" class="nav-arrow"></ion-icon>
-      </div>
-    </ion-card>
-  </div>
 
-  <div *ngIf="stampCards.length === 0" class="empty-state">
-    <div class="empty-icon">💳</div>
-    <h3>A sua carteira está vazia</h3>
-    <p>Siga negócios para receber cartões de fidelidade!</p>
-    <ion-button routerLink="/tabs/home" fill="outline" shape="round">
-      Explorar Negócios
-    </ion-button>
-  </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" [style.width.%]="getProgressPercent(card)"></div>
+          </div>
+
+          <div class="wallet-card-footer">
+            <span class="progress-label">
+              <ion-icon [name]="isComplete(card) ? 'trophy-outline' : 'sparkles-outline'" aria-hidden="true"></ion-icon>
+              {{ getProgressLabel(card) }}
+            </span>
+            <span *ngIf="card.lastStampDate" class="last-stamp">{{ getLastStampLabel(card) }}</span>
+          </div>
+        </div>
+
+        <ion-icon name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
+      </ion-card>
+    </section>
+
+    <div *ngIf="stampCards.length === 0" class="app-empty-state">
+      <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+      <h3>Your wallet is empty</h3>
+      <p>Follow businesses to receive loyalty cards and track rewards.</p>
+      <ion-button routerLink="/tabs/home" fill="outline" shape="round">Explore businesses</ion-button>
+    </div>
+  </main>
 </ion-content>

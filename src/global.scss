@@ -35,3 +35,331 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ion-background-color);
+}
+
+body {
+  color: var(--ion-text-color);
+}
+
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+ion-toolbar {
+  --border-width: 0;
+}
+
+ion-button {
+  min-height: 44px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+ion-button[expand] {
+  --box-shadow: var(--app-shadow-2);
+  --transition: background var(--app-motion-fast) var(--app-easing),
+                box-shadow var(--app-motion-fast) var(--app-easing),
+                transform var(--app-motion-fast) var(--app-easing);
+}
+
+ion-card[button],
+button,
+a,
+ion-button,
+ion-tab-button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--app-focus-ring);
+  transition: box-shadow var(--app-motion-fast) var(--app-easing);
+}
+
+.app-page {
+  width: min(100%, var(--app-page-max-width));
+  margin: 0 auto;
+  padding: 0 16px 96px;
+}
+
+.app-page--flush {
+  width: min(100%, var(--app-page-max-width));
+  margin: 0 auto;
+  padding-bottom: 96px;
+}
+
+.app-section {
+  margin-top: 22px;
+}
+
+.app-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 12px;
+
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    color: var(--ion-text-color);
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: 1.22rem;
+    line-height: 1.18;
+    position: relative;
+    display: inline-block;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: var(--app-color-muted);
+    font-size: 0.9rem;
+    line-height: 1.42;
+  }
+}
+
+.app-card {
+  margin: 0;
+  border: 1px solid var(--app-color-line);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-color-surface);
+  box-shadow: var(--app-shadow-2);
+  overflow: hidden;
+  transition: border-color var(--app-motion-normal) var(--app-easing),
+              box-shadow var(--app-motion-normal) var(--app-easing),
+              transform var(--app-motion-normal) var(--app-easing);
+
+  &[button]:hover,
+  &[button]:focus-within {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.32);
+    box-shadow: var(--app-shadow-4);
+    transform: translateY(-1px);
+  }
+
+  &[button]:active {
+    transform: translateY(0);
+    box-shadow: var(--app-shadow-2);
+  }
+}
+
+.app-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  color: var(--app-color-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  ion-icon {
+    color: var(--app-color-reward);
+    flex-shrink: 0;
+  }
+}
+
+.app-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+
+  &.is-open {
+    color: #ffffff;
+    background: var(--app-color-success);
+  }
+
+  &.is-closed {
+    color: var(--app-color-muted);
+    background: var(--app-color-surface-soft);
+    border-color: var(--app-color-line);
+  }
+
+  &.is-reward {
+    color: var(--ion-color-warning-contrast);
+    background: var(--app-color-reward);
+  }
+
+  &.is-muted {
+    color: var(--app-color-muted);
+    background: var(--app-color-surface-soft);
+    border-color: var(--app-color-line);
+  }
+}
+
+.app-reward-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.22);
+  border-radius: var(--app-radius-lg);
+  background: linear-gradient(135deg,
+    rgba(var(--ion-color-primary-rgb), 0.1) 0%,
+    rgba(var(--ion-color-primary-rgb), 0.04) 100%
+  );
+  box-shadow: var(--app-shadow-1);
+
+  ion-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    padding: 10px;
+    border-radius: var(--app-radius-md);
+    color: var(--ion-color-primary-contrast);
+    background: var(--ion-color-primary);
+  }
+
+  span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--app-color-brand-deep);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  strong {
+    display: block;
+    color: var(--ion-text-color);
+    font-size: 1rem;
+    line-height: 1.24;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: var(--app-color-muted);
+    font-size: 0.88rem;
+    line-height: 1.42;
+  }
+}
+
+.app-empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 56vh;
+  padding: 52px 24px;
+  text-align: center;
+  color: var(--app-color-muted);
+  animation: fadeSlideUp var(--app-motion-slow) var(--app-easing) both;
+
+  ion-icon {
+    width: 62px;
+    height: 62px;
+    padding: 15px;
+    margin-bottom: 14px;
+    border-radius: var(--app-radius-lg);
+    color: var(--ion-color-primary);
+    background: var(--app-color-brand-soft);
+  }
+
+  h2,
+  h3 {
+    margin: 0 0 7px;
+    color: var(--ion-text-color);
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+
+  p {
+    max-width: 34rem;
+    margin: 0 0 20px;
+    line-height: 1.45;
+  }
+}
+
+.app-fixed-action {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 14px 18px calc(14px + var(--ion-safe-area-bottom));
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: linear-gradient(
+    to top,
+    var(--ion-background-color) 60%,
+    rgba(var(--ion-background-color-rgb), 0.7) 85%,
+    rgba(var(--ion-background-color-rgb), 0) 100%
+  );
+}
+
+.app-fade-in {
+  animation: fadeIn var(--app-motion-normal) var(--app-easing) both;
+}
+
+.app-slide-up {
+  animation: fadeSlideUp var(--app-motion-slow) var(--app-easing) both;
+}
+
+.app-scale-in {
+  animation: scaleIn var(--app-motion-normal) var(--app-easing-spring) both;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (min-width: 700px) {
+  .app-page {
+    padding-inline: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

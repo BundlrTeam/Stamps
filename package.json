@@ -1,12 +1,7 @@
 {
   "name": "stamp-me",
   "version": "1.0.0",
-  "author": "",
-  "homepage": "https://github.com/YOUR_USERNAME/stamp-me",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/stamp-me.git"
-  },
+  "author": "Stamp Me",
   "license": "MIT",
   "keywords": ["ionic", "angular", "capacitor", "mobile"],
   "scripts": {
@@ -75,5 +70,5 @@
     "vite": "^7.3.5",
     "webpack-dev-server": "^5.2.4"
   },
-  "description": "Stamp Me — an Ionic/Angular/Capacitor mobile app"
+  "description": "Stamp Me - professional Ionic/Angular mockup for digital loyalty stamp cards"
 }

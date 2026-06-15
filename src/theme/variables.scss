@@ -1,59 +1,166 @@
-// Stamp Me - Custom Theme Variables
-// Warm, inviting color palette for a loyalty app
+// Stamp Me theme tokens
 
 :root {
+  --app-color-ink: #17211f;
+  --app-color-muted: #63706c;
+  --app-color-surface: #ffffff;
+  --app-color-surface-soft: #f7f4ef;
+  --app-color-surface-warm: #fff8f2;
+  --app-color-line: rgba(23, 33, 31, 0.1);
+  --app-color-brand: #e8652b;
+  --app-color-brand-deep: #b9471f;
+  --app-color-brand-soft: #fff0e7;
+  --app-color-success: #0f9f7a;
+  --app-color-reward: #d99a21;
+  --app-color-reward-soft: #fff5d9;
+  --app-shadow-0: none;
+  --app-shadow-1: 0 1px 3px rgba(23, 33, 31, 0.06), 0 1px 2px rgba(23, 33, 31, 0.04);
+  --app-shadow-2: 0 4px 12px rgba(23, 33, 31, 0.08), 0 2px 4px rgba(23, 33, 31, 0.04);
+  --app-shadow-3: 0 10px 28px rgba(23, 33, 31, 0.10), 0 4px 8px rgba(23, 33, 31, 0.05);
+  --app-shadow-4: 0 18px 42px rgba(23, 33, 31, 0.14), 0 6px 14px rgba(23, 33, 31, 0.07);
+  --app-shadow-focus: 0 0 0 3px rgba(232, 101, 43, 0.28);
+  --app-shadow-card: var(--app-shadow-3);
+  --app-shadow-raised: var(--app-shadow-4);
+  --app-radius-sm: 8px;
+  --app-radius-md: 12px;
+  --app-radius-lg: 16px;
+  --app-radius-xl: 22px;
+  --app-radius-pill: 999px;
+  --app-page-max-width: 980px;
+  --app-motion-fast: 150ms;
+  --app-motion-normal: 220ms;
+  --app-motion-slow: 360ms;
+  --app-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --app-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --app-focus-ring: 0 0 0 3px rgba(232, 101, 43, 0.32);
+  --app-surface-0: var(--ion-background-color);
+  --app-surface-1: var(--app-color-surface);
+  --app-surface-2: var(--app-color-surface-soft);
+  --app-surface-3: var(--app-color-surface-warm);
+  --app-gradient-brand: linear-gradient(135deg, #e8652b 0%, #d94b3d 100%);
+  --app-gradient-brand-soft: linear-gradient(135deg, rgba(232,101,43,0.12) 0%, rgba(217,75,61,0.06) 100%);
+  --app-gradient-reward: linear-gradient(135deg, #d99a21 0%, #c07d10 100%);
+
   --ion-color-primary: #e8652b;
   --ion-color-primary-rgb: 232, 101, 43;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #cc5926;
-  --ion-color-primary-tint: #ea7540;
+  --ion-color-primary-tint: #ee7c4a;
 
-  --ion-color-secondary: #ff9f43;
-  --ion-color-secondary-rgb: 255, 159, 67;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #e08c3b;
-  --ion-color-secondary-tint: #ffa956;
+  --ion-color-secondary: #0f9f7a;
+  --ion-color-secondary-rgb: 15, 159, 122;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0d8c6b;
+  --ion-color-secondary-tint: #27a987;
 
-  --ion-color-tertiary: #6c5ce7;
-  --ion-color-tertiary-rgb: 108, 92, 231;
+  --ion-color-tertiary: #285a64;
+  --ion-color-tertiary-rgb: 40, 90, 100;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #5f51cb;
-  --ion-color-tertiary-tint: #7b6ce9;
+  --ion-color-tertiary-shade: #234f58;
+  --ion-color-tertiary-tint: #3e6b74;
 
-  --ion-color-success: #00b894;
-  --ion-color-success-rgb: 0, 184, 148;
+  --ion-color-success: #0f9f7a;
+  --ion-color-success-rgb: 15, 159, 122;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #00a282;
-  --ion-color-success-tint: #1abf9f;
+  --ion-color-success-shade: #0d8c6b;
+  --ion-color-success-tint: #27a987;
 
-  --ion-color-warning: #fdcb6e;
-  --ion-color-warning-rgb: 253, 203, 110;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #dfb361;
-  --ion-color-warning-tint: #fdd07d;
+  --ion-color-warning: #d99a21;
+  --ion-color-warning-rgb: 217, 154, 33;
+  --ion-color-warning-contrast: #17211f;
+  --ion-color-warning-contrast-rgb: 23, 33, 31;
+  --ion-color-warning-shade: #bf881d;
+  --ion-color-warning-tint: #dda437;
 
-  --ion-color-danger: #e74c3c;
-  --ion-color-danger-rgb: 231, 76, 60;
+  --ion-color-danger: #d94b3d;
+  --ion-color-danger-rgb: 217, 75, 61;
   --ion-color-danger-contrast: #ffffff;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #cb4335;
-  --ion-color-danger-tint: #e95e50;
+  --ion-color-danger-shade: #bf4236;
+  --ion-color-danger-tint: #dd5d50;
 
   --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
-  --ion-tab-bar-background: #ffffff;
-  --ion-tab-bar-border-color: rgba(0, 0, 0, 0.08);
+  --ion-background-color: #fbf7f1;
+  --ion-background-color-rgb: 251, 247, 241;
+  --ion-text-color: var(--app-color-ink);
+  --ion-text-color-rgb: 23, 33, 31;
+  --ion-card-background: var(--app-color-surface);
+  --ion-item-background: var(--app-color-surface);
+  --ion-toolbar-background: rgba(251, 247, 241, 0.94);
+  --ion-toolbar-color: var(--app-color-ink);
+  --ion-tab-bar-background: rgba(255, 255, 255, 0.94);
+  --ion-tab-bar-border-color: var(--app-color-line);
 }
 
-// Dark mode overrides
 @media (prefers-color-scheme: dark) {
   :root {
-    --ion-tab-bar-background: #1a1a2e;
-    --ion-tab-bar-border-color: rgba(255, 255, 255, 0.08);
+    --app-color-ink: #f7f4ef;
+    --app-color-muted: #aeb9b5;
+    --app-color-surface: #17211f;
+    --app-color-surface-soft: #101816;
+    --app-color-surface-warm: #211a16;
+    --app-color-line: rgba(247, 244, 239, 0.12);
+    --app-color-brand: #ff8a55;
+    --app-color-brand-deep: #ffb08b;
+    --app-color-brand-soft: rgba(232, 101, 43, 0.16);
+    --app-color-success: #3fd3aa;
+    --app-color-reward: #f1bd52;
+    --app-color-reward-soft: rgba(217, 154, 33, 0.17);
+    --app-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+    --app-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
+    --app-shadow-3: 0 10px 28px rgba(0, 0, 0, 0.28), 0 4px 8px rgba(0, 0, 0, 0.16);
+    --app-shadow-4: 0 18px 42px rgba(0, 0, 0, 0.38), 0 6px 14px rgba(0, 0, 0, 0.22);
+    --app-shadow-focus: 0 0 0 3px rgba(232, 101, 43, 0.32);
+    --app-shadow-card: var(--app-shadow-3);
+    --app-shadow-raised: var(--app-shadow-4);
+    --app-gradient-brand-soft: linear-gradient(135deg, rgba(232,101,43,0.18) 0%, rgba(217,75,61,0.10) 100%);
+
+    --ion-background-color: #0e1513;
+    --ion-background-color-rgb: 14, 21, 19;
+    --ion-text-color: #f7f4ef;
+    --ion-text-color-rgb: 247, 244, 239;
+    --ion-card-background: #17211f;
+    --ion-item-background: #17211f;
+    --ion-toolbar-background: rgba(14, 21, 19, 0.94);
+    --ion-toolbar-color: #f7f4ef;
+    --ion-tab-bar-background: rgba(23, 33, 31, 0.94);
+    --ion-tab-bar-border-color: rgba(247, 244, 239, 0.12);
   }
+}
+
+html.ion-palette-dark {
+  --app-color-ink: #f7f4ef;
+  --app-color-muted: #aeb9b5;
+  --app-color-surface: #17211f;
+  --app-color-surface-soft: #101816;
+  --app-color-surface-warm: #211a16;
+  --app-color-line: rgba(247, 244, 239, 0.12);
+  --app-color-brand: #ff8a55;
+  --app-color-brand-deep: #ffb08b;
+  --app-color-brand-soft: rgba(232, 101, 43, 0.16);
+  --app-color-success: #3fd3aa;
+  --app-color-reward: #f1bd52;
+  --app-color-reward-soft: rgba(217, 154, 33, 0.17);
+  --app-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+  --app-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
+  --app-shadow-3: 0 10px 28px rgba(0, 0, 0, 0.28), 0 4px 8px rgba(0, 0, 0, 0.16);
+  --app-shadow-4: 0 18px 42px rgba(0, 0, 0, 0.38), 0 6px 14px rgba(0, 0, 0, 0.22);
+  --app-shadow-focus: 0 0 0 3px rgba(232, 101, 43, 0.32);
+  --app-shadow-card: var(--app-shadow-3);
+  --app-shadow-raised: var(--app-shadow-4);
+  --app-gradient-brand-soft: linear-gradient(135deg, rgba(232,101,43,0.18) 0%, rgba(217,75,61,0.10) 100%);
+  --ion-background-color: #0e1513;
+  --ion-background-color-rgb: 14, 21, 19;
+  --ion-text-color: #f7f4ef;
+  --ion-text-color-rgb: 247, 244, 239;
+  --ion-card-background: #17211f;
+  --ion-item-background: #17211f;
+  --ion-toolbar-background: rgba(14, 21, 19, 0.94);
+  --ion-toolbar-color: #f7f4ef;
+  --ion-tab-bar-background: rgba(23, 33, 31, 0.94);
+  --ion-tab-bar-border-color: rgba(247, 244, 239, 0.12);
 }

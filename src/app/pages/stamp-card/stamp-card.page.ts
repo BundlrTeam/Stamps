@@ -19,26 +19,23 @@ export class StampCardPage implements OnInit {
 
   stampCard: StampCard | undefined;
   business: Business | undefined;
-  notFound = false;
   stampSlots: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
   showScanner: boolean = false;
   scannedCode: string = '';
 
   ngOnInit() {
-    const businessId = this.route.snapshot.paramMap.get('businessId');
-    if (businessId) {
-      this.stampCard = this.businessService.getStampCard(businessId);
-      this.business = this.businessService.getBusinessById(businessId);
-      this.notFound = !this.stampCard;
-    }
+    this.loadCardData();
   }
 
   ionViewWillEnter() {
+    this.loadCardData();
+  }
+
+  private loadCardData() {
     const businessId = this.route.snapshot.paramMap.get('businessId');
     if (businessId) {
       this.stampCard = this.businessService.getStampCard(businessId);
       this.business = this.businessService.getBusinessById(businessId);
-      this.notFound = !this.stampCard;
     }
   }
 
@@ -125,12 +122,6 @@ export class StampCardPage implements OnInit {
     }
   }
 
-  getRowSlots(row: number): number[] {
-    if (row === 1) return [1, 2, 3];
-    if (row === 2) return [4, 5, 6];
-    if (row === 3) return [7, 8, 9];
-    return [10]; // last row, single centered
-  }
 
   getNextRewardText(): string {
     if (!this.stampCard) return '';

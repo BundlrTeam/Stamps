@@ -1,227 +1,188 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Perfil</ion-title>
+    <ion-title>Profile</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Secção do Perfil -->
-  <div class="profile-header">
-    <div class="photo-container">
-      <ion-avatar class="profile-photo">
-        <img [src]="user.photoUrl" alt="Foto de perfil" />
-      </ion-avatar>
-      <ion-button
-        fill="solid"
-        size="small"
-        class="edit-photo-btn"
-        (click)="changePhoto()"
-      >
-        <ion-icon name="camera-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </div>
-
-    <div class="profile-info">
-      <div class="name-section" *ngIf="!isEditingName">
-        <h1 class="profile-name">{{ user.name }}</h1>
-        <ion-button fill="clear" size="small" (click)="startEditingName()">
-          <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+<ion-content>
+  <main class="app-page profile-page">
+    <section class="profile-card app-fade-in" aria-labelledby="profile-title">
+      <div class="photo-container">
+        <ion-avatar class="profile-photo">
+          <img [src]="user.photoUrl" alt="{{ user.name }}'s profile picture" />
+        </ion-avatar>
+        <ion-button fill="solid" size="small" class="edit-photo-btn" (click)="changePhoto()" aria-label="Change photo">
+          <ion-icon name="camera-outline" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
       </div>
 
-      <div class="name-edit-section" *ngIf="isEditingName">
-        <ion-input
-          [(ngModel)]="tempName"
-          class="name-input"
-          placeholder="Nome"
-          (keyup.enter)="saveName()"
-        ></ion-input>
-        <ion-button fill="clear" size="small" color="success" (click)="saveName()">
-          <ion-icon name="checkmark-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" size="small" color="danger" (click)="cancelEditingName()">
-          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-        </ion-button>
+      <div class="profile-info">
+        <div class="name-section" *ngIf="!isEditingName">
+          <div>
+            <h1 id="profile-title">{{ user.name }}</h1>
+            <p>{{ user.email }}</p>
+            <p>{{ user.phone }}</p>
+          </div>
+          <ion-button fill="clear" size="small" (click)="startEditingName()" aria-label="Edit name">
+            <ion-icon name="create-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="name-edit-section" *ngIf="isEditingName">
+          <ion-input [(ngModel)]="tempName" class="name-input" label="Name" labelPlacement="floating" (keyup.enter)="saveName()"></ion-input>
+          <div class="name-actions">
+            <ion-button fill="clear" size="small" color="success" (click)="saveName()" aria-label="Save name">
+              <ion-icon name="checkmark-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="cancelEditingName()" aria-label="Cancel editing">
+              <ion-icon name="close-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-group app-slide-up" aria-labelledby="preferences-title">
+      <div class="app-section-header">
+        <div>
+          <h2 id="preferences-title">Preferences</h2>
+          <p>Quick adjustments for this demo.</p>
+        </div>
       </div>
 
-      <p class="profile-email">{{ user.email }}</p>
-      <p class="profile-phone">{{ user.phone }}</p>
-    </div>
-  </div>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="moon-outline" slot="start" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>Dark mode</h3>
+            <p>Toggle between light and dark theme.</p>
+          </ion-label>
+          <ion-toggle [checked]="isDarkMode" (ionChange)="toggleTheme()" slot="end" aria-label="Toggle dark mode"></ion-toggle>
+        </ion-item>
 
-  <!-- Secção de Definições -->
-  <ion-list class="settings-list" lines="full">
-    <ion-list-header>
-      <ion-label>Definições</ion-label>
-    </ion-list-header>
+        <ion-item button (click)="resetDemoState()" detail="false">
+          <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>Reset demo</h3>
+            <p>Restore sample cards and stamps.</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
 
-    <!-- Tema -->
-    <ion-item>
-      <ion-icon name="moon-outline" slot="start" color="primary"></ion-icon>
-      <ion-label>
-        <h3>Modo Escuro</h3>
-        <p>Alternar entre tema claro e escuro</p>
-      </ion-label>
-      <ion-toggle
-        [checked]="isDarkMode"
-        (ionChange)="toggleTheme()"
-        slot="end"
-      ></ion-toggle>
-    </ion-item>
+        <ion-item button (click)="logout()" detail="false">
+          <ion-icon name="log-out-outline" slot="start" color="danger" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>Log out</h3>
+            <p>Log out of the current account.</p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </section>
 
-    <!-- Logout -->
-    <ion-item button (click)="logout()" detail="false">
-      <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
-      <ion-label>
-        <h3>Terminar Sessão</h3>
-        <p>Sair da conta atual</p>
-      </ion-label>
-      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
-    </ion-item>
-  </ion-list>
-
-  <!-- Botão discreto para adicionar negócio -->
-  <div class="add-business-section">
-    <ion-button
-      expand="block"
-      fill="outline"
-      class="add-business-btn"
-      (click)="openAddBusinessModal()"
-    >
-      <ion-icon name="storefront-outline" slot="start"></ion-icon>
-      Adiciona o teu negócio
-    </ion-button>
-    <p class="add-business-hint">Tens um estabelecimento? Junta-te à Stamp Me!</p>
-  </div>
+    <section class="merchant-card app-slide-up" [class.submitted]="merchantLeadSubmitted" aria-labelledby="merchant-title">
+      <div class="merchant-icon">
+        <ion-icon [name]="merchantLeadSubmitted ? 'checkmark-circle-outline' : 'storefront-outline'" aria-hidden="true"></ion-icon>
+      </div>
+      <div>
+        <span>For Merchants</span>
+        <h2 id="merchant-title">{{ merchantLeadSubmitted ? 'Request received' : 'Have a business?' }}</h2>
+        <p>
+          {{ merchantLeadSubmitted
+            ? 'The Stamp Me team will contact you to set up your digital card.'
+            : 'Show interest and get a proposal to create your digital loyalty card.' }}
+        </p>
+        <ion-button *ngIf="!merchantLeadSubmitted" expand="block" shape="round" (click)="openAddBusinessModal()">
+          I want to join
+        </ion-button>
+      </div>
+    </section>
+  </main>
 </ion-content>
 
-<!-- Modal para Adicionar Negócio -->
-<ion-modal
-  [isOpen]="showAddBusinessModal"
-  (didDismiss)="closeAddBusinessModal()"
-  class="add-business-modal"
->
+<ion-modal [isOpen]="showAddBusinessModal" (didDismiss)="closeAddBusinessModal()" class="add-business-modal">
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Adicionar Negócio</ion-title>
+        <ion-title>Add Business</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="closeAddBusinessModal()">
-            <ion-icon name="close-outline"></ion-icon>
+          <ion-button (click)="closeAddBusinessModal()" aria-label="Close form">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="ion-padding">
+    <ion-content>
       <form (ngSubmit)="submitBusiness()" class="business-form">
-        <ion-list lines="none">
-          <!-- Nome -->
-          <ion-item class="form-item">
-            <ion-label position="stacked">Nome do negócio *</ion-label>
-            <ion-input
-              [(ngModel)]="newBusiness.name"
-              name="businessName"
-              placeholder="Ex: Pizzaria Bella"
-              required
-            ></ion-input>
-          </ion-item>
+        <section class="form-section">
+          <h2>Business Details</h2>
+          <ion-list lines="none">
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.name" name="businessName" label="Business Name *" labelPlacement="stacked" placeholder="e.g. Pizza Bella" required></ion-input>
+            </ion-item>
 
-          <!-- Morada -->
-          <ion-item class="form-item">
-            <ion-label position="stacked">Morada</ion-label>
-            <ion-input
-              [(ngModel)]="newBusiness.address"
-              name="businessAddress"
-              placeholder="Rua, número, cidade"
-            ></ion-input>
-          </ion-item>
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.address" name="businessAddress" label="Address" labelPlacement="stacked" placeholder="Street, number, city"></ion-input>
+            </ion-item>
 
-          <!-- Categoria -->
-          <ion-item class="form-item">
-            <ion-label position="stacked">Categoria *</ion-label>
-            <ion-select
-              [(ngModel)]="newBusiness.category"
-              name="businessCategory"
-              placeholder="Seleciona uma categoria"
-              interface="popover"
-              required
-            >
-              <ion-select-option value="Pizzaria">Pizzaria</ion-select-option>
-              <ion-select-option value="Barbearia">Barbearia</ion-select-option>
-              <ion-select-option value="Cafetaria">Cafetaria</ion-select-option>
-              <ion-select-option value="Bar">Bar</ion-select-option>
-              <ion-select-option value="Hostel">Hostel</ion-select-option>
-              <ion-select-option value="Restaurante">Restaurante</ion-select-option>
-              <ion-select-option value="Loja">Loja</ion-select-option>
-              <ion-select-option value="Outro">Outro</ion-select-option>
-            </ion-select>
-          </ion-item>
+            <ion-item class="form-item">
+              <ion-select [(ngModel)]="newBusiness.category" name="businessCategory" label="Category *" labelPlacement="stacked" placeholder="Select a category" interface="popover" required>
+                <ion-select-option value="Pizzaria">Pizzeria</ion-select-option>
+                <ion-select-option value="Restaurante">Restaurant</ion-select-option>
+                <ion-select-option value="Cafe">Cafe</ion-select-option>
+                <ion-select-option value="Barbearia">Barber</ion-select-option>
+                <ion-select-option value="Beleza">Beauty</ion-select-option>
+                <ion-select-option value="Bar">Bar</ion-select-option>
+                <ion-select-option value="Hotel">Hotel</ion-select-option>
+                <ion-select-option value="Loja">Store</ion-select-option>
+              </ion-select>
+            </ion-item>
 
-          <!-- Descrição -->
-          <ion-item class="form-item">
-            <ion-label position="stacked">Descrição</ion-label>
-            <ion-textarea
-              [(ngModel)]="newBusiness.description"
-              name="businessDescription"
-              placeholder="Descreve o teu negócio..."
-              rows="4"
-            ></ion-textarea>
-          </ion-item>
+            <ion-item class="form-item">
+              <ion-textarea [(ngModel)]="newBusiness.description" name="businessDescription" label="Description" labelPlacement="stacked" placeholder="Describe your business..." rows="4"></ion-textarea>
+            </ion-item>
+          </ion-list>
+        </section>
 
-          <!-- Serviços -->
-          <div class="services-section">
-            <ion-label class="services-label">Serviços</ion-label>
-            <div
-              class="service-input-row"
-              *ngFor="let service of newBusiness.services; let i = index; trackBy: trackByIndex"
-            >
-              <ion-input
-                [(ngModel)]="newBusiness.services[i]"
-                [name]="'service' + i"
-                placeholder="Serviço {{ i + 1 }}"
-                class="service-input"
-              ></ion-input>
-              <ion-button
-                *ngIf="newBusiness.services.length > 1"
-                fill="clear"
-                color="danger"
-                size="small"
-                (click)="removeServiceField(i)"
-              >
-                <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </div>
-            <ion-button
-              fill="clear"
-              size="small"
-              (click)="addServiceField()"
-              class="add-service-btn"
-            >
-              <ion-icon name="add-outline" slot="start"></ion-icon>
-              Adicionar serviço
+        <section class="form-section services-section">
+          <h2>Services</h2>
+          <div class="service-input-row" *ngFor="let service of newBusiness.services; let i = index; trackBy: trackByIndex">
+            <ion-input [(ngModel)]="newBusiness.services[i]" [name]="'service' + i" placeholder="Service {{ i + 1 }}" class="service-input"></ion-input>
+            <ion-button *ngIf="newBusiness.services.length > 1" fill="clear" color="danger" size="small" (click)="removeServiceField(i)" aria-label="Remove service">
+              <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
             </ion-button>
           </div>
+          <ion-button fill="clear" size="small" (click)="addServiceField()" class="add-service-btn">
+            <ion-icon name="add-outline" slot="start" aria-hidden="true"></ion-icon>
+            Add service
+          </ion-button>
+        </section>
 
-          <!-- URL da Foto -->
-          <ion-item class="form-item">
-            <ion-label position="stacked">URL da foto</ion-label>
-            <ion-input
-              [(ngModel)]="newBusiness.photoUrl"
-              name="businessPhotoUrl"
-              type="url"
-              placeholder="https://..."
-            ></ion-input>
-          </ion-item>
-        </ion-list>
+        <section class="form-section">
+          <h2>Contact</h2>
+          <ion-list lines="none">
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.photoUrl" name="businessPhotoUrl" type="url" inputmode="url" label="Photo URL" labelPlacement="stacked" placeholder="https://..."></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.contactName" name="contactName" label="Contact Name *" labelPlacement="stacked" placeholder="First and last name" required></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.contactEmail" name="contactEmail" type="email" inputmode="email" label="Contact Email *" labelPlacement="stacked" placeholder="email@business.com" required></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newBusiness.contactPhone" name="contactPhone" type="tel" inputmode="tel" label="Phone" labelPlacement="stacked" placeholder="+351 900 000 000"></ion-input>
+            </ion-item>
+          </ion-list>
+        </section>
 
         <div class="form-actions">
-          <ion-button
-            expand="block"
-            type="submit"
-            class="submit-btn"
-          >
-            Submeter para aprovação
+          <ion-button expand="block" type="submit" shape="round">
+            Request Contact
           </ion-button>
         </div>
       </form>
