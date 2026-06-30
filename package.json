@@ -6,7 +6,9 @@
   "keywords": ["ionic", "angular", "capacitor", "mobile"],
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "prestart": "node scripts/set-env.js",
+    "start": "concurrently \"node backend/server.js\" \"ng serve\"",
+    "prebuild": "node scripts/set-env.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -14,6 +16,9 @@
   },
   "private": true,
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
     "@angular/animations": "^20.0.0",
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
@@ -36,6 +41,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "@angular-devkit/build-angular": "^20.0.0",
     "@angular-eslint/builder": "^20.0.0",
     "@angular-eslint/eslint-plugin": "^20.0.0",

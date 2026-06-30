@@ -1,3 +1,7 @@
 export const environment = {
-  production: true
+  production: true,
+  supabaseUrl: '',
+  supabaseKey: '',
+  dbSupaPass: '',
+  backendUrl: 'http://localhost:3000/api'
 };

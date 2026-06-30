@@ -20,6 +20,7 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
   isFollowing: boolean = false;
   notFound = false;
   activeImageIndex = 0;
+  isOwnBusiness = false;
   private autoPlayIntervalId: any = null;
 
   getBusinessImages(): string[] {
@@ -93,6 +94,7 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
       this.business = this.businessService.getBusinessById(id);
       this.notFound = !this.business;
       this.isFollowing = this.businessService.isFollowing(id);
+      this.isOwnBusiness = id === 'my-business';
     }
   }
 

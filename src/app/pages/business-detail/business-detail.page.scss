@@ -2,6 +2,30 @@
   padding-bottom: 126px;
 }
 
+.own-business-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: var(--app-radius-xl);
+  background: var(--app-gradient-brand-soft);
+  border: 1.5px dashed var(--ion-color-primary);
+
+  ion-icon {
+    font-size: 1.4rem;
+    color: var(--ion-color-primary);
+  }
+
+  span {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--app-color-brand-deep);
+  }
+}
+
+
+
 .detail-hero {
   position: relative;
   height: 320px;

@@ -74,3 +74,39 @@ export interface MerchantLead {
   contactEmail: string;
   contactPhone: string;
 }
+
+export interface CustomReward {
+  step: number;          // 1–10
+  imageUrl: string;
+  title: string;
+  description: string;
+  validityDays: number;  // 14–90
+}
+
+export interface CardCustomization {
+  backgroundColor: string;   // hex preset
+  backgroundStyle?: 'color' | 'image';
+  backgroundImageUrl?: string; // URL for background image
+  stampStyle: 'color' | 'image';
+  stampColor: string;        // hex (when stampStyle === 'color')
+  stampImageUrl: string;     // URL (when stampStyle === 'image')
+  stampImageOffsetX: number; // 0–100
+  stampImageOffsetY: number; // 0–100
+  stampImageScale: number;   // 1.0–3.0
+  customRewards: CustomReward[];
+}
+
+export interface ApprovedBusiness {
+  businessId: string;      // always 'my-business'
+  name: string;
+  address: string;
+  city: string;
+  category: string;
+  description: string;
+  services: string[];
+  photos: string[];        // 3–5 URLs
+  logoUrl?: string;        // Store profile photo/logo URL
+  cardCustomization: CardCustomization;
+  approvedAt: string;      // ISO date
+}
+

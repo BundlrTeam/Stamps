@@ -8,7 +8,7 @@
 
   <base href="/" />
 
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="light" />
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
@@ -32,8 +32,7 @@
   <script>
     (function() {
       const savedTheme = localStorage.getItem('darkMode');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const isDark = savedTheme === 'true' || (savedTheme === null && prefersDark);
+      const isDark = savedTheme === 'true';
       document.documentElement.classList.toggle('ion-palette-dark', isDark);
     })();
   </script>

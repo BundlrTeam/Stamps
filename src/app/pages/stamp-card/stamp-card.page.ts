@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
-import { Business, StampCard } from '../../models/business.model';
+import { Business, StampCard, CardCustomization } from '../../models/business.model';
 import { AlertController, ToastController, IonContent } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
@@ -38,6 +38,7 @@ export class StampCardPage implements OnInit {
 
   stampCard: StampCard | undefined;
   business: Business | undefined;
+  cardCustomization: CardCustomization | null = null;
   stampSlots: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
   showScanner: boolean = false;
   scannedCode: string = '';
@@ -78,11 +79,51 @@ export class StampCardPage implements OnInit {
     if (businessId) {
       this.stampCard = this.businessService.getStampCard(businessId);
       this.business = this.businessService.getBusinessById(businessId);
+      if (businessId === 'my-business') {
+        this.cardCustomization = this.businessService.getCardCustomization();
+      } else {
+        this.cardCustomization = null;
+      }
     }
   }
 
   isStamped(slot: number): boolean {
     return this.stampCard ? slot <= this.stampCard.stamps : false;
+  }
+
+  getLoyaltyCardStyle(): object {
+    if (!this.cardCustomization) return {};
+    if (this.cardCustomization.backgroundStyle === 'image' && this.cardCustomization.backgroundImageUrl) {
+      return {
+        backgroundImage: `url(${this.cardCustomization.backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+    }
+    return { background: this.cardCustomization.backgroundColor };
+  }
+
+  getStampStyle(slot: number): object {
+    if (!this.cardCustomization || !this.isStamped(slot)) return {};
+    if (this.cardCustomization.stampStyle === 'color') {
+      return {
+        background: this.cardCustomization.stampColor,
+        borderColor: this.cardCustomization.stampColor,
+        borderStyle: 'solid'
+      };
+    }
+    if (this.cardCustomization.stampStyle === 'image' && this.cardCustomization.stampImageUrl) {
+      return {
+        backgroundImage: `url(${this.cardCustomization.stampImageUrl})`,
+        backgroundSize: `${this.cardCustomization.stampImageScale * 100}%`,
+        backgroundPosition: `${this.cardCustomization.stampImageOffsetX}% ${this.cardCustomization.stampImageOffsetY}%`,
+        backgroundRepeat: 'no-repeat',
+        borderColor: 'rgba(255,255,255,0.6)',
+        borderStyle: 'solid'
+      };
+    }
+    return {};
   }
 
   getRewardLabel(slot: number): string | null {

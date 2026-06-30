@@ -133,11 +133,15 @@
   </main>
 
   <div class="app-fixed-action">
-    <ion-button *ngIf="!isFollowing" expand="block" shape="round" color="primary" (click)="followBusiness()">
+    <div *ngIf="isOwnBusiness" class="own-business-badge">
+      <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
+      <span>Esta é a sua página de negócio</span>
+    </div>
+    <ion-button *ngIf="!isFollowing && !isOwnBusiness" expand="block" shape="round" color="primary" (click)="followBusiness()">
       <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
       Adicionar à carteira
     </ion-button>
-    <ion-button *ngIf="isFollowing" expand="block" shape="round" color="secondary" (click)="openStampCard()">
+    <ion-button *ngIf="isFollowing && !isOwnBusiness" expand="block" shape="round" color="secondary" (click)="openStampCard()">
       <ion-icon name="albums-outline" slot="start" aria-hidden="true"></ion-icon>
       Ver cartão
     </ion-button>

@@ -38,10 +38,15 @@ export class HomePage implements OnInit {
   ];
 
   ngOnInit() {
-    this.businesses = this.businessService.getBusinesses();
-    this.featuredBusinesses = this.businesses.slice(0, 4);
-    this.filteredBusinesses = this.businesses;
+    this.businessService.businesses$.subscribe(data => {
+      this.businesses = data;
+      this.featuredBusinesses = data.slice(0, 4);
+      this.filteredBusinesses = data;
+    });
     this.greeting = this.computeGreeting();
+  }
+
+  ionViewWillEnter() {
     const cards: StampCard[] = this.businessService.getStampCards();
     this.walletCardCount = cards.length;
     const pending = cards

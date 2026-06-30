@@ -86,6 +86,7 @@
       class="loyalty-card"
       [class.card-celebrate]="showCelebration"
       [class.card-celebrate-prize]="showCelebration && celebrationType === 'prize'"
+      [ngStyle]="getLoyaltyCardStyle()"
       aria-label="Cartão de Fidelidade"
     >
       <div class="loyalty-card-header">
@@ -106,18 +107,19 @@
           [class.final-slot]="slot === 10"
           [class.just-stamped]="showCelebration && slot === stampCard.stamps"
         >
-          <div class="stamp-circle">
-            <ng-container *ngIf="isStamped(slot); else unstampedContent">
+          <div class="stamp-circle" [ngStyle]="getStampStyle(slot)">
+            <ng-container *ngIf="isStamped(slot) && cardCustomization?.stampStyle !== 'image'; else unstampedContent">
               <ion-icon *ngIf="slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
               <ion-icon *ngIf="slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
             </ng-container>
             <ng-template #unstampedContent>
-              <ng-container *ngIf="hasReward(slot); else numberOnly">
+              <ng-container *ngIf="isStamped(slot) && cardCustomization?.stampStyle === 'image'"></ng-container>
+              <ng-container *ngIf="!isStamped(slot) && hasReward(slot)">
                 <ion-icon [name]="getRewardIcon(slot)" class="stamp-reward-icon" aria-hidden="true"></ion-icon>
               </ng-container>
-              <ng-template #numberOnly>
+              <ng-container *ngIf="!isStamped(slot) && !hasReward(slot)">
                 <span class="stamp-number">{{ slot }}</span>
-              </ng-template>
+              </ng-container>
             </ng-template>
           </div>
           <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
