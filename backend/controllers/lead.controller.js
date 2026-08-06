@@ -1,10 +1,18 @@
 const db = require('../db');
 
-exports.upsertLead = async (req, res) => {
-  const lead = req.body;
-  if (!lead || !lead.contactEmail) {
-    return res.status(400).json({ error: 'Dados inválidos. contactEmail é obrigatório.' });
-  }
+exports.upsertLead = async (req, res, next) => {
+  try {
+    const lead = req.body;
+    if (!lead || !lead.contactEmail) {
+      return res.status(400).json({ success: false, error: 'Dados inválidos. contactEmail é obrigatório.' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(lead.contactEmail)) {
+      return res.status(400).json({ success: false, error: 'E-mail inválido.' });
+    }
+    if (!lead.name) {
+      return res.status(400).json({ success: false, error: 'Dados inválidos. name é obrigatório.' });
+    }
 
   const email = lead.contactEmail;
   const name = lead.name || '';
@@ -41,9 +49,10 @@ exports.upsertLead = async (req, res) => {
         googleBusinessProfileUrl, businessPhotos, contactName, contactPhone
       ]);
       console.log(`Lead guardado no PostgreSQL: ${email}`);
-      return res.status(200).json({ success: true, message: 'Lead guardado no PostgreSQL.' });
+      return res.status(200).json({ success: true, data: { message: 'Lead guardado no PostgreSQL.' } });
     } catch (err) {
       console.error('Erro ao guardar lead no PostgreSQL, a tentar guardar em memória:', err.message);
+      // Fallback em memória se houver erro (continua abaixo)
     }
   }
 
@@ -62,14 +71,26 @@ exports.upsertLead = async (req, res) => {
     created_at: new Date().toISOString()
   };
   console.log(`Lead guardado em memória: ${email}`);
-  return res.status(200).json({ success: true, message: 'Lead guardado em memória local.' });
+  return res.status(200).json({ success: true, data: { message: 'Lead guardado em memória local.' } });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getLeadByEmail = async (req, res) => {
-  const email = req.params.email;
-  if (!email) {
-    return res.status(400).json({ error: 'E-mail é obrigatório.' });
-  }
+exports.getLeadByEmail = async (req, res, next) => {
+  try {
+    const email = req.params.email;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'E-mail é obrigatório.' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, error: 'E-mail inválido.' });
+    }
+    
+    if (req.userEmail !== email) {
+      return res.status(403).json({ success: false, error: 'Acesso negado. O email autenticado não corresponde.' });
+    }
 
   if (db.isDbConnected) {
     try {
@@ -78,7 +99,7 @@ exports.getLeadByEmail = async (req, res) => {
       if (result.rows.length > 0) {
         const row = result.rows[0];
         // Retornar no mesmo formato camelCase que a aplicação frontend espera
-        return res.json({
+        return res.json({ success: true, data: {
           name: row.name,
           address: row.address || '',
           category: row.category || '',
@@ -89,9 +110,9 @@ exports.getLeadByEmail = async (req, res) => {
           contactName: row.contact_name || '',
           contactEmail: row.contact_email,
           contactPhone: row.contact_phone || ''
-        });
+        }});
       }
-      return res.status(404).json({ message: 'Lead não encontrado.' });
+      return res.status(404).json({ success: false, error: 'Lead não encontrado.' });
     } catch (err) {
       console.error('Erro ao pesquisar lead no PostgreSQL, a ler de memória:', err.message);
     }
@@ -100,26 +121,37 @@ exports.getLeadByEmail = async (req, res) => {
   // Fallback in-memory
   const lead = db.memoryStore.leads[email];
   if (lead) {
-    return res.json(lead);
+    return res.json({ success: true, data: lead });
   }
-  return res.status(404).json({ message: 'Lead não encontrado.' });
+  return res.status(404).json({ success: false, error: 'Lead não encontrado.' });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.deleteLead = async (req, res) => {
-  const email = req.params.email;
-  if (!email) {
-    return res.status(400).json({ error: 'E-mail é obrigatório.' });
-  }
-
-  if (db.isDbConnected) {
-    try {
-      await db.query('DELETE FROM merchant_leads WHERE contact_email = $1', [email]);
-      return res.json({ success: true, message: 'Lead removido com sucesso do PostgreSQL.' });
-    } catch (err) {
-      console.error('Erro ao remover lead no PostgreSQL:', err.message);
+exports.deleteLead = async (req, res, next) => {
+  try {
+    const email = req.params.email;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'E-mail é obrigatório.' });
     }
-  }
 
-  delete db.memoryStore.leads[email];
-  return res.json({ success: true, message: 'Lead removido com sucesso de memória.' });
+    if (req.userEmail !== email) {
+      return res.status(403).json({ success: false, error: 'Acesso negado. O email autenticado não corresponde.' });
+    }
+
+    if (db.isDbConnected) {
+      try {
+        await db.query('DELETE FROM merchant_leads WHERE contact_email = $1', [email]);
+        return res.json({ success: true, data: { message: 'Lead removido com sucesso do PostgreSQL.' } });
+      } catch (err) {
+        console.error('Erro ao remover lead no PostgreSQL:', err.message);
+      }
+    }
+
+    delete db.memoryStore.leads[email];
+    return res.json({ success: true, data: { message: 'Lead removido com sucesso de memória.' } });
+  } catch (err) {
+    next(err);
+  }
 };

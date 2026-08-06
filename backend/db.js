@@ -2,33 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 
-let env = {};
-try {
-  const envPath = path.resolve(__dirname, '../.env');
-  if (fs.existsSync(envPath)) {
-    const content = fs.readFileSync(envPath, 'utf8');
-    const lines = content.split('\r\n').join('\n').split('\n');
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const index = trimmed.indexOf('=');
-      if (index !== -1) {
-        const key = trimmed.substring(0, index).trim();
-        let value = trimmed.substring(index + 1).trim();
-        if (value.startsWith('"') && value.endsWith('"')) {
-          value = value.substring(1, value.length - 1);
-        } else if (value.startsWith("'") && value.endsWith("'")) {
-          value = value.substring(1, value.length - 1);
-        }
-        env[key] = value;
-      }
-    }
-  }
-} catch (e) {
-  console.error('Erro ao ler .env no backend/db.js:', e);
-}
-
-const stringSqlSupa = env['STRING_SQLSUPA'] || process.env['STRING_SQLSUPA'] || '';
+const stringSqlSupa = process.env['STRING_SQLSUPA'] || process.env.STRING_SQLSUPA || '';
 
 let pool = null;
 if (stringSqlSupa) {
@@ -52,6 +26,64 @@ async function query(text, params) {
     return pool.query(text, params);
   }
   throw new Error('Sem ligação ao PostgreSQL');
+}
+
+async function initDb() {
+  if (!pool) return;
+  try {
+    console.log('A inicializar a base de dados (DDL & Seeds)...');
+    await query(`
+      CREATE TABLE IF NOT EXISTS businesses (
+        id VARCHAR(255) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image TEXT,
+        images JSONB,
+        logo TEXT,
+        description TEXT,
+        category VARCHAR(100),
+        address VARCHAR(255),
+        city VARCHAR(100),
+        distance_km NUMERIC,
+        rating NUMERIC,
+        review_count INTEGER,
+        is_open BOOLEAN,
+        closes_at VARCHAR(10),
+        services JSONB,
+        reward TEXT,
+        reward_description TEXT,
+        qr_code_pattern VARCHAR(100),
+        card_customization JSONB,
+        approved_at TIMESTAMP
+      );
+    `);
+
+    // Verificar se já tem dados para seeding
+    const res = await query('SELECT COUNT(*) as count FROM businesses');
+    if (parseInt(res.rows[0].count) === 0) {
+      console.log('Tabela businesses vazia. A semear dados...');
+      const { MOCK_BUSINESSES } = require('./seeds');
+      for (const b of MOCK_BUSINESSES) {
+        await query(`
+          INSERT INTO businesses (
+            id, name, image, images, logo, description, category, address, city, 
+            distance_km, rating, review_count, is_open, closes_at, services, 
+            reward, reward_description, qr_code_pattern
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        `, [
+          b.id, b.name, b.image, JSON.stringify(b.images), b.logo, b.description, b.category, b.address, b.city,
+          b.distanceKm, b.rating, b.reviewCount, b.isOpen, b.closesAt, JSON.stringify(b.services),
+          b.reward, b.rewardDescription, b.qrCodePattern
+        ]);
+      }
+      console.log('Seeding concluído.');
+    }
+  } catch (err) {
+    console.error('Erro ao inicializar base de dados:', err.message);
+  }
+}
+
+if (pool) {
+  initDb();
 }
 
 module.exports = {

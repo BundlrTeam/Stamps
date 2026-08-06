@@ -1,6 +1,7 @@
 import { Component, inject, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { BusinessService } from '../../services/business.service';
+import { SessionService, AppMode } from '../../services/session.service';
 import { StampCard, Badge, UnlockedReward } from '../../models/business.model';
 
 export type WalletTab = 'cards' | 'stamps' | 'rewards';
@@ -20,6 +21,7 @@ interface ConfettiParticle {
 })
 export class WalletPage {
   private readonly businessService = inject(BusinessService);
+  private readonly sessionService = inject(SessionService);
   private readonly alertController = inject(AlertController);
   private readonly ngZone = inject(NgZone);
 
@@ -33,6 +35,7 @@ export class WalletPage {
   isSelecting = false;
   selectedCardIds = new Set<string>();
   activeTab: WalletTab = 'cards';
+  appMode: AppMode = 'customer';
 
   // Celebration state (badge unlock)
   showCelebration = false;
@@ -88,6 +91,7 @@ export class WalletPage {
   ionViewWillEnter() {
     this.refreshCards();
     this.checkForNewBadges();
+    this.appMode = this.sessionService.getMode();
   }
 
   ionViewWillLeave() {
@@ -311,6 +315,7 @@ export class WalletPage {
   trackByCardId(_index: number, card: StampCard): string { return card.businessId; }
   trackByBadgeId(_index: number, badge: Badge): string { return badge.id; }
   trackByRewardId(_index: number, reward: UnlockedReward): string { return reward.id; }
+  trackByIndex(index: number): number { return index; }
 
   getRewardIcon(reward: UnlockedReward): string {
     if (reward.rewardType === 'discount') return 'ticket-outline';

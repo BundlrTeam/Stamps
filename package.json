@@ -7,11 +7,11 @@
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/set-env.js",
-    "start": "concurrently \"node backend/server.js\" \"ng serve\"",
+    "start": "concurrently \"node --env-file=.env backend/server.js\" \"ng serve\"",
     "prebuild": "node scripts/set-env.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test --browsers=EdgeHeadless",
     "lint": "ng lint"
   },
   "private": true,

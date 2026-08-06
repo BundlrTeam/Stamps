@@ -1,15 +1,6 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-     <ion-title>
-       <span class="wallet-title">
-         <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
-         Carteira
-       </span>
-     </ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
+  <div class="wallet-dynamic-bg"></div>
 
   <!-- ─── Confetti Canvas ─── -->
   <canvas #walletConfettiCanvas class="confetti-canvas" aria-hidden="true"></canvas>
@@ -25,7 +16,7 @@
     <!-- Falling badge icons -->
     <ng-container *ngIf="newBadge">
       <span
-        *ngFor="let icon of [0,1,2,3,4,5,6,7,8,9,10,11]; let i = index"
+        *ngFor="let icon of [0,1,2,3,4,5,6,7,8,9,10,11]; let i = index; trackBy: trackByIndex"
         class="falling-icon"
         [class]="'falling-icon ' + badgeFallingIconClass"
         [style.--i]="i"
@@ -62,26 +53,23 @@
 
   <main class="app-page wallet-page">
 
-    <!-- ── Page heading ── -->
-    <section class="app-section-header wallet-heading">
-      <div class="wallet-header-flex">
-        <div class="wallet-title-row">
-          <h1>
-            <span class="stamp-count-hero">{{ totalStamps }}</span>
-            carimbos
-          </h1>
-          <div class="wallet-action-btn" *ngIf="stampCards.length > 0 && activeTab === 'cards'">
-            <ion-button *ngIf="!isSelecting" fill="clear" (click)="startSelection()" aria-label="Selecionar cartões para remover">
-              <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-            <ion-button *ngIf="isSelecting" fill="clear" (click)="cancelSelection()">
-              Cancelar
-            </ion-button>
-          </div>
-        </div>
-        <p>Continue visitando os seus estabelecimentos favoritos.</p>
+    <!-- ── Header ── -->
+    <div class="sticky-header-container">
+      <div class="spotify-header">
+      <h1 class="spotify-greeting">Carteira</h1>
+      <div class="spotify-actions">
+        <button class="icon-action-btn" *ngIf="stampCards.length > 0 && activeTab === 'cards' && !isSelecting" (click)="startSelection()" aria-label="Remover">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+        <button class="icon-action-btn" *ngIf="isSelecting" (click)="cancelSelection()" aria-label="Cancelar">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
       </div>
-    </section>
+    </div>
+    </div>
+
+    <!-- Customer Mode UI -->
+    <ng-container *ngIf="appMode === 'customer'; else businessWallet">
 
     <!-- ── 3 clickable tab tiles ── -->
     <section
@@ -158,16 +146,16 @@
       role="tabpanel"
       aria-labelledby="tab-cards"
     >
-      <ion-card
+      <!-- Wallet List Item -->
+      <button
         *ngFor="let card of stampCards; trackBy: trackByCardId"
         [routerLink]="isSelecting ? null : ['/tabs/wallet/stamp-card', card.businessId]"
-        class="app-card wallet-card app-slide-up"
+        class="wallet-list-item app-slide-up"
         [class.is-complete]="isComplete(card)"
         [class.is-near-reward]="isNearReward(card)"
         [class.is-selecting]="isSelecting"
         [class.is-selected]="isSelected(card)"
         (click)="toggleCardSelection(card)"
-        button
         [attr.role]="isSelecting ? 'checkbox' : null"
         [attr.aria-checked]="isSelecting ? isSelected(card) : null"
       >
@@ -175,35 +163,24 @@
           <ion-icon [name]="isSelected(card) ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
         </div>
 
-        <div class="wallet-card-image">
+        <div class="wallet-item-cover">
           <img [src]="card.businessLogo" [alt]="card.businessName" />
-          <span class="app-status-pill is-muted">{{ card.category }}</span>
         </div>
 
-        <div class="wallet-card-info">
-          <div class="wallet-card-heading">
-            <div>
-              <h2>{{ card.businessName }}</h2>
-              <p>{{ card.reward }}</p>
-            </div>
-            <span class="stamp-count">{{ card.stamps }}/10</span>
-          </div>
-
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-fill" [style.width.%]="getProgressPercent(card)"></div>
-          </div>
-
-          <div class="wallet-card-footer">
-            <span class="progress-label">
-              <ion-icon [name]="isComplete(card) ? 'trophy-outline' : 'sparkles-outline'" aria-hidden="true"></ion-icon>
-              {{ getProgressLabel(card) }}
-            </span>
-            <span *ngIf="card.lastStampDate" class="last-stamp">{{ getLastStampLabel(card) }}</span>
+        <div class="wallet-item-content">
+          <h2 class="wallet-item-title">{{ card.businessName }}</h2>
+          <p class="wallet-item-subtitle">{{ card.category }} • {{ card.stamps }}/10</p>
+          
+          <div class="wallet-item-progress" aria-hidden="true">
+            <div class="wallet-progress-fill" [style.width.%]="getProgressPercent(card)"></div>
           </div>
         </div>
 
-        <ion-icon name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
-      </ion-card>
+        <div class="wallet-item-action">
+          <ion-icon *ngIf="isComplete(card)" name="trophy" class="status-icon success" aria-hidden="true"></ion-icon>
+          <ion-icon *ngIf="!isComplete(card)" name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
+        </div>
+      </button>
     </section>
 
     <!-- Empty state — cards -->
@@ -283,47 +260,29 @@
       aria-labelledby="tab-rewards"
     >
       <div class="rewards-list" *ngIf="unlockedRewards.length > 0">
-        <ion-card
+        <button
           *ngFor="let reward of unlockedRewards; trackBy: trackByRewardId"
           [routerLink]="['/tabs/wallet/reward', reward.id]"
-          class="app-card reward-card app-slide-up"
+          class="wallet-list-item app-slide-up"
           [class.is-expired]="isRewardExpired(reward)"
           [class.is-prize]="reward.rewardType === 'prize'"
-          button
         >
-          <!-- Reward type icon -->
-          <div class="reward-card-icon-wrap">
-            <ion-icon [name]="getRewardIcon(reward)" class="reward-card-icon" aria-hidden="true"></ion-icon>
+          <div class="wallet-item-cover is-reward">
+            <ion-icon [name]="getRewardIcon(reward)" aria-hidden="true"></ion-icon>
           </div>
 
-          <!-- Info -->
-          <div class="reward-card-info">
-            <div class="reward-card-top">
-              <div>
-                <span class="reward-card-business">{{ reward.businessName }}</span>
-                <strong class="reward-card-label">{{ reward.rewardLabel }}</strong>
-              </div>
-              <span
-                class="reward-card-expiry"
-                [class.is-expired-label]="isRewardExpired(reward)"
-              >
-                {{ getRewardExpiryLabel(reward) }}
-              </span>
-            </div>
-
-            <div class="reward-card-meta">
-              <span class="reward-card-category">{{ reward.businessCategory }}</span>
-              <span
-                class="reward-card-type-pill"
-                [class.is-prize]="reward.rewardType === 'prize'"
-              >
-                {{ reward.rewardType === 'prize' ? '🏆 Prémio' : '🏷️ Desconto' }}
-              </span>
-            </div>
+          <div class="wallet-item-content">
+            <h2 class="wallet-item-title">{{ reward.rewardLabel }}</h2>
+            <p class="wallet-item-subtitle">{{ reward.businessName }}</p>
+            <p class="wallet-item-meta" [class.is-expired-label]="isRewardExpired(reward)">
+              {{ getRewardExpiryLabel(reward) }}
+            </p>
           </div>
 
-          <ion-icon name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
-        </ion-card>
+          <div class="wallet-item-action">
+            <ion-icon name="chevron-forward-outline" class="nav-arrow" aria-hidden="true"></ion-icon>
+          </div>
+        </button>
       </div>
 
       <!-- Empty state — rewards -->
@@ -334,6 +293,43 @@
         <ion-button (click)="setTab('cards')" fill="outline" shape="round">Ver cartões ativos</ion-button>
       </div>
     </section>
+
+    </ng-container>
+
+    <!-- Business Mode UI -->
+    <ng-template #businessWallet>
+      <section class="business-wallet-dashboard app-slide-up" style="padding: 24px 16px;">
+        
+        <div class="business-wallet-header" style="margin-bottom: 32px;">
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--ion-text-color); margin-bottom: 8px;">Os Meus Cartões</h2>
+          <p style="color: var(--app-color-muted); margin: 0;">Faça a gestão dos seus cartões de fidelidade ativos.</p>
+        </div>
+
+        <div class="business-card-preview" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 24px; backdrop-filter: blur(12px);">
+          <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <ion-icon name="card-outline" style="font-size: 2rem; color: var(--ion-color-primary);"></ion-icon>
+            <span style="font-size: 1.25rem; font-weight: 700;">Cartão Principal</span>
+          </div>
+          
+          <div class="card-stats" style="display: flex; gap: 32px; margin-bottom: 32px;">
+            <div>
+              <strong style="display: block; font-size: 1.5rem; color: var(--ion-color-primary);">1240</strong>
+              <span style="color: var(--app-color-muted); font-size: 0.85rem; text-transform: uppercase;">Selos</span>
+            </div>
+            <div>
+              <strong style="display: block; font-size: 1.5rem; color: var(--ion-color-secondary);">345</strong>
+              <span style="color: var(--app-color-muted); font-size: 0.85rem; text-transform: uppercase;">Clientes</span>
+            </div>
+          </div>
+          
+          <ion-button expand="block" shape="round" routerLink="/tabs/profile" style="--background: var(--ion-color-primary); --color: white; font-weight: 700; height: 48px;">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Gerir Cartão (Perfil)
+          </ion-button>
+        </div>
+
+      </section>
+    </ng-template>
 
   </main>
 </ion-content>

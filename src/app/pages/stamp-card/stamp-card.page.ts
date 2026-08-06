@@ -19,6 +19,16 @@ interface ConfettiParticle {
   shape: 'rect' | 'circle' | 'star';
 }
 
+interface StampSlotData {
+  slot: number;
+  isStamped: boolean;
+  hasReward: boolean;
+  isRewardUnlocked: boolean;
+  stampStyle: any;
+  rewardIcon: string;
+  rewardLabel: string | null;
+}
+
 @Component({
   selector: 'app-stamp-card',
   templateUrl: './stamp-card.page.html',
@@ -39,7 +49,11 @@ export class StampCardPage implements OnInit {
   stampCard: StampCard | undefined;
   business: Business | undefined;
   cardCustomization: CardCustomization | null = null;
-  stampSlots: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
+  
+  stampSlotsData: StampSlotData[] = [];
+  nextRewardText: string = '';
+  nextRewardIcon: string = 'sparkles-outline';
+
   showScanner: boolean = false;
   scannedCode: string = '';
 
@@ -82,9 +96,31 @@ export class StampCardPage implements OnInit {
       if (businessId === 'my-business') {
         this.cardCustomization = this.businessService.getCardCustomization();
       } else {
-        this.cardCustomization = null;
+        this.cardCustomization = this.businessService.DEFAULT_CARD_CUSTOMIZATION;
       }
+      this.updateStampSlotsData();
     }
+  }
+
+  private updateStampSlotsData() {
+    this.stampSlotsData = Array.from({ length: 10 }, (_, i) => {
+      const slot = i + 1;
+      return {
+        slot,
+        isStamped: this.isStamped(slot),
+        hasReward: this.hasReward(slot),
+        isRewardUnlocked: this.isRewardUnlocked(slot),
+        stampStyle: this.getStampStyle(slot),
+        rewardIcon: this.getRewardIcon(slot),
+        rewardLabel: this.getRewardLabel(slot)
+      };
+    });
+    this.nextRewardText = this.computeNextRewardText();
+    this.nextRewardIcon = this.computeNextRewardIcon();
+  }
+
+  trackBySlot(_index: number, slotData: StampSlotData): number {
+    return slotData.slot;
   }
 
   isStamped(slot: number): boolean {
@@ -145,7 +181,7 @@ export class StampCardPage implements OnInit {
     return this.businessService.getRewardIcon(this.business.category, type);
   }
 
-  getNextRewardIcon(): string {
+  private computeNextRewardIcon(): string {
     if (!this.stampCard || !this.business) return 'sparkles-outline';
     const nextReward = this.stampCard.nextRewardAt;
     if (!nextReward) return 'sparkles-outline';
@@ -159,6 +195,7 @@ export class StampCardPage implements OnInit {
     this.businessService.addStamp(this.stampCard.businessId);
     // refresh
     this.stampCard = this.businessService.getStampCard(this.stampCard.businessId);
+    this.updateStampSlotsData();
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (e) {
@@ -197,6 +234,7 @@ export class StampCardPage implements OnInit {
     const success = this.businessService.addStampWithQR(this.stampCard.businessId, code.trim());
     if (success) {
       this.stampCard = this.businessService.getStampCard(this.stampCard.businessId);
+      this.updateStampSlotsData();
       this.showScanner = false;
       this.scannedCode = '';
 
@@ -400,7 +438,7 @@ export class StampCardPage implements OnInit {
     }
   }
 
-  getNextRewardText(): string {
+  private computeNextRewardText(): string {
     if (!this.stampCard) return '';
     if (this.stampCard.stamps >= 10) return 'Cartão completo. Recompensa final disponível.';
     return this.businessService.getRewardProgressLabel(this.stampCard);

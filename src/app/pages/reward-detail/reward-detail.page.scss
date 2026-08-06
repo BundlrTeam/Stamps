@@ -1,5 +1,6 @@
 .reward-detail-page {
-  padding-top: 16px;
+  padding-top: 0;
+  padding-bottom: 16px; // Overrides the default app-page padding to reduce space below button
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -12,8 +13,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px 36px;
-  margin-bottom: 0;
+  padding: calc(24px + env(safe-area-inset-top)) 24px 24px;
+  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.25) 0%, rgba(var(--ion-color-primary-rgb), 0.05) 70%, transparent 100%);
+  margin: 0 -16px 16px;
+  border-bottom: none;
 
   &.is-expired,
   &.is-used {
@@ -77,7 +80,7 @@
 }
 
 .reward-type-pill {
-  margin-top: 18px;
+  margin-top: 10px;
   padding: 6px 16px;
   border-radius: 999px;
   background: rgba(var(--ion-color-primary-rgb), 0.1);
@@ -100,7 +103,7 @@
 
 .reward-label-section {
   text-align: center;
-  padding: 0 24px 24px;
+  padding: 0 24px 16px;
   animation: fadeSlideUp 0.45s 0.15s ease both;
 }
 
@@ -131,10 +134,12 @@
   gap: 14px;
   padding: 14px 16px;
   margin-bottom: 16px;
-  border: 1px solid var(--app-color-line);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--app-radius-lg);
-  background: var(--app-color-surface);
-  box-shadow: var(--app-shadow-1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   text-decoration: none;
@@ -219,9 +224,11 @@
   align-items: flex-start;
   gap: 10px;
   padding: 14px;
-  border: 1px solid var(--app-color-line);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--app-radius-lg);
-  background: var(--app-color-surface);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
   &.expiring-soon {
     border-color: rgba(var(--ion-color-warning-rgb), 0.4);
@@ -319,13 +326,12 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  margin-bottom: 20px;
-  border: 1px solid var(--app-color-line);
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--app-radius-xl);
-  background: var(--app-color-surface);
-  box-shadow: var(--app-shadow-1);
-  min-height: 180px;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .reward-qr-grid {
@@ -335,6 +341,7 @@
   width: 140px;
   height: 140px;
   filter: blur(0.5px);
+  position: relative;
 }
 
 .qr-cell {
@@ -344,23 +351,24 @@
 
 .reward-qr-overlay-icon {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 3.5rem;
   color: var(--ion-color-primary);
   background: var(--app-color-surface);
   padding: 8px;
   border-radius: var(--app-radius-md);
   border: 2px solid rgba(var(--ion-color-primary-rgb), 0.25);
+  margin-top: -12px; /* Slight offset up to align with grid better if needed, but translate handles it */
 }
 
 .reward-qr-hint {
-  margin: 12px 0 0;
+  margin: 20px 0 0;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--app-color-muted);
   text-align: center;
-  position: relative;
-  z-index: 1;
-  margin-top: 150px;
 }
 
 .reward-use-btn {

@@ -1,12 +1,18 @@
 
 .app-tab-bar {
-  margin: 0 auto;
-  bottom: calc(20px + var(--ion-safe-area-bottom));
-  width: min(calc(100% - 40px), 460px);
-  height: 66px;
-  padding: 7px;
-  border: 1px solid var(--app-color-line);
-  border-radius: var(--app-radius-xl);
+  margin: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: calc(66px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+  padding: 7px 0 calc(7px + var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+  border-top: 1px solid var(--app-color-line);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
   background: var(--ion-tab-bar-background);
   box-shadow: var(--app-shadow-3);
   backdrop-filter: blur(18px) saturate(1.4);
@@ -14,7 +20,9 @@
 
   ion-tab-button {
     min-height: 50px;
-    border-radius: var(--app-radius-lg);
+    margin: 0 6px;
+    border-radius: 18px;
+
     --color: var(--app-color-muted);
     --color-selected: var(--ion-color-primary);
     --ripple-color: rgba(var(--ion-color-primary-rgb), 0.18);

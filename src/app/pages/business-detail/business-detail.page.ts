@@ -127,4 +127,8 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
     if (!this.business) return;
     this.router.navigate(['/tabs/wallet/stamp-card', this.business.id]);
   }
+
+  trackByString(_index: number, item: string): string {
+    return item;
+  }
 }

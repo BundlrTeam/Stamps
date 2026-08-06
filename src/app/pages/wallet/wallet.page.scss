@@ -2,18 +2,6 @@
 // Toolbar / Header
 // ─────────────────────────────────────────────────────────────
 
-.wallet-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.2rem;
-  font-weight: 700;
-
-  ion-icon {
-    color: var(--ion-color-primary);
-  }
-}
-
 ion-button[slot='end'],
 ion-buttons ion-button {
   --color: var(--app-color-brand-deep);
@@ -23,8 +11,35 @@ ion-buttons ion-button {
 // Page layout
 // ─────────────────────────────────────────────────────────────
 
+.wallet-dynamic-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35vh;
+  background: linear-gradient(to bottom, rgba(30, 41, 59, 0.95) 0%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
 .wallet-page {
-  padding-top: 12px;
+  padding-top: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.sticky-header-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: 0 -16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: rgba(18, 18, 18, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 16px;
 }
 
 .wallet-heading {
@@ -35,51 +50,61 @@ ion-buttons ion-button {
   }
 }
 
-.wallet-header-flex {
-  display: block;
+// ─────────────────────────────────────────────────────────────
+// Header (Spotify Style)
+// ─────────────────────────────────────────────────────────────
+
+.spotify-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 20px;
+  height: 80px; /* Fixed height to prevent shifting */
+  overflow: hidden;
 }
 
-.wallet-title-row {
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.spotify-greeting {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.04em;
+  animation: slideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.spotify-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  h1 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--ion-text-color);
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
+  gap: 16px;
+  animation: slideInRight 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
-.stamp-count-hero {
-  font-size: 2.2rem;
-  font-weight: 800;
-  background: var(--app-gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.03em;
-}
-
-.wallet-action-btn {
-  display: inline-flex;
+.icon-action-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  font-size: 1.6rem;
+  display: flex;
   align-items: center;
-  ion-button {
-    --padding-start: 4px;
-    --padding-end: 4px;
-    height: 32px;
-    min-height: 32px;
-    margin: 0;
-    font-size: 0.9rem;
+  justify-content: center;
+  position: relative;
+  opacity: 0.9;
+  transition: opacity 0.2s;
 
-    ion-icon {
-      font-size: 1.15rem;
-    }
+  &:hover {
+    opacity: 1;
   }
 }
 
@@ -90,8 +115,9 @@ ion-buttons ion-button {
 .wallet-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 22px;
+  gap: 12px;
+  padding: 0 16px 16px;
+  margin-bottom: 0;
 }
 
 .wallet-summary-tile {
@@ -195,6 +221,75 @@ ion-buttons ion-button {
   }
 }
 
+.stamp-count-hero {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: var(--app-gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+}
+
+.wallet-action-btn {
+  display: inline-flex;
+  align-items: center;
+  ion-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    height: 32px;
+    min-height: 32px;
+    margin: 0;
+    font-size: 0.9rem;
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Filter Chips (Spotify Style)
+// ─────────────────────────────────────────────────────────────
+
+.wallet-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px 16px;
+  margin: 0 -16px 12px; // negative margin to span full width
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.wallet-filter-chip {
+  all: unset;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-line);
+  transition: all 0.2s ease;
+  scroll-snap-align: start;
+
+  &.is-active {
+    background: var(--ion-text-color);
+    color: var(--ion-color-step-50, var(--ion-color-step-100, #000));
+    border-color: var(--ion-text-color);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
 // ─────────────────────────────────────────────────────────────
 // Selection toolbar
 // ─────────────────────────────────────────────────────────────
@@ -219,46 +314,36 @@ ion-buttons ion-button {
 }
 
 // ─────────────────────────────────────────────────────────────
-// TAB: Cards
+// List Items (Spotify Style)
 // ─────────────────────────────────────────────────────────────
 
 .wallet-cards {
-  display: grid;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.wallet-card {
+.wallet-list-item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  margin: 0;
+  width: 100%;
   position: relative;
-  min-height: 132px;
-  padding: 12px 34px 12px 114px;
-  border-left: 4px solid var(--ion-color-primary);
-  border-radius: var(--app-radius-lg);
-  box-shadow: var(--app-shadow-1);
-  transition: transform var(--app-motion-normal) var(--app-easing),
-              box-shadow var(--app-motion-normal) var(--app-easing),
-              border-color var(--app-motion-normal) var(--app-easing);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px) scale(1.005);
-    box-shadow: var(--app-shadow-3);
-
-    .nav-arrow {
-      transform: translateY(-50%) translateX(3px);
-      color: var(--ion-color-primary);
-    }
-
-    .wallet-card-image img {
-      transform: scale(1.05) rotate(1deg);
-    }
+    opacity: 0.8;
   }
-
-  &.is-near-reward {
-    border-left-color: var(--ion-color-warning);
-  }
-
-  &.is-complete {
-    border-left-color: var(--ion-color-secondary);
-    background: linear-gradient(135deg, var(--app-color-surface), rgba(var(--ion-color-secondary-rgb), 0.06));
+  
+  &:active {
+    transform: scale(0.98);
   }
 
   &.is-selecting {
@@ -266,162 +351,117 @@ ion-buttons ion-button {
   }
 
   &.is-selected {
-    border-color: rgba(var(--ion-color-danger-rgb), 0.46);
-    box-shadow: 0 0 0 2px rgba(var(--ion-color-danger-rgb), 0.13), var(--app-shadow-card);
+    background: rgba(var(--ion-color-danger-rgb), 0.08);
+    border-radius: 8px;
+    padding: 10px 8px;
+    margin: 0 -8px;
   }
 }
 
 .selection-indicator {
   position: absolute;
   right: 12px;
-  top: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--ion-color-danger);
   font-size: 1.35rem;
   z-index: 2;
 }
 
-.wallet-card-image {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  width: 88px;
-  height: 88px;
-  border-radius: var(--app-radius-lg);
+.wallet-item-cover {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--app-color-surface-soft);
+  display: grid;
+  place-items: center;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--app-motion-normal) var(--app-easing);
   }
 
-  .app-status-pill {
-    position: absolute;
-    left: 7px;
-    right: 7px;
-    bottom: 7px;
-    min-height: 22px;
-    padding-inline: 6px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.6rem;
+  &.is-reward {
+    background: var(--app-gradient-brand);
+    color: white;
+    font-size: 1.8rem;
+    
+    .is-prize & {
+      background: linear-gradient(135deg, var(--app-color-reward), var(--app-color-reward));
+    }
   }
 }
 
-.wallet-card-info {
+.wallet-item-content {
+  flex: 1;
   min-width: 0;
-}
-
-.wallet-card-heading {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-
-  h2 {
-    margin: 0;
-    color: var(--ion-text-color);
-    font-size: 1rem;
-    line-height: 1.18;
-    font-weight: 700;
-  }
-
-  p {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 4px 0 0;
-    color: var(--app-color-muted);
-    font-size: 0.78rem;
-    line-height: 1.25;
-  }
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
-.stamp-count {
-  flex-shrink: 0;
-  color: var(--ion-color-primary);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  background: var(--app-gradient-brand);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-.progress-track {
-  height: 8px;
-  margin-top: 12px;
-  border-radius: var(--app-radius-pill);
+.wallet-item-title {
+  margin: 0;
+  color: var(--ion-text-color);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
   overflow: hidden;
-  background: var(--app-color-surface-soft);
-  position: relative;
+  text-overflow: ellipsis;
 }
 
-.progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--app-gradient-brand);
-  background-size: 200% 200%;
-  animation: progress-glow 3s ease infinite;
-  box-shadow: 0 0 8px rgba(var(--ion-color-primary-rgb), 0.4);
-}
-
-.is-complete .progress-fill {
-  background: var(--app-gradient-reward);
-  box-shadow: 0 0 8px rgba(var(--ion-color-secondary-rgb), 0.4);
-}
-
-@keyframes progress-glow {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.wallet-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 9px;
-}
-
-.progress-label,
-.last-stamp {
+.wallet-item-subtitle {
+  margin: 0;
   color: var(--app-color-muted);
-  font-size: 0.74rem;
-  line-height: 1.25;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.progress-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
+.wallet-item-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--app-color-surface-soft);
+  overflow: hidden;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 150px;
+}
 
-  ion-icon {
-    flex-shrink: 0;
-    color: var(--app-color-reward);
+.wallet-progress-fill {
+  height: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 2px;
+  
+  .is-complete & {
+    background: var(--ion-color-success);
   }
 }
 
-.last-stamp {
+.wallet-item-action {
   flex-shrink: 0;
-}
-
-.nav-arrow {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--app-color-muted);
-  font-size: 1.2rem;
-  transition: transform var(--app-motion-normal) var(--app-easing), color var(--app-motion-normal) var(--app-easing);
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  
+  .nav-arrow {
+    color: var(--app-color-muted);
+    font-size: 1.2rem;
+  }
+  
+  .status-icon.success {
+    color: var(--ion-color-success);
+    font-size: 1.2rem;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -429,7 +469,7 @@ ion-buttons ion-button {
 // ─────────────────────────────────────────────────────────────
 
 .badges-intro {
-  margin: 0 0 18px;
+  margin: 0 16px 18px;
   color: var(--app-color-muted);
   font-size: 0.88rem;
   font-weight: 600;
@@ -467,7 +507,7 @@ ion-buttons ion-button {
     border-color: transparent;
 
     &.is-silver {
-      border-color: #F97316;
+      border-color: var(--ion-color-primary);
       background: linear-gradient(
         160deg,
         rgba(249, 115, 22, 0.1) 0%,
@@ -477,7 +517,7 @@ ion-buttons ion-button {
     }
 
     &.is-gold {
-      border-color: #D4AF37;
+      border-color: var(--app-color-reward);
       background: linear-gradient(
         160deg,
         rgba(212, 175, 55, 0.14) 0%,
@@ -511,14 +551,14 @@ ion-buttons ion-button {
   transition: background 0.2s ease, border-color 0.2s ease;
 
   .is-unlocked.is-silver & {
-    background: linear-gradient(135deg, #FED7AA 0%, #FFF7ED 100%);
-    border-color: #F97316;
+    background: linear-gradient(135deg, var(--app-color-brand-soft) 0%, var(--app-color-brand-soft) 100%);
+    border-color: var(--ion-color-primary);
     animation: orangeRingPulse 3s ease-in-out infinite;
   }
 
   .is-unlocked.is-gold & {
-    background: linear-gradient(135deg, #f0d060 0%, #fff3b0 50%, #e8c84a 100%);
-    border-color: #D4AF37;
+    background: linear-gradient(135deg, var(--app-color-reward) 0%, var(--app-color-reward) 50%, var(--app-color-reward) 100%);
+    border-color: var(--app-color-reward);
     animation: goldShimmer 3s ease-in-out infinite;
   }
 }
@@ -541,11 +581,11 @@ ion-buttons ion-button {
   transition: color 0.2s ease;
 
   .is-unlocked.is-silver & {
-    color: #EA580C;
+    color: var(--ion-color-primary);
   }
 
   .is-unlocked.is-gold & {
-    color: #B8860B;
+    color: var(--app-color-reward);
   }
 }
 
@@ -562,13 +602,13 @@ ion-buttons ion-button {
   place-items: center;
 
   .is-unlocked.is-silver & {
-    background: linear-gradient(135deg, #F97316, #FB923C);
-    border-color: #F97316;
+    background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary));
+    border-color: var(--ion-color-primary);
   }
 
   .is-unlocked.is-gold & {
-    background: #D4AF37;
-    border-color: #D4AF37;
+    background: var(--app-color-reward);
+    border-color: var(--app-color-reward);
   }
 }
 
@@ -624,7 +664,7 @@ ion-buttons ion-button {
   transition: width 0.6s ease;
 
   &.is-gold-fill {
-    background: linear-gradient(90deg, #D4AF37, #FFD700);
+    background: linear-gradient(90deg, var(--app-color-reward), var(--app-color-reward));
   }
 }
 
@@ -643,7 +683,7 @@ ion-buttons ion-button {
     color: var(--ion-color-primary);
 
     .is-unlocked.is-gold & {
-      color: #D4AF37;
+      color: var(--app-color-reward);
     }
   }
 }
@@ -653,69 +693,21 @@ ion-buttons ion-button {
 // ─────────────────────────────────────────────────────────────
 
 .rewards-list {
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.reward-card {
-  position: relative;
-  display: grid;
-  grid-template-columns: 52px 1fr auto;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 38px 14px 14px;
-  border-radius: var(--app-radius-lg);
-  border: 1px solid var(--app-color-line);
-  box-shadow: var(--app-shadow-1);
-  background: var(--app-color-surface);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &.is-prize {
-    border-left: 4px solid var(--app-color-reward);
-    background: linear-gradient(
-      135deg,
-      rgba(var(--ion-color-warning-rgb), 0.05) 0%,
-      var(--app-color-surface) 100%
-    );
+// We reuse .wallet-list-item for rewards, just define specific meta styling
+.wallet-item-meta {
+  margin: 0;
+  color: var(--app-color-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  
+  &.is-expired-label {
+    color: var(--ion-color-danger);
   }
-
-  &:not(.is-prize) {
-    border-left: 4px solid var(--ion-color-primary);
-  }
-
-  &.is-expired {
-    filter: grayscale(0.6);
-    opacity: 0.65;
-  }
-
-  &:hover:not(.is-expired) {
-    transform: translateY(-2px);
-    box-shadow: var(--app-shadow-3);
-
-    .nav-arrow {
-      transform: translateY(-50%) translateX(3px);
-      color: var(--ion-color-primary);
-    }
-  }
-}
-
-.reward-card-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--app-radius-md);
-  background: var(--app-gradient-brand);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-
-  .is-prize & {
-    background: linear-gradient(135deg, #D4AF37, #FFD700);
-  }
-}
-
-.reward-card-icon {
-  font-size: 1.5rem;
-  color: #ffffff;
 }
 
 .reward-card-info {
@@ -812,4 +804,304 @@ ion-buttons ion-button {
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Shared Celebration System (Moved from global.scss)
+// ─────────────────────────────────────────────────────────────
+
+.confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: contents;
+}
+
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+
+  &.is-active {
+    pointer-events: auto;
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+.falling-icon {
+  position: fixed;
+  top: -60px;
+  font-size: 1.8rem;
+  animation: celebIconRain 1.8s calc(var(--i) * 0.12s) ease-in both;
+  pointer-events: none;
+  z-index: 9998;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+  left: calc(4% + var(--i) * 8%);
+
+  ion-icon {
+    color: var(--app-color-reward);
+    animation: celebIconSpin 1.8s calc(var(--i) * 0.12s) ease-in-out both;
+  }
+
+  &.is-orange ion-icon { color: var(--ion-color-primary); }
+  &.is-gold   ion-icon { color: var(--app-color-reward); }
+}
+
+@keyframes celebIconRain {
+  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+  10%  { opacity: 1; transform: translateY(20px) scale(1.1); }
+  100% { transform: translateY(110vh) scale(0.9); opacity: 0.6; }
+}
+
+@keyframes celebIconSpin {
+  0%   { transform: rotate(0deg) scale(0.6); }
+  20%  { transform: rotate(25deg) scale(1.15); }
+  60%  { transform: rotate(-15deg) scale(1); }
+  100% { transform: rotate(360deg) scale(0.9); }
+}
+
+.celebration-card {
+  position: relative;
+  width: min(88%, 360px);
+  padding: 36px 28px 28px;
+  border-radius: 28px;
+  background: var(--app-color-surface);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  text-align: center;
+  transform: scale(0.7) translateY(30px);
+  opacity: 0;
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.35s ease;
+  will-change: transform, opacity;
+
+  .is-active & {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  &.prize-card {
+    background: linear-gradient(
+      145deg,
+      #fff 0%,
+      rgba(var(--ion-color-primary-rgb), 0.06) 100%
+    );
+    border: 2px solid rgba(var(--ion-color-primary-rgb), 0.2);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      background: radial-gradient(
+        circle at top center,
+        rgba(var(--ion-color-warning-rgb), 0.18) 0%,
+        transparent 65%
+      );
+      pointer-events: none;
+    }
+  }
+
+  // Badge celebration variants
+  &.badge-card-orange {
+    border: 2px solid rgba(var(--ion-color-primary-rgb), 0.35);
+    background: linear-gradient(145deg, #fff 0%, rgba(var(--ion-color-primary-rgb), 0.06) 100%);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      background: radial-gradient(circle at top center, rgba(var(--ion-color-primary-rgb), 0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+  }
+
+  &.badge-card-gold {
+    border: 2px solid rgba(var(--ion-color-warning-rgb), 0.4);
+    background: linear-gradient(145deg, #fff 0%, rgba(var(--ion-color-warning-rgb), 0.08) 100%);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      background: radial-gradient(circle at top center, rgba(var(--ion-color-warning-rgb), 0.2) 0%, transparent 65%);
+      pointer-events: none;
+    }
+  }
+}
+
+.celebration-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--app-gradient-brand);
+  margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.35);
+  animation: celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  &.pulse-glow {
+    animation:
+      celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+      celebGlowPulse 1.8s 0.8s ease-in-out infinite;
+  }
+
+  &.is-orange-wrap {
+    background: var(--app-gradient-brand);
+    box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.4);
+
+    &.pulse-glow {
+      animation:
+        celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        orangeGlowPulse 1.8s 0.8s ease-in-out infinite;
+    }
+  }
+
+  &.is-gold-wrap {
+    background: var(--app-gradient-reward);
+    box-shadow: 0 8px 24px rgba(var(--ion-color-warning-rgb), 0.45);
+
+    &.pulse-glow {
+      animation:
+        celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        goldGlowPulse 1.8s 0.8s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes celebIconPop {
+  0%   { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+  60%  { transform: scale(1.18) rotate(8deg); }
+  80%  { transform: scale(0.95) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+@keyframes celebGlowPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.35); }
+  50%       { box-shadow: 0 8px 32px rgba(var(--ion-color-primary-rgb), 0.6), 0 0 60px rgba(var(--ion-color-warning-rgb), 0.3); }
+}
+
+@keyframes orangeGlowPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.4); }
+  50%       { box-shadow: 0 8px 36px rgba(var(--ion-color-primary-rgb), 0.7), 0 0 60px rgba(var(--ion-color-primary-rgb), 0.3); }
+}
+
+@keyframes goldGlowPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(var(--ion-color-warning-rgb), 0.45); }
+  50%       { box-shadow: 0 8px 36px rgba(var(--ion-color-warning-rgb), 0.75), 0 0 60px rgba(var(--ion-color-warning-rgb), 0.35); }
+}
+
+.celebration-main-icon {
+  font-size: 2.4rem;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.celebration-badge-tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &.tier-orange {
+    background: rgba(var(--ion-color-primary-rgb), 0.12);
+    border: 1px solid rgba(var(--ion-color-primary-rgb), 0.3);
+    color: var(--app-color-brand-deep);
+    ion-icon { color: var(--ion-color-primary); }
+  }
+
+  &.tier-gold {
+    background: rgba(var(--ion-color-warning-rgb), 0.14);
+    border: 1px solid rgba(var(--ion-color-warning-rgb), 0.4);
+    color: var(--ion-color-warning-shade);
+    ion-icon { color: var(--ion-color-warning); }
+  }
+}
+
+.celebration-heading {
+  margin: 0 0 8px;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--ion-text-color);
+  letter-spacing: -0.01em;
+  animation: celebTextReveal 0.5s 0.35s ease both;
+}
+
+.celebration-sub {
+  margin: 0 0 24px;
+  font-size: 1rem;
+  color: var(--app-color-muted);
+  font-weight: 600;
+  line-height: 1.44;
+  animation: celebTextReveal 0.5s 0.45s ease both;
+}
+
+@keyframes celebTextReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.celebration-dismiss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--app-gradient-brand);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: celebTextReveal 0.5s 0.55s ease both;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(var(--ion-color-primary-rgb), 0.45);
+  }
+
+  &:active { transform: scale(0.97); }
+
+  &.is-orange-btn {
+    background: var(--app-gradient-brand);
+    box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.4);
+    &:hover { box-shadow: 0 12px 28px rgba(var(--ion-color-primary-rgb), 0.55); }
+  }
+
+  &.is-gold-btn {
+    background: var(--app-gradient-reward);
+    color: var(--app-color-surface-warm);
+    box-shadow: 0 8px 20px rgba(var(--ion-color-warning-rgb), 0.45);
+    &:hover { box-shadow: 0 12px 28px rgba(var(--ion-color-warning-rgb), 0.6); }
+  }
 }

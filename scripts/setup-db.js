@@ -68,6 +68,7 @@ const client = new Client({
 
 const sqlCreateTables = `
 DROP TABLE IF EXISTS approved_businesses;
+DROP TABLE IF EXISTS businesses;
 
 CREATE TABLE IF NOT EXISTS businesses (
   id TEXT PRIMARY KEY,

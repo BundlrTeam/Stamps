@@ -1,13 +1,11 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ stampCard?.businessName || 'Cartão' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content *ngIf="stampCard; else missingCard">
+<ion-content *ngIf="stampCard; else missingCard" [fullscreen]="true">
+  
+  <!-- Floating Back Button -->
+  <ion-fab slot="fixed" vertical="top" horizontal="start" class="app-floating-back">
+    <ion-fab-button size="small" color="dark" class="floating-back-btn" routerLink="/tabs/wallet" routerDirection="back" aria-label="Voltar">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
   <!-- ─── Confetti Canvas (fixed, full-screen, pointer-events none) ─── -->
   <canvas #confettiCanvas class="confetti-canvas" aria-hidden="true"></canvas>
@@ -49,11 +47,13 @@
 
   <main class="app-page stamp-page">
     <section class="stamp-hero" aria-labelledby="stamp-title">
-      <img [src]="stampCard.businessLogo" [alt]="stampCard.businessName" />
-      <div>
+      <div class="hero-bg-image" [style.background-image]="'url(' + stampCard.businessLogo + ')'"></div>
+      <div class="hero-bg-gradient"></div>
+      
+      <div class="hero-content">
         <span class="app-status-pill is-muted">{{ stampCard.category }}</span>
         <h1 id="stamp-title">{{ stampCard.businessName }}</h1>
-        <p>{{ getNextRewardText() }}</p>
+        <p>{{ nextRewardText }}</p>
       </div>
     </section>
 
@@ -99,31 +99,31 @@
 
       <div class="stamp-grid">
         <div
-          *ngFor="let slot of stampSlots"
+          *ngFor="let slotData of stampSlotsData; trackBy: trackBySlot"
           class="stamp-slot"
-          [class.stamped]="isStamped(slot)"
-          [class.has-reward]="hasReward(slot)"
-          [class.reward-unlocked]="isRewardUnlocked(slot)"
-          [class.final-slot]="slot === 10"
-          [class.just-stamped]="showCelebration && slot === stampCard.stamps"
+          [class.stamped]="slotData.isStamped"
+          [class.has-reward]="slotData.hasReward"
+          [class.reward-unlocked]="slotData.isRewardUnlocked"
+          [class.final-slot]="slotData.slot === 10"
+          [class.just-stamped]="showCelebration && slotData.slot === stampCard.stamps"
         >
-          <div class="stamp-circle" [ngStyle]="getStampStyle(slot)">
-            <ng-container *ngIf="isStamped(slot) && cardCustomization?.stampStyle !== 'image'; else unstampedContent">
-              <ion-icon *ngIf="slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
-              <ion-icon *ngIf="slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
+          <div class="stamp-circle" [ngStyle]="slotData.stampStyle">
+            <ng-container *ngIf="slotData.isStamped && cardCustomization?.stampStyle !== 'image'; else unstampedContent">
+              <ion-icon *ngIf="slotData.slot < 10" name="checkmark" class="stamp-check" aria-hidden="true"></ion-icon>
+              <ion-icon *ngIf="slotData.slot === 10" name="trophy" class="stamp-check" aria-hidden="true"></ion-icon>
             </ng-container>
             <ng-template #unstampedContent>
-              <ng-container *ngIf="isStamped(slot) && cardCustomization?.stampStyle === 'image'"></ng-container>
-              <ng-container *ngIf="!isStamped(slot) && hasReward(slot)">
-                <ion-icon [name]="getRewardIcon(slot)" class="stamp-reward-icon" aria-hidden="true"></ion-icon>
+              <ng-container *ngIf="slotData.isStamped && cardCustomization?.stampStyle === 'image'"></ng-container>
+              <ng-container *ngIf="!slotData.isStamped && slotData.hasReward">
+                <ion-icon [name]="slotData.rewardIcon" class="stamp-reward-icon" aria-hidden="true"></ion-icon>
               </ng-container>
-              <ng-container *ngIf="!isStamped(slot) && !hasReward(slot)">
-                <span class="stamp-number">{{ slot }}</span>
+              <ng-container *ngIf="!slotData.isStamped && !slotData.hasReward">
+                <span class="stamp-number">{{ slotData.slot }}</span>
               </ng-container>
             </ng-template>
           </div>
-          <span *ngIf="hasReward(slot)" class="reward-tag" [class.unlocked]="isRewardUnlocked(slot)">
-            {{ getRewardLabel(slot) }}
+          <span *ngIf="slotData.hasReward" class="reward-tag" [class.unlocked]="slotData.isRewardUnlocked">
+            {{ slotData.rewardLabel }}
           </span>
         </div>
       </div>
@@ -136,7 +136,7 @@
     </section>
 
     <section class="app-reward-panel">
-      <ion-icon [name]="getNextRewardIcon()" aria-hidden="true"></ion-icon>
+      <ion-icon [name]="nextRewardIcon" aria-hidden="true"></ion-icon>
       <div>
         <span>Próxima recompensa</span>
         <strong>{{ stampCard.reward }}</strong>

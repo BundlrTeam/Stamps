@@ -1,75 +1,57 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>{{ activeProfile === 'business' ? 'Negócio' : 'Perfil' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content>
+<ion-content [scrollY]="false">
   <main class="app-page profile-page">
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!--  Avatar Switcher                                                 -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <section class="avatar-switcher-section app-fade-in">
-      <div class="avatar-switcher-track" [class.switching]="profileSwitcherAnimating">
-
-        <!-- Customer Avatar -->
-        <div class="avatar-item" [class.active]="activeProfile === 'customer'" (click)="selectProfile('customer')" role="button" [attr.aria-label]="'Perfil de cliente'">
-          <div class="photo-container">
-            <ion-avatar class="profile-photo">
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  Profile Header (Spotify Style)                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="profile-header-section app-fade-in">
+      <div class="profile-header-content">
+        <!-- Active Avatar -->
+        <div class="profile-main-avatar">
+          <!-- Customer Avatar -->
+          <div *ngIf="activeProfile === 'customer'" class="photo-container-large">
+            <ion-avatar class="profile-photo-large">
               <img [src]="user.photoUrl" alt="Foto de perfil de {{ user.name }}" />
             </ion-avatar>
-            <ion-button fill="solid" size="small" class="edit-photo-btn" (click)="$event.stopPropagation(); changePhoto()" aria-label="Alterar foto">
-              <ion-icon name="camera-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            <ion-button fill="solid" size="small" class="edit-photo-btn-large" (click)="$event.stopPropagation(); changePhoto()" aria-label="Alterar foto">
+              <ion-icon name="camera" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
           </div>
-          <span>Cliente</span>
-        </div>
 
-        <!-- Business Avatar (unlocked after approval) -->
-        <div *ngIf="isBusinessApproved"
-             class="avatar-item"
-             [class.active]="activeProfile === 'business'"
-             (click)="selectProfile('business')"
-             role="button"
-             [attr.aria-label]="'Perfil de negócio'">
-          <div class="avatar-business-circle" [style.background-image]="approvedBiz?.logoUrl ? 'url(\'' + approvedBiz?.logoUrl + '\')' : 'none'" [class.has-logo]="approvedBiz?.logoUrl">
-            <ion-icon *ngIf="!approvedBiz?.logoUrl" name="storefront-outline" aria-hidden="true"></ion-icon>
+          <div *ngIf="activeProfile === 'business' && approvedBiz" class="avatar-business-large" [style.background-image]="approvedBiz.logoUrl ? 'url(\'' + approvedBiz.logoUrl + '\')' : 'none'" [class.has-logo]="approvedBiz.logoUrl">
+            <ion-icon *ngIf="!approvedBiz.logoUrl" name="storefront" aria-hidden="true"></ion-icon>
           </div>
-          <span>{{ approvedBiz?.name || 'Negócio' }}</span>
         </div>
 
-        <!-- Profile info block -->
-        <div class="profile-info-block" *ngIf="activeProfile === 'customer'">
-          <div class="name-section" *ngIf="!isEditingName">
-            <div>
-              <h1 id="profile-title">{{ user.name }}</h1>
-              <p>{{ user.email }}</p>
-              <p>{{ user.phone }}</p>
+        <!-- Name & Info -->
+        <div class="profile-main-info">
+          <div *ngIf="activeProfile === 'customer'">
+            <div class="name-edit-wrapper" *ngIf="!isEditingName">
+              <h1 id="profile-title" (click)="startEditingName()">{{ user.name }}</h1>
+              <p class="profile-subtitle">{{ user.email }} • {{ user.phone }}</p>
             </div>
-            <ion-button fill="clear" size="small" (click)="startEditingName()" aria-label="Editar nome">
-              <ion-icon name="create-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-          </div>
-          <div class="name-edit-section" *ngIf="isEditingName">
-            <ion-input [(ngModel)]="tempName" class="name-input" label="Nome" labelPlacement="floating" (keyup.enter)="saveName()"></ion-input>
-            <div class="name-actions">
-              <ion-button fill="clear" size="small" color="success" (click)="saveName()" aria-label="Salvar nome">
-                <ion-icon name="checkmark-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" size="small" color="danger" (click)="cancelEditingName()" aria-label="Cancelar edição">
-                <ion-icon name="close-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-              </ion-button>
+            <div class="name-edit-inline" *ngIf="isEditingName">
+              <ion-input [(ngModel)]="tempName" class="name-input-inline" (keyup.enter)="saveName()" placeholder="Seu nome..."></ion-input>
+              <ion-button fill="clear" color="success" (click)="saveName()"><ion-icon name="checkmark"></ion-icon></ion-button>
+              <ion-button fill="clear" color="danger" (click)="cancelEditingName()"><ion-icon name="close"></ion-icon></ion-button>
             </div>
           </div>
+
+          <div *ngIf="activeProfile === 'business' && approvedBiz">
+            <h1>{{ approvedBiz.name }}</h1>
+            <p class="profile-subtitle">{{ approvedBiz.category }} • {{ approvedBiz.address }}</p>
+          </div>
         </div>
 
-        <div class="profile-info-block" *ngIf="activeProfile === 'business' && approvedBiz">
-          <span class="biz-badge">Negócio</span>
-          <h1>{{ approvedBiz.name }}</h1>
-          <p>{{ approvedBiz.category }} · {{ approvedBiz.address }}</p>
+        <!-- Sleek Profile Switcher Pill -->
+        <div class="profile-switcher-pill" *ngIf="isBusinessApproved">
+          <button [class.active]="activeProfile === 'customer'" (click)="selectProfile('customer')">Cliente</button>
+          <button [class.active]="activeProfile === 'business'" (click)="selectProfile('business')">Negócio</button>
         </div>
-
       </div>
     </section>
 
@@ -78,69 +60,51 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <ng-container *ngIf="activeProfile === 'customer'">
 
-      <section class="settings-group app-slide-up" aria-labelledby="preferences-title">
-        <div class="app-section-header">
-          <div>
-            <h2 id="preferences-title">Preferências</h2>
-            <p>Ajustes rápidos para esta demonstração.</p>
-          </div>
-        </div>
-
+      <section class="profile-settings-list app-slide-up" aria-labelledby="preferences-title">
         <ion-list lines="none">
-          <ion-item>
+          <ion-item class="profile-list-item">
             <ion-icon name="moon-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Modo escuro</h3>
-              <p>Alternar entre os temas claro e escuro.</p>
-            </ion-label>
+            <ion-label>Modo escuro</ion-label>
             <ion-toggle [checked]="isDarkMode" (ionChange)="toggleTheme()" slot="end" aria-label="Alternar modo escuro"></ion-toggle>
           </ion-item>
 
-          <ion-item button (click)="resetDemoState()" detail="false">
+          <ion-item class="profile-list-item" button (click)="resetDemoState()" detail="false">
             <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Redefinir demonstração</h3>
-              <p>Restaurar cartões e selos de exemplo.</p>
-            </ion-label>
+            <ion-label>Redefinir demonstração</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
 
-          <ion-item button (click)="logout()" detail="false">
+          <ion-item class="profile-list-item" button (click)="logout()" detail="false">
             <ion-icon name="log-out-outline" slot="start" color="danger" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Sair</h3>
-              <p>Sair da conta atual.</p>
-            </ion-label>
+            <ion-label color="danger">Sair</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
         </ion-list>
       </section>
 
-      <section class="merchant-card app-slide-up" [class.submitted]="merchantLeadSubmitted" aria-labelledby="merchant-title">
-        <div class="merchant-icon">
-          <ion-icon [name]="merchantLeadSubmitted ? 'checkmark-circle-outline' : 'storefront-outline'" aria-hidden="true"></ion-icon>
-        </div>
-        <div>
-          <span>Para Empresas</span>
+      <!-- Premium-style Merchant Banner -->
+      <section class="premium-merchant-banner app-slide-up" [class.submitted]="merchantLeadSubmitted" aria-labelledby="merchant-title">
+        <div class="banner-content">
+          <div class="banner-header">
+            <span>Para Empresas</span>
+            <ion-icon *ngIf="merchantLeadSubmitted" name="checkmark-circle" aria-hidden="true" color="success"></ion-icon>
+          </div>
           <h2 id="merchant-title">{{ merchantLeadSubmitted ? 'Solicitação recebida' : 'Possui um estabelecimento?' }}</h2>
           <p>
             {{ merchantLeadSubmitted
               ? 'A equipe do Stamp Me entrará em contato para configurar seu cartão digital.'
               : 'Demonstre interesse e receba uma proposta para criar seu cartão de fidelidade digital.' }}
           </p>
-          <ion-button *ngIf="!merchantLeadSubmitted" expand="block" shape="round" (click)="openAddBusinessModal()">
+          
+          <ion-button *ngIf="!merchantLeadSubmitted" expand="block" shape="round" color="light" class="premium-btn" (click)="openAddBusinessModal()">
             Quero participar
           </ion-button>
+          
           <ion-button *ngIf="merchantLeadSubmitted && !isBusinessApproved"
-                      expand="block" shape="round" fill="outline" color="warning"
-                      (click)="approveBusinessDemo()" class="demo-approve-btn">
-            <ion-icon name="flash-outline" slot="start" aria-hidden="true"></ion-icon>
+                      expand="block" shape="round" fill="solid" color="warning"
+                      (click)="approveBusinessDemo()" class="demo-approve-btn premium-btn">
             Aprovar automaticamente (demo)
           </ion-button>
-          <div *ngIf="isBusinessApproved" class="approved-hint">
-            <ion-icon name="checkmark-circle" color="success" aria-hidden="true"></ion-icon>
-            <span>Negócio aprovado! Mude de perfil acima.</span>
-          </div>
         </div>
       </section>
 
@@ -151,38 +115,23 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <ng-container *ngIf="activeProfile === 'business' && isBusinessApproved">
 
-      <section class="business-actions-group app-slide-up" aria-label="Ações do negócio">
-        <div class="app-section-header">
-          <div>
-            <h2>Gerir Negócio</h2>
-            <p>Controle a sua presença na plataforma.</p>
-          </div>
-        </div>
+      <section class="profile-settings-list app-slide-up" aria-label="Ações do negócio">
         <ion-list lines="none">
-          <ion-item button [routerLink]="['/tabs/home/business/my-business']" detail="false">
+          <ion-item class="profile-list-item" button [routerLink]="['/tabs/home/business/my-business']" detail="false">
             <ion-icon name="eye-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Ver página de negócio</h3>
-              <p>Veja como os clientes veem a sua loja.</p>
-            </ion-label>
+            <ion-label>Ver página de negócio</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
 
-          <ion-item button (click)="openEditBusinessModal()" detail="false">
+          <ion-item class="profile-list-item" button (click)="openEditBusinessModal()" detail="false">
             <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Editar página de negócio</h3>
-              <p>Fotos, descrição, endereço e serviços.</p>
-            </ion-label>
+            <ion-label>Editar página de negócio</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
 
-          <ion-item button (click)="openEditCardModal()" detail="false">
+          <ion-item class="profile-list-item" button (click)="openEditCardModal()" detail="false">
             <ion-icon name="card-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>Editar cartão de fidelidade</h3>
-              <p>Cores, carimbo e prémios personalizados.</p>
-            </ion-label>
+            <ion-label>Editar cartão de fidelidade</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
         </ion-list>

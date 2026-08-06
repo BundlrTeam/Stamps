@@ -28,10 +28,8 @@
 
 .detail-hero {
   position: relative;
-  height: 320px;
+  height: 380px;
   overflow: hidden;
-  border-bottom-left-radius: 26px;
-  border-bottom-right-radius: 26px;
   background: var(--app-color-surface-soft);
 
   /* Carousel styles */
@@ -94,7 +92,7 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.18) 62%, rgba(0, 0, 0, 0));
+    linear-gradient(to top, var(--ion-background-color) 0%, rgba(18, 18, 18, 0.4) 40%, rgba(18, 18, 18, 0.1) 100%);
 }
 
 .hero-content {
@@ -170,10 +168,11 @@
   div {
     min-width: 0;
     padding: 12px;
-    border: 1px solid var(--app-color-line);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--app-radius-lg);
-    background: var(--app-color-surface);
-    box-shadow: 0 6px 18px rgba(23, 33, 31, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   ion-icon {
@@ -229,9 +228,11 @@
   display: flex;
   gap: 13px;
   padding: 14px;
-  border: 1px solid var(--app-color-line);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--app-radius-lg);
-  background: var(--app-color-surface);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   ion-icon {
     flex-shrink: 0;

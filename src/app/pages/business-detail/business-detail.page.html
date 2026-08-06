@@ -1,13 +1,11 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ business?.name || 'Negócio' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content *ngIf="business; else missingBusiness" [fullscreen]="true">
+  <!-- Floating Back Button -->
+  <ion-fab slot="fixed" vertical="top" horizontal="start" class="app-floating-back">
+    <ion-fab-button size="small" color="dark" class="floating-back-btn" routerLink="/tabs/home" routerDirection="back" aria-label="Voltar">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-<ion-content *ngIf="business; else missingBusiness">
   <main class="app-page--flush detail-page">
     <section class="detail-hero" aria-labelledby="business-title">
       <div class="hero-carousel-container">
@@ -21,7 +19,7 @@
           (mouseup)="startAutoPlay()"
         >
           <img 
-            *ngFor="let img of getBusinessImages()" 
+            *ngFor="let img of getBusinessImages(); trackBy: trackByString" 
             [src]="img" 
             [alt]="business.name" 
             class="carousel-slide" 
@@ -31,7 +29,7 @@
         <div class="carousel-dots" *ngIf="getBusinessImages().length > 1">
           <button 
             type="button"
-            *ngFor="let img of getBusinessImages(); let i = index" 
+            *ngFor="let img of getBusinessImages(); let i = index; trackBy: trackByString" 
             class="carousel-dot"
             [class.active]="activeImageIndex === i"
             (click)="scrollToSlide(i, carouselTrack)"
@@ -123,7 +121,7 @@
         </div>
 
         <div class="services-grid">
-          <div class="service-chip" *ngFor="let service of business.services">
+          <div class="service-chip" *ngFor="let service of business.services; trackBy: trackByString">
             <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
             <span>{{ service }}</span>
           </div>

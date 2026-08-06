@@ -54,7 +54,7 @@ export class RewardDetailPage implements OnInit {
     if (isNaN(expires.getTime())) return '';
     return new Intl.DateTimeFormat('pt-PT', {
       day: '2-digit',
-      month: 'long',
+      month: '2-digit',
       year: 'numeric'
     }).format(expires);
   }
@@ -65,7 +65,7 @@ export class RewardDetailPage implements OnInit {
     if (isNaN(unlocked.getTime())) return '';
     return new Intl.DateTimeFormat('pt-PT', {
       day: '2-digit',
-      month: 'long',
+      month: '2-digit',
       year: 'numeric'
     }).format(unlocked);
   }

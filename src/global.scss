@@ -232,6 +232,8 @@ ion-tab-button {
     rgba(var(--ion-color-primary-rgb), 0.1) 0%,
     rgba(var(--ion-color-primary-rgb), 0.04) 100%
   );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--app-shadow-1);
 
   ion-icon {
@@ -302,6 +304,23 @@ ion-tab-button {
   }
 }
 
+.app-floating-back {
+  margin-top: calc(env(safe-area-inset-top) + 16px);
+  margin-left: 16px;
+  z-index: 100;
+  
+  .floating-back-btn {
+    --background: rgba(18, 18, 18, 0.5);
+    --background-activated: rgba(18, 18, 18, 0.7);
+    --color: #fff;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+}
+
 .app-fixed-action {
   position: fixed;
   left: 0;
@@ -363,304 +382,4 @@ ion-tab-button {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Shared Celebration System
-// (used by stamp-card and wallet pages)
-// ─────────────────────────────────────────────────────────────
-
-.confetti-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9998;
-  will-change: contents;
-}
-
-.celebration-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-
-  &.is-active {
-    pointer-events: auto;
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-}
-
-.falling-icon {
-  position: fixed;
-  top: -60px;
-  font-size: 1.8rem;
-  animation: celebIconRain 1.8s calc(var(--i) * 0.12s) ease-in both;
-  pointer-events: none;
-  z-index: 9998;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
-  left: calc(4% + var(--i) * 8%);
-
-  ion-icon {
-    color: #FFE66D;
-    animation: celebIconSpin 1.8s calc(var(--i) * 0.12s) ease-in-out both;
-  }
-
-  &.is-orange ion-icon { color: #FB923C; }
-  &.is-gold   ion-icon { color: #FBBF24; }
-}
-
-@keyframes celebIconRain {
-  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
-  10%  { opacity: 1; transform: translateY(20px) scale(1.1); }
-  100% { transform: translateY(110vh) scale(0.9); opacity: 0.6; }
-}
-
-@keyframes celebIconSpin {
-  0%   { transform: rotate(0deg) scale(0.6); }
-  20%  { transform: rotate(25deg) scale(1.15); }
-  60%  { transform: rotate(-15deg) scale(1); }
-  100% { transform: rotate(360deg) scale(0.9); }
-}
-
-.celebration-card {
-  position: relative;
-  width: min(88%, 360px);
-  padding: 36px 28px 28px;
-  border-radius: 28px;
-  background: var(--app-color-surface);
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  text-align: center;
-  transform: scale(0.7) translateY(30px);
-  opacity: 0;
-  transition:
-    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity 0.35s ease;
-  will-change: transform, opacity;
-
-  .is-active & {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-
-  &.prize-card {
-    background: linear-gradient(
-      145deg,
-      #fff 0%,
-      rgba(var(--ion-color-primary-rgb), 0.06) 100%
-    );
-    border: 2px solid rgba(var(--ion-color-primary-rgb), 0.2);
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 26px;
-      background: radial-gradient(
-        circle at top center,
-        rgba(255, 230, 109, 0.18) 0%,
-        transparent 65%
-      );
-      pointer-events: none;
-    }
-  }
-
-  // Badge celebration variants
-  &.badge-card-orange {
-    border: 2px solid rgba(249, 115, 22, 0.35);
-    background: linear-gradient(145deg, #fff 0%, rgba(249, 115, 22, 0.06) 100%);
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 26px;
-      background: radial-gradient(circle at top center, rgba(251, 146, 60, 0.15) 0%, transparent 65%);
-      pointer-events: none;
-    }
-  }
-
-  &.badge-card-gold {
-    border: 2px solid rgba(212, 175, 55, 0.4);
-    background: linear-gradient(145deg, #fff 0%, rgba(212, 175, 55, 0.08) 100%);
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 26px;
-      background: radial-gradient(circle at top center, rgba(251, 191, 36, 0.2) 0%, transparent 65%);
-      pointer-events: none;
-    }
-  }
-}
-
-.celebration-icon-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  background: var(--app-gradient-brand);
-  margin-bottom: 18px;
-  box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.35);
-  animation: celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-
-  &.pulse-glow {
-    animation:
-      celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-      celebGlowPulse 1.8s 0.8s ease-in-out infinite;
-  }
-
-  &.is-orange-wrap {
-    background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
-    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
-
-    &.pulse-glow {
-      animation:
-        celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-        orangeGlowPulse 1.8s 0.8s ease-in-out infinite;
-    }
-  }
-
-  &.is-gold-wrap {
-    background: linear-gradient(135deg, #D4AF37 0%, #FFD700 60%, #F59E0B 100%);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45);
-
-    &.pulse-glow {
-      animation:
-        celebIconPop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-        goldGlowPulse 1.8s 0.8s ease-in-out infinite;
-    }
-  }
-}
-
-@keyframes celebIconPop {
-  0%   { transform: scale(0.3) rotate(-30deg); opacity: 0; }
-  60%  { transform: scale(1.18) rotate(8deg); }
-  80%  { transform: scale(0.95) rotate(-3deg); }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-
-@keyframes celebGlowPulse {
-  0%, 100% { box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.35); }
-  50%       { box-shadow: 0 8px 32px rgba(var(--ion-color-primary-rgb), 0.6), 0 0 60px rgba(255, 230, 109, 0.3); }
-}
-
-@keyframes orangeGlowPulse {
-  0%, 100% { box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4); }
-  50%       { box-shadow: 0 8px 36px rgba(249, 115, 22, 0.7), 0 0 60px rgba(251, 146, 60, 0.3); }
-}
-
-@keyframes goldGlowPulse {
-  0%, 100% { box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45); }
-  50%       { box-shadow: 0 8px 36px rgba(212, 175, 55, 0.75), 0 0 60px rgba(255, 215, 0, 0.35); }
-}
-
-.celebration-main-icon {
-  font-size: 2.4rem;
-  color: #ffffff;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.celebration-badge-tier {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 14px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-
-  &.tier-orange {
-    background: rgba(249, 115, 22, 0.12);
-    border: 1px solid rgba(249, 115, 22, 0.3);
-    color: #EA580C;
-    ion-icon { color: #F97316; }
-  }
-
-  &.tier-gold {
-    background: rgba(212, 175, 55, 0.14);
-    border: 1px solid rgba(212, 175, 55, 0.4);
-    color: #B45309;
-    ion-icon { color: #D4AF37; }
-  }
-}
-
-.celebration-heading {
-  margin: 0 0 8px;
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: var(--ion-text-color);
-  letter-spacing: -0.01em;
-  animation: celebTextReveal 0.5s 0.35s ease both;
-}
-
-.celebration-sub {
-  margin: 0 0 24px;
-  font-size: 1rem;
-  color: var(--app-color-muted);
-  font-weight: 600;
-  line-height: 1.44;
-  animation: celebTextReveal 0.5s 0.45s ease both;
-}
-
-@keyframes celebTextReveal {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.celebration-dismiss-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 32px;
-  border: none;
-  border-radius: 999px;
-  background: var(--app-gradient-brand);
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 750;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.35);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  animation: celebTextReveal 0.5s 0.55s ease both;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(var(--ion-color-primary-rgb), 0.45);
-  }
-
-  &:active { transform: scale(0.97); }
-
-  &.is-orange-btn {
-    background: linear-gradient(135deg, #F97316, #FB923C);
-    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
-    &:hover { box-shadow: 0 12px 28px rgba(249, 115, 22, 0.55); }
-  }
-
-  &.is-gold-btn {
-    background: linear-gradient(135deg, #D4AF37, #FFD700);
-    color: #78350F;
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.45);
-    &:hover { box-shadow: 0 12px 28px rgba(212, 175, 55, 0.6); }
-  }
-}
 

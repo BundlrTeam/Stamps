@@ -1,13 +1,11 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/wallet" text="" icon="arrow-back" aria-label="Voltar"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Recompensa</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content *ngIf="reward; else notFound" [fullscreen]="true">
+  <!-- Floating Back Button -->
+  <ion-fab slot="fixed" vertical="top" horizontal="start" class="app-floating-back">
+    <ion-fab-button size="small" color="dark" class="floating-back-btn" routerLink="/tabs/wallet" routerDirection="back" aria-label="Voltar">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-<ion-content *ngIf="reward; else notFound">
   <main class="app-page reward-detail-page">
 
     <!-- Hero badge visual -->

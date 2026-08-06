@@ -1,7 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ActionSheetController, ToastController } from '@ionic/angular';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BusinessService } from '../../services/business.service';
+import { SessionService, AppMode } from '../../services/session.service';
 import { MerchantLead, ApprovedBusiness, CardCustomization, CustomReward } from '../../models/business.model';
 
 interface UserProfile {
@@ -22,7 +24,9 @@ export class ProfilePage implements OnInit {
   private readonly actionSheetController = inject(ActionSheetController);
   private readonly toastController = inject(ToastController);
   private readonly businessService = inject(BusinessService);
+  private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly profileStorageKey = 'stamp-me-demo-profile';
   private readonly leadStorageKey = 'stamp-me-merchant-lead';
   private readonly sessionStorageKey = 'stamp-me-demo-session';
@@ -56,7 +60,12 @@ export class ProfilePage implements OnInit {
   merchantLeadSubmitted = false;
 
   // ─── Profile Switcher ─────────────────────────────────────────────────────
-  activeProfile: 'customer' | 'business' = 'customer';
+  get activeProfile(): AppMode {
+    return this.sessionService.getMode();
+  }
+  set activeProfile(mode: AppMode) {
+    this.sessionService.setMode(mode);
+  }
   isBusinessApproved: boolean = false;
   profileSwitcherAnimating: boolean = false;
   approvedBiz: ApprovedBusiness | null = null;
@@ -114,17 +123,19 @@ export class ProfilePage implements OnInit {
 
     // Se o lead não estiver submetido localmente, tentar carregar do Supabase usando o e-mail do utilizador
     if (!this.merchantLeadSubmitted && !this.isBusinessApproved && this.user.email) {
-      this.businessService.fetchMerchantLeadFromSupabase(this.user.email).subscribe({
-        next: (lead) => {
-          if (lead) {
-            console.log('Candidatura recuperada do Supabase com sucesso.');
-            localStorage.setItem(this.leadStorageKey, JSON.stringify(lead));
-            this.newBusiness = lead;
-            this.merchantLeadSubmitted = true;
-          }
-        },
-        error: (err) => console.error('Erro ao procurar candidatura no Supabase:', err)
-      });
+      this.businessService.fetchMerchantLeadFromSupabase(this.user.email)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (lead) => {
+            if (lead) {
+              console.log('Candidatura recuperada do Supabase com sucesso.');
+              localStorage.setItem(this.leadStorageKey, JSON.stringify(lead));
+              this.newBusiness = lead;
+              this.merchantLeadSubmitted = true;
+            }
+          },
+          error: (err) => console.error('Erro ao procurar candidatura no Supabase:', err)
+        });
     } else if (this.merchantLeadSubmitted) {
       const rawLead = localStorage.getItem(this.leadStorageKey);
       if (rawLead) {

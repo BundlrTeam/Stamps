@@ -1,150 +1,199 @@
-<ion-header class="ion-no-border app-header">
-  <ion-toolbar>
-    <ion-title>
-      <span class="brand-lockup">
-        <img src="assets/brand/stamp-me-mark.svg" alt="" />
-        <span>Stamp Me</span>
-      </span>
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
+<ion-content [fullscreen]="true">
+  <div class="home-dynamic-bg"></div>
   <main class="app-page home-page">
-    <section class="home-hero" aria-labelledby="home-title">
-      <div class="home-greeting app-slide-up">
-        <p class="home-greeting__time">{{ greeting }}</p>
-        <h1 id="home-title" class="home-greeting__name">Encontre sua próxima<br><span>recompensa</span></h1>
-      </div>
-      <div class="home-wallet-teaser app-slide-up" *ngIf="walletCardCount > 0" routerLink="/tabs/wallet">
-        <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
-        <span>{{ walletCardCount }} {{ walletCardCount === 1 ? 'cartão ativo' : 'cartões ativos' }}</span>
-        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
-      </div>
-      <ion-searchbar
-        placeholder="Pesquisar negócios, categorias ou recompensas"
-        debounce="300"
-        (ionInput)="onSearchChange($event)"
-        animated="true"
-        class="home-search"
-      ></ion-searchbar>
-    </section>
-
-    <section class="app-section categories-section" aria-labelledby="categories-title">
-      <div class="app-section-header compact">
-        <div>
-          <h2 id="categories-title">Categorias</h2>
-          <p>Filtre por tipo de negócio.</p>
+    
+    <!-- Ultra-compact Spotify-style header -->
+    <div class="sticky-header-container">
+      <div class="spotify-header">
+        <h1 class="spotify-greeting" *ngIf="!isSearchActive" (click)="resetHome()" style="cursor: pointer;">Stamp Me</h1>
+        
+        <div class="spotify-actions" *ngIf="!isSearchActive">
+          <button class="icon-action-btn" (click)="isSearchActive = true" aria-label="Pesquisar">
+            <ion-icon name="search-outline"></ion-icon>
+          </button>
+          <button class="icon-action-btn" routerLink="/tabs/profile" aria-label="Perfil">
+            <ion-icon name="person-circle-outline"></ion-icon>
+          </button>
         </div>
-        <ion-button *ngIf="selectedCategory" fill="clear" size="small" (click)="clearFilter()">
-          Limpar
-        </ion-button>
+
+        <div class="header-search-wrapper" *ngIf="isSearchActive">
+          <ion-searchbar
+            mode="md"
+            placeholder="Pesquisar negócios ou categorias"
+            debounce="300"
+            (ionInput)="onSearchChange($event)"
+            animated="true"
+            showCancelButton="always"
+            cancelButtonText="Voltar"
+            cancelButtonIcon="close"
+            (ionCancel)="isSearchActive = false; searchQuery = ''; clearFilter()"
+            class="compact-search"
+          ></ion-searchbar>
+        </div>
       </div>
 
-      <div class="category-strip" role="list">
+      <!-- Categories right below greeting like Spotify tags -->
+      <div class="category-strip">
         <button
           type="button"
           class="category-chip"
-          *ngFor="let category of categories"
+          *ngFor="let category of categories; trackBy: trackByCategory"
           (click)="filterByCategory(category.name)"
           [class.active]="selectedCategory === category.name"
-          [attr.aria-pressed]="selectedCategory === category.name"
         >
-          <ion-icon [name]="category.icon" aria-hidden="true"></ion-icon>
           <span>{{ category.name }}</span>
         </button>
       </div>
-    </section>
+    </div>
 
-    <section class="app-section" *ngIf="!selectedCategory && !searchQuery" aria-labelledby="featured-title">
-      <div class="app-section-header">
-        <div>
-          <h2 id="featured-title">Destaques perto de você</h2>
-          <p>Cartões ativos, ofertas claras e visitas que contam.</p>
-        </div>
-      </div>
+    <!-- Customer Mode UI -->
+    <ng-container *ngIf="appMode === 'customer'; else businessHome">
 
-      <div class="featured-carousel">
-        <ion-card
-          *ngFor="let business of featuredBusinesses; trackBy: trackByBusinessId"
-          [routerLink]="['/tabs/home/business', business.id]"
-          class="app-card featured-card"
-          button
-        >
-          <div class="featured-image-wrapper">
-            <img [src]="business.image" [alt]="business.name" />
-            <div class="featured-gradient" aria-hidden="true"></div>
-            <div class="featured-overlay">
-              <ion-badge>{{ business.category }}</ion-badge>
-              <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
-                {{ business.isOpen ? 'Aberto' : 'Fechado' }}
-              </span>
-            </div>
+      <!-- Quick View Grid (Spotify style) -->
+      <section class="quick-view-grid" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery)">
+        <div class="quick-card wallet-link" routerLink="/tabs/wallet" button>
+          <div class="quick-card-icon">
+            <ion-icon name="wallet"></ion-icon>
           </div>
-          <ion-card-header>
-            <div class="card-logo-badge">
-              <img [src]="business.logo" [alt]="business.name" />
-            </div>
-            <ion-card-title>{{ business.name }}</ion-card-title>
-            <ion-card-subtitle>{{ business.reward }}</ion-card-subtitle>
-            <div class="app-meta-row">
-              <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }} ({{ business.reviewCount }})</span>
-              <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
-            </div>
-          </ion-card-header>
-        </ion-card>
-      </div>
-    </section>
-
-    <section class="app-section" aria-labelledby="business-list-title">
-      <div class="app-section-header list-header">
-        <div>
-          <h2 id="business-list-title">{{ selectedCategory || (searchQuery ? 'Resultados' : 'Todos os negócios') }}</h2>
-          <p>{{ filteredBusinesses.length }} resultado{{ filteredBusinesses.length === 1 ? '' : 's' }} disponíve{{ filteredBusinesses.length === 1 ? 'l' : 'is' }}</p>
+          <div class="quick-card-text">Ver na Carteira</div>
         </div>
-      </div>
-
-      <div class="business-grid" *ngIf="filteredBusinesses.length > 0">
-        <ion-card
-          *ngFor="let business of filteredBusinesses; trackBy: trackByBusinessId"
-          [routerLink]="['/tabs/home/business', business.id]"
-          class="app-card business-card"
-          button
-        >
-          <div class="card-image-wrapper">
-            <img [src]="business.image" [alt]="business.name" />
-            <ion-badge>{{ business.category }}</ion-badge>
+        
+        <div class="quick-card" *ngFor="let card of topActiveCards; trackBy: trackByCardId" [routerLink]="['/tabs/wallet/stamp-card', card.businessId]" button>
+          <div class="quick-card-img">
+            <img [src]="card.businessLogo || card.businessImage" [alt]="card.businessName" />
           </div>
-          <ion-card-header>
-            <div class="card-logo-badge">
-              <img [src]="business.logo" [alt]="business.name" />
+          <div class="quick-card-text">{{ card.businessName }}</div>
+        </div>
+      </section>
+
+      <!-- Destaques para você (horizontal carousel of cards) -->
+      <section class="app-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery)" aria-labelledby="featured-title">
+        <div class="app-section-header">
+          <div>
+            <h2 id="featured-title">Destaques para você</h2>
+          </div>
+        </div>
+
+        <div class="featured-carousel">
+          <ion-card
+            *ngFor="let business of featuredBusinesses; trackBy: trackByBusinessId"
+            [routerLink]="['/tabs/home/business', business.id]"
+            class="app-card featured-card"
+            button
+          >
+            <div class="featured-image-wrapper">
+              <img [src]="business.image" [alt]="business.name" />
+              <div class="featured-gradient" aria-hidden="true"></div>
+              <div class="featured-overlay">
+                <ion-badge>{{ business.category }}</ion-badge>
+                <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
+                  {{ business.isOpen ? 'Aberto' : 'Fechado' }}
+                </span>
+              </div>
             </div>
-            <div class="card-title-row">
+            <ion-card-header>
+              <div class="card-logo-badge">
+                <img [src]="business.logo" [alt]="business.name" />
+              </div>
               <ion-card-title>{{ business.name }}</ion-card-title>
-              <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
-                {{ business.isOpen ? 'Aberto' : 'Fechado' }}
-              </span>
-            </div>
-            <p class="card-description">{{ business.description }}</p>
-            <div class="app-meta-row">
-              <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }}</span>
-              <span><ion-icon name="location-outline" aria-hidden="true"></ion-icon>{{ business.city }}</span>
-              <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
-            </div>
-            <div class="reward-line">
-              <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
-              <span>{{ business.reward }}</span>
-            </div>
-          </ion-card-header>
-        </ion-card>
-      </div>
+              <ion-card-subtitle>{{ business.reward }}</ion-card-subtitle>
+              <div class="app-meta-row">
+                <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }} ({{ business.reviewCount }})</span>
+                <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
+              </div>
+            </ion-card-header>
+          </ion-card>
+        </div>
+      </section>
 
-      <div *ngIf="filteredBusinesses.length === 0" class="app-empty-state">
-        <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
-        <h3>Nenhum negócio encontrado</h3>
-        <p>Experimente outra pesquisa ou volte à lista completa de negócios disponíveis.</p>
-        <ion-button fill="outline" shape="round" (click)="clearFilter()">Ver todos</ion-button>
-      </div>
-    </section>
+      <!-- Todos os negócios / Filtros -->
+      <section class="app-section" aria-labelledby="business-list-title">
+        <div class="app-section-header list-header">
+          <div>
+            <h2 id="business-list-title">{{ selectedCategory || (searchQuery ? 'Resultados' : 'Todos os negócios') }}</h2>
+          </div>
+        </div>
+
+        <div class="business-grid" *ngIf="filteredBusinesses.length > 0">
+          <ion-card
+            *ngFor="let business of filteredBusinesses; trackBy: trackByBusinessId"
+            [routerLink]="['/tabs/home/business', business.id]"
+            class="app-card business-card"
+            button
+          >
+            <div class="card-image-wrapper">
+              <img [src]="business.image" [alt]="business.name" />
+              <ion-badge>{{ business.category }}</ion-badge>
+            </div>
+            <ion-card-header>
+              <div class="card-logo-badge">
+                <img [src]="business.logo" [alt]="business.name" />
+              </div>
+              <div class="card-title-row">
+                <ion-card-title>{{ business.name }}</ion-card-title>
+                <span class="app-status-pill" [class.is-open]="business.isOpen" [class.is-closed]="!business.isOpen">
+                  {{ business.isOpen ? 'Aberto' : 'Fechado' }}
+                </span>
+              </div>
+              <p class="card-description">{{ business.description }}</p>
+              <div class="app-meta-row">
+                <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }}</span>
+                <span><ion-icon name="location-outline" aria-hidden="true"></ion-icon>{{ business.city }}</span>
+                <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
+              </div>
+              <div class="reward-line">
+                <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+                <span>{{ business.reward }}</span>
+              </div>
+            </ion-card-header>
+          </ion-card>
+        </div>
+
+        <div *ngIf="filteredBusinesses.length === 0" class="app-empty-state">
+          <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+          <h3>Nenhum negócio encontrado</h3>
+          <p>Experimente outra pesquisa.</p>
+          <ion-button fill="outline" shape="round" (click)="clearFilter()" class="compact-btn">Limpar filtros</ion-button>
+        </div>
+      </section>
+      
+    </ng-container>
+
+    <!-- Business Mode UI -->
+    <ng-template #businessHome>
+      <section class="business-dashboard">
+        <h2 class="section-title">Visão Geral</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <ion-icon name="people-outline"></ion-icon>
+            <h3>{{ mockAnalytics.activeUsers }}</h3>
+            <p>Clientes Ativos</p>
+          </div>
+          <div class="stat-card">
+            <ion-icon name="albums-outline"></ion-icon>
+            <h3>{{ mockAnalytics.issuedStamps }}</h3>
+            <p>Selos Distribuídos</p>
+          </div>
+          <div class="stat-card">
+            <ion-icon name="gift-outline"></ion-icon>
+            <h3>{{ mockAnalytics.redeemedRewards }}</h3>
+            <p>Prémios Resgatados</p>
+          </div>
+        </div>
+
+        <h2 class="section-title">Atividade Recente</h2>
+        <ion-list class="recent-activity-list" lines="none">
+          <ion-item class="activity-item" *ngFor="let activity of mockAnalytics.recentActivity">
+            <ion-icon name="scan-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>{{ activity.user }}</h3>
+              <p>{{ activity.action }}</p>
+            </ion-label>
+            <ion-note slot="end">{{ activity.time }}</ion-note>
+          </ion-item>
+        </ion-list>
+      </section>
+    </ng-template>
+
   </main>
 </ion-content>

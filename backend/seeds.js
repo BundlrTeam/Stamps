@@ -1,16 +1,51 @@
-import { Business } from '../models/business.model';
+const fs = require('fs');
+const path = require('path');
 
-export const MOCK_BUSINESSES: Business[] = [
+let env = {};
+try {
+  const envPath = path.resolve(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, 'utf8');
+    const lines = content.split('\r\n').join('\n').split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const index = trimmed.indexOf('=');
+      if (index !== -1) {
+        const key = trimmed.substring(0, index).trim();
+        let value = trimmed.substring(index + 1).trim();
+        if (value.startsWith('"') && value.endsWith('"')) {
+          value = value.substring(1, value.length - 1);
+        } else if (value.startsWith("'") && value.endsWith("'")) {
+          value = value.substring(1, value.length - 1);
+        }
+        env[key] = value;
+      }
+    }
+  }
+} catch (e) {}
+
+const supabaseUrl = env['SUPABASE_URL'] || process.env['SUPABASE_URL'] || '';
+const supabaseKey = env['SUPABASE_KEY'] || process.env['SUPABASE_KEY'] || '';
+
+function resolveImageUrl(originalUrl, filePath) {
+  if (supabaseUrl && supabaseKey && supabaseUrl !== 'PLACEHOLDER' && supabaseUrl.trim() !== '') {
+    return `${supabaseUrl}/storage/v1/object/public/photos/${filePath}`;
+  }
+  return originalUrl;
+}
+
+const baseMocks = [
   {
     id: 'pizzaria-bella',
     name: 'Pizzaria Bella',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=120&h=120&fit=crop',
     description: 'Pizzaria artesanal com massas de fermentação lenta, ingredientes italianos e ambiente familiar no centro da cidade.',
     category: 'Pizzaria',
     address: 'Rua da Boavista, 142',
@@ -28,13 +63,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'forno-do-bairro',
     name: 'Forno do Bairro',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=120&h=120&fit=crop',
     description: 'Restaurante casual com pratos de forno, menus de almoço e uma seleção cuidadosa de vinhos.',
     category: 'Restaurante',
     address: 'Rua das Flores, 88',
@@ -52,13 +87,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'ramen-lisboa',
     name: 'Ramen Lisboa',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=120&h=120&fit=crop',
     description: 'Ramen bar moderno com caldos cozidos lentamente, noodles frescos e opções vegetarianas.',
     category: 'Restaurante',
     address: 'Avenida Almirante Reis, 61',
@@ -76,13 +111,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'cafe-aroma',
     name: 'Café Aroma',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=120&h=120&fit=crop',
     description: 'Café de especialidade com grãos selecionados, confeitaria artesanal e brunch no fim de semana.',
     category: 'Café',
     address: 'Praça dos Poveiros, 34',
@@ -100,13 +135,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'slow-bean',
     name: 'Slow Bean',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=120&h=120&fit=crop',
     description: 'Espaço calmo para trabalhar, com café filtrado, sanduíches naturais e uma equipe que conhece todos pelo nome.',
     category: 'Café',
     address: 'Rua Miguel Bombarda, 219',
@@ -124,13 +159,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'barbearia-classic',
     name: 'Barbearia Classic',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=120&h=120&fit=crop',
     description: 'Barbearia premium com ambiente clássico, cortes modernos e atendimento com hora marcada.',
     category: 'Barbearia',
     address: 'Rua de Cedofeita, 301',
@@ -148,13 +183,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'studio-luz',
     name: 'Studio Luz',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=120&h=120&fit=crop',
     description: 'Salão luminoso com manicure, styling e tratamentos rápidos para clientes com agenda cheia.',
     category: 'Beleza',
     address: 'Rua do Almada, 404',
@@ -172,13 +207,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'bar-do-cais',
     name: 'Bar do Cais',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1536935338788-846bb9981813?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=120&h=120&fit=crop',
     description: 'Cocktail bar perto do rio, perfeito para after-work, música ao vivo e noites descontraídas.',
     category: 'Bar',
     address: 'Cais da Ribeira, 12',
@@ -196,13 +231,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'vinyl-room',
     name: 'Vinyl Room',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1482440308425-276ad0f28b19?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1539628399213-d6aa89c93074?w=120&h=120&fit=crop',
     description: 'Bar intimista com vinis, cerveja artesanal e uma agenda semanal de DJs locais.',
     category: 'Bar',
     address: 'Rua da Picaria, 55',
@@ -220,13 +255,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'hostel-atlas',
     name: 'Hostel Atlas',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=120&h=120&fit=crop',
     description: 'Hostel urbano com quartos privativos, cowork, passeios locais e benefícios para estadias frequentes.',
     category: 'Hostel',
     address: 'Rua de Santa Catarina, 910',
@@ -244,13 +279,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'casa-azul-guesthouse',
     name: 'Casa Azul Guesthouse',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=120&h=120&fit=crop',
     description: 'Guesthouse acolhedora com café da manhã artesanal, jardim interno e check-in simples.',
     category: 'Hotel',
     address: 'Rua do Bonfim, 228',
@@ -268,13 +303,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'mercearia-nova',
     name: 'Mercearia Nova',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1488459718432-36c55e07a35c?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=120&h=120&fit=crop',
     description: 'Mercearia de bairro com produtos frescos, cestas semanais e foco em produtores locais.',
     category: 'Loja',
     address: 'Rua Antero de Quental, 76',
@@ -292,13 +327,13 @@ export const MOCK_BUSINESSES: Business[] = [
   {
     id: 'livraria-pagina',
     name: 'Livraria Página',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    image: 'https://images.unsplash.com/photo-1526243741027-444d633d7365?w=900&h=650&fit=crop',
     images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop'
+      'https://images.unsplash.com/photo-1526243741027-444d633d7365?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=900&h=650&fit=crop',
+      'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=900&h=650&fit=crop'
     ],
-    logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=650&fit=crop',
+    logo: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=120&h=120&fit=crop',
     description: 'Livraria independente com clube de leitura, recomendações personalizadas e café no piso superior.',
     category: 'Loja',
     address: 'Rua das Carmelitas, 18',
@@ -314,3 +349,15 @@ export const MOCK_BUSINESSES: Business[] = [
     qrCodePattern: 'STAMP_QR_PAGINA18'
   }
 ];
+
+const MOCK_BUSINESSES = baseMocks.map(b => {
+  const id = b.id;
+  return {
+    ...b,
+    image: resolveImageUrl(b.image, `businesses/${id}/main.jpg`),
+    images: b.images.map((img, idx) => resolveImageUrl(img, `businesses/${id}/gallery${idx === 0 ? '1' : idx + 1}.jpg`)),
+    logo: resolveImageUrl(b.logo, `businesses/${id}/logo.jpg`)
+  };
+});
+
+module.exports = { MOCK_BUSINESSES };
