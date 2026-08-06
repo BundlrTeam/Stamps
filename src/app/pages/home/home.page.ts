@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, DestroyRef, ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
 import { Business, StampCard } from '../../models/business.model';
@@ -21,6 +22,7 @@ export class HomePage implements OnInit {
   private readonly businessService = inject(BusinessService);
   private readonly sessionService = inject(SessionService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   @ViewChild(IonContent) content!: IonContent;
 
@@ -32,7 +34,8 @@ export class HomePage implements OnInit {
   isSearchActive: boolean = false;
   greeting: string = '';
   walletCardCount = 0;
-  topActiveCards: StampCard[] = [];
+  topActiveCards: any[] = [];
+  activeCardIndex: number = 0;
   nextRewardStamps: number | null = null;
   appMode: AppMode = 'customer';
 
@@ -92,12 +95,57 @@ export class HomePage implements OnInit {
       return aRemaining - bRemaining;
     });
     
-    this.topActiveCards = sortedCards.slice(0, 3);
+    this.topActiveCards = sortedCards.slice(0, 3).map(c => {
+      let color = this.businessService.DEFAULT_CARD_CUSTOMIZATION.backgroundColor;
+      if (c.businessId === 'my-business') {
+        const cust = this.businessService.getCardCustomization();
+        if (cust && cust.backgroundColor) {
+          color = cust.backgroundColor;
+        }
+      }
+      return {
+        ...c,
+        isFlipped: false,
+        backgroundColor: color
+      };
+    });
+    this.activeCardIndex = 0;
     
     const pending = cards
       .map(c => c.nextRewardAt != null ? c.nextRewardAt - c.stamps : null)
       .filter((n): n is number => n !== null && n > 0);
     this.nextRewardStamps = pending.length ? Math.min(...pending) : null;
+  }
+
+  nextCard(event: Event) {
+    event.stopPropagation();
+    if (this.activeCardIndex < this.topActiveCards.length - 1) {
+      this.activeCardIndex++;
+    }
+  }
+
+  prevCard(event: Event) {
+    event.stopPropagation();
+    if (this.activeCardIndex > 0) {
+      this.activeCardIndex--;
+    }
+  }
+
+  selectCard(index: number, card: any) {
+    if (index !== this.activeCardIndex) {
+      this.activeCardIndex = index;
+      return;
+    }
+
+    card.isFlipped = !card.isFlipped;
+    if (card.isFlipped) {
+      setTimeout(() => {
+        this.router.navigate(['/tabs/wallet/stamp-card', card.businessId]);
+        setTimeout(() => {
+          card.isFlipped = false;
+        }, 500);
+      }, 800);
+    }
   }
 
   private computeGreeting(): string {

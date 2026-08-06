@@ -137,7 +137,8 @@ export class StampCardPage implements OnInit {
         backgroundRepeat: 'no-repeat'
       };
     }
-    return { background: this.cardCustomization.backgroundColor };
+    const color = this.cardCustomization.backgroundColor || '#e8652b';
+    return { background: `linear-gradient(135deg, ${color} 0%, #111827 100%)` };
   }
 
   getStampStyle(slot: number): object {

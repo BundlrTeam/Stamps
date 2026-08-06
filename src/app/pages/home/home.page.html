@@ -31,38 +31,106 @@
           ></ion-searchbar>
         </div>
       </div>
-
-      <!-- Categories right below greeting like Spotify tags -->
-      <div class="category-strip">
-        <button
-          type="button"
-          class="category-chip"
-          *ngFor="let category of categories; trackBy: trackByCategory"
-          (click)="filterByCategory(category.name)"
-          [class.active]="selectedCategory === category.name"
-        >
-          <span>{{ category.name }}</span>
-        </button>
-      </div>
     </div>
 
     <!-- Customer Mode UI -->
     <ng-container *ngIf="appMode === 'customer'; else businessHome">
 
-      <!-- Quick View Grid (Spotify style) -->
-      <section class="quick-view-grid" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery)">
-        <div class="quick-card wallet-link" routerLink="/tabs/wallet" button>
-          <div class="quick-card-icon">
-            <ion-icon name="wallet"></ion-icon>
-          </div>
-          <div class="quick-card-text">Ver na Carteira</div>
+      <!-- 3D Wallet Card Carousel -->
+      <section class="wallet-3d-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && topActiveCards.length > 0">
+        <div class="app-section-header">
+          <h2>Cartões ativos</h2>
         </div>
-        
-        <div class="quick-card" *ngFor="let card of topActiveCards; trackBy: trackByCardId" [routerLink]="['/tabs/wallet/stamp-card', card.businessId]" button>
-          <div class="quick-card-img">
-            <img [src]="card.businessLogo || card.businessImage" [alt]="card.businessName" />
+
+        <div class="wallet-3d-carousel">
+          <button class="nav-arrow-btn prev" (click)="prevCard($event)" [disabled]="activeCardIndex === 0">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </button>
+
+          <div class="wallet-3d-viewport">
+            <div 
+              *ngFor="let card of topActiveCards; let i = index; trackBy: trackByCardId" 
+              class="wallet-3d-card-wrapper"
+              [class.active]="i === activeCardIndex"
+              [class.prev]="i < activeCardIndex"
+              [class.next]="i > activeCardIndex"
+              [class.flipped]="card.isFlipped"
+              (click)="selectCard(i, card)"
+            >
+              <div class="card-inner">
+                 <!-- FRONT: Real Physical Loyalty Card look -->
+                <div class="card-face card-front" [ngStyle]="{'background': 'linear-gradient(135deg, ' + card.backgroundColor + ' 0%, #111827 100%)'}">
+                  <div class="card-face-glass"></div>
+                  <div class="card-brand">
+                    <img [src]="card.businessLogo || 'assets/default-logo.jpg'" [alt]="card.businessName" />
+                    <span>{{ card.businessName }}</span>
+                  </div>
+                  <div class="card-stamps-summary">
+                    <strong>{{ card.stamps }} / 10</strong>
+                    <span>Selos Acumulados</span>
+                  </div>
+                  <div class="card-chip"></div>
+                  <div class="card-footer-info">
+                    <span>{{ card.category }}</span>
+                    <span>FIDELIDADE</span>
+                  </div>
+                </div>
+
+                <!-- BACK: Stamp Grid preview -->
+                <div class="card-face card-back" [ngStyle]="{'background': 'linear-gradient(135deg, ' + card.backgroundColor + ' 0%, #111827 100%)'}">
+                  <div class="card-face-glass"></div>
+                  <div class="stamp-dots-grid">
+                    <div 
+                      *ngFor="let dot of [1,2,3,4,5,6,7,8,9,10]" 
+                      class="stamp-dot" 
+                      [class.active]="dot <= card.stamps"
+                    >
+                      <ion-icon *ngIf="dot <= card.stamps" name="checkmark"></ion-icon>
+                      <span *ngIf="dot > card.stamps">{{ dot }}</span>
+                    </div>
+                  </div>
+                  <div class="card-back-reward">
+                    <ion-icon name="gift-outline"></ion-icon>
+                    <span>{{ card.reward }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="quick-card-text">{{ card.businessName }}</div>
+
+          <button class="nav-arrow-btn next" (click)="nextCard($event)" [disabled]="activeCardIndex === topActiveCards.length - 1">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
+
+        <div class="carousel-indicators">
+          <span 
+            *ngFor="let dot of topActiveCards; let idx = index; trackBy: trackByCardId" 
+            class="indicator-dot" 
+            [class.active]="idx === activeCardIndex"
+            (click)="activeCardIndex = idx"
+          ></span>
+        </div>
+      </section>
+
+      <!-- Fallback empty wallet card when no active cards exist -->
+      <section class="wallet-3d-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && topActiveCards.length === 0">
+        <div class="wallet-3d-carousel">
+          <div class="wallet-3d-viewport">
+            <div class="wallet-3d-card-wrapper active" routerLink="/tabs/wallet" button>
+              <div class="card-inner">
+                <div class="card-face card-front empty-wallet-card" style="background: linear-gradient(135deg, #2a2a2a, #1a1a1a);">
+                  <div class="card-face-glass"></div>
+                  <div class="empty-card-content">
+                    <ion-icon name="wallet-outline"></ion-icon>
+                    <h3>Sua Carteira está vazia</h3>
+                    <p>Siga estabelecimentos para ver cartões de fidelidade aqui.</p>
+                    <span class="empty-card-action">VER CARTEIRA</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -91,20 +159,33 @@
                 </span>
               </div>
             </div>
-            <ion-card-header>
-              <div class="card-logo-badge">
-                <img [src]="business.logo" [alt]="business.name" />
-              </div>
-              <ion-card-title>{{ business.name }}</ion-card-title>
-              <ion-card-subtitle>{{ business.reward }}</ion-card-subtitle>
-              <div class="app-meta-row">
-                <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }} ({{ business.reviewCount }})</span>
-                <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
-              </div>
-            </ion-card-header>
+            <div class="card-info-area">
+            <div class="card-logo-badge">
+              <img [src]="business.logo" [alt]="business.name" />
+            </div>
+            <ion-card-title>{{ business.name }}</ion-card-title>
+            <ion-card-subtitle>{{ business.reward }}</ion-card-subtitle>
+            <div class="app-meta-row">
+              <span><ion-icon name="star" aria-hidden="true"></ion-icon>{{ business.rating }} ({{ business.reviewCount }})</span>
+              <span><ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>{{ business.distanceKm }} km</span>
+            </div>
+          </div>
           </ion-card>
         </div>
       </section>
+
+      <!-- Categories filter strip -->
+      <div class="category-strip" style="margin-top: 40px; margin-bottom: 12px;">
+        <button
+          type="button"
+          class="category-chip"
+          *ngFor="let category of categories; trackBy: trackByCategory"
+          (click)="filterByCategory(category.name)"
+          [class.active]="selectedCategory === category.name"
+        >
+          <span>{{ category.name }}</span>
+        </button>
+      </div>
 
       <!-- Todos os negócios / Filtros -->
       <section class="app-section" aria-labelledby="business-list-title">
@@ -125,7 +206,7 @@
               <img [src]="business.image" [alt]="business.name" />
               <ion-badge>{{ business.category }}</ion-badge>
             </div>
-            <ion-card-header>
+            <div class="card-info-area">
               <div class="card-logo-badge">
                 <img [src]="business.logo" [alt]="business.name" />
               </div>
@@ -145,7 +226,7 @@
                 <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
                 <span>{{ business.reward }}</span>
               </div>
-            </ion-card-header>
+            </div>
           </ion-card>
         </div>
 
