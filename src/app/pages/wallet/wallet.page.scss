@@ -17,7 +17,7 @@ ion-buttons ion-button {
   left: 0;
   right: 0;
   height: 35vh;
-  background: linear-gradient(to bottom, rgba(30, 41, 59, 0.95) 0%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(var(--ion-color-primary-rgb), 0.22) 0%, transparent 100%);
   z-index: 0;
   pointer-events: none;
   opacity: 0.85;
@@ -35,10 +35,10 @@ ion-buttons ion-button {
   z-index: 100;
   margin: 0 -16px;
   padding-top: max(12px, env(safe-area-inset-top));
-  background: rgba(18, 18, 18, 0.3);
+  background: rgba(var(--ion-background-color-rgb), 0.3);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--app-color-line);
   margin-bottom: 16px;
 }
 
@@ -77,7 +77,7 @@ ion-buttons ion-button {
   margin: 0;
   font-size: 1.55rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--ion-text-color);
   letter-spacing: -0.04em;
   animation: slideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
@@ -94,7 +94,7 @@ ion-buttons ion-button {
   border: none;
   padding: 0;
   margin: 0;
-  color: #fff;
+  color: var(--ion-text-color);
   font-size: 1.6rem;
   display: flex;
   align-items: center;
