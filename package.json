@@ -7,7 +7,7 @@
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/set-env.js",
-    "start": "concurrently \"node --env-file=.env backend/server.js\" \"ng serve\"",
+    "start": "concurrently \"node --env-file=.env backend/server.js\" \"ng serve --host=0.0.0.0\"",
     "prebuild": "node scripts/set-env.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",

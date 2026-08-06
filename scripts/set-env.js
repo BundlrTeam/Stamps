@@ -1,5 +1,20 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+
+// Detect local network IP (first non-internal IPv4 address)
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return 'localhost';
+}
+const localIP = getLocalIP();
 
 let env = {};
 try {
@@ -38,7 +53,7 @@ const envFileContent = `export const environment = {
   supabaseUrl: '${supabaseUrl}',
   supabaseKey: '${supabaseKey}',
   dbSupaPass: '${dbSupaPass}',
-  backendUrl: 'http://localhost:3000/api'
+  backendUrl: 'http://${localIP}:3000/api'
 };
 `;
 
@@ -47,7 +62,7 @@ const envProdFileContent = `export const environment = {
   supabaseUrl: '${supabaseUrl}',
   supabaseKey: '${supabaseKey}',
   dbSupaPass: '${dbSupaPass}',
-  backendUrl: 'http://localhost:3000/api'
+  backendUrl: 'http://${localIP}:3000/api'
 };
 `;
 
@@ -59,7 +74,9 @@ if (!fs.existsSync(envDir)) {
 
 fs.writeFileSync(path.join(envDir, 'environment.ts'), envFileContent);
 fs.writeFileSync(path.join(envDir, 'environment.prod.ts'), envProdFileContent);
-console.log('Ficheiros de ambiente Angular gerados com sucesso.');
+console.log(`Ficheiros de ambiente Angular gerados com sucesso.`);
+console.log(`Backend URL configurada para: http://${localIP}:3000/api`);
+console.log(`No teu telemóvel (mesma rede WiFi) acede a: http://${localIP}:4200`);
 
 // Executar setup do banco de dados se a connection string estiver presente
 const stringSqlSupa = env['STRING_SQLSUPA'] || process.env['STRING_SQLSUPA'] || '';
