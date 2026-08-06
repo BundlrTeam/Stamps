@@ -1,5 +1,5 @@
 
-<ion-content [scrollY]="false">
+<ion-content>
   <main class="app-page profile-page">
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -205,7 +205,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="modal-content-with-footer">
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
       <div class="step-progress-wrapper">
         <div class="step-progress-bar">
           <div class="step-progress-fill" [style.width.%]="getProgressPercentage()"></div>
@@ -233,7 +233,7 @@
                 <ion-input [(ngModel)]="newBusiness.address" name="businessAddress" label="Endereço" labelPlacement="stacked" placeholder="Rua, número, cidade"></ion-input>
               </ion-item>
               <ion-item class="form-item">
-                <ion-select [(ngModel)]="newBusiness.category" name="businessCategory" label="Categoria *" labelPlacement="stacked" placeholder="Selecione uma categoria" interface="popover" required>
+                <ion-select [(ngModel)]="newBusiness.category" name="businessCategory" label="Categoria *" labelPlacement="stacked" placeholder="Selecione uma categoria" interface="action-sheet" required>
                   <ion-select-option value="Pizzaria">Pizzaria</ion-select-option>
                   <ion-select-option value="Restaurante">Restaurante</ion-select-option>
                   <ion-select-option value="Café">Café</ion-select-option>
@@ -371,7 +371,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="modal-content-with-footer">
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
       <div class="step-card-container">
         <ion-card class="step-card">
           <ion-card-header>
@@ -486,7 +486,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="modal-content-with-footer">
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
       <div class="card-editor-scroll">
 
         <!-- A — Background Color / Image -->
@@ -657,7 +657,7 @@
 
           <div class="add-reward-form" *ngIf="showAddRewardForm">
             <ion-item class="form-item">
-              <ion-select [(ngModel)]="newRewardDraft.step" name="rewardStep" label="Etapa *" labelPlacement="stacked" interface="popover">
+              <ion-select [(ngModel)]="newRewardDraft.step" name="rewardStep" label="Etapa *" labelPlacement="stacked" interface="action-sheet">
                 <ion-select-option *ngFor="let s of STEP_OPTIONS" [value]="s" [disabled]="isRewardStepTaken(s)">Etapa {{ s }}</ion-select-option>
               </ion-select>
             </ion-item>

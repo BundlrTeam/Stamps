@@ -1,9 +1,8 @@
 .profile-page {
-  padding-bottom: 0;
+  padding-bottom: 96px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
 }
 
 // ─── Profile Header (Spotify Style) ─────────────────────────────────────────
@@ -459,6 +458,11 @@
     ion-title { font-size: 1.15rem; font-weight: 950; }
     ion-button { --color: var(--app-color-muted); font-size: 1.4rem; }
   }
+
+  // Garante scroll correto dentro do modal em mobile
+  ion-content {
+    --overflow: auto;
+  }
 }
 
 .modal-content-with-footer {
@@ -509,7 +513,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: calc(100% - 90px);
+  // Evitar min-height fixo que impede scroll em ecrãs pequenos
 }
 
 .step-card {
@@ -603,7 +607,8 @@
 .modal-footer-actions {
   background: var(--app-color-surface);
   border-top: 1px solid var(--app-color-line);
-  padding: 16px 20px 24px;
+  // Inclui safe-area-inset-bottom para iPhones com home bar e Android gesture nav
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
 }
 
 .step-actions-row {

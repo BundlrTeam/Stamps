@@ -1,7 +1,7 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from, of, BehaviorSubject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, take, catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../environments/environment';
 import { Business, StampCard, StampReward, Badge, UnlockedReward, MerchantLead, ApprovedBusiness, CardCustomization } from '../models/business.model';
@@ -69,7 +69,9 @@ export class BusinessService {
 
   loadBusinessesFromBackend() {
     const backendUrl = environment.backendUrl;
-    this.http.get<Business[]>(`${backendUrl}/businesses`).subscribe({
+    this.http.get<{ success: boolean; data: Business[] }>(`${backendUrl}/businesses`).pipe(
+      map(r => r?.data ?? [])
+    ).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
           this.businesses = data;
@@ -111,7 +113,10 @@ export class BusinessService {
   fetchApprovedBusinessFromSupabase(): Observable<ApprovedBusiness | null> {
     const backendUrl = environment.backendUrl;
     const url = `${backendUrl}/approved-businesses/my-business`;
-    return this.http.get<ApprovedBusiness>(url);
+    return this.http.get<{ success: boolean; data: ApprovedBusiness }>(url).pipe(
+      map(r => r?.data ?? null),
+      catchError(() => of(null))
+    );
   }
 
   syncMerchantLeadToSupabase(lead: MerchantLead): Observable<unknown> {
@@ -123,7 +128,10 @@ export class BusinessService {
   fetchMerchantLeadFromSupabase(email: string): Observable<MerchantLead | null> {
     const backendUrl = environment.backendUrl;
     const url = `${backendUrl}/leads/${encodeURIComponent(email)}`;
-    return this.http.get<MerchantLead>(url);
+    return this.http.get<{ success: boolean; data: MerchantLead }>(url).pipe(
+      map(r => r?.data ?? null),
+      catchError(() => of(null))
+    );
   }
 
   approveBusinessFromLead(lead: MerchantLead): ApprovedBusiness {
@@ -152,8 +160,18 @@ export class BusinessService {
     localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
     this.walletService.registerBusiness(this.buildBusinessFromApproved(approved));
 
+    // Atualizar imediatamente a lista de negócios para a homepage reagir sem esperar pelo Supabase
+    const newBiz = this.buildBusinessFromApproved(approved);
+    const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
+    if (!alreadyExists) {
+      this.businesses = [...this.businesses, newBiz];
+    } else {
+      this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
+    }
+    this.businessesSubject.next(this.businesses);
+
     this.syncApprovedBusinessToSupabase(approved).subscribe({
-      next: () => this.loadBusinessesFromBackend(),
+      next: () => this.loadBusinessesFromBackend(), // refrescar do backend para confirmar
       error: (err) => console.error('Erro ao sincronizar negócio para o Supabase:', err)
     });
 

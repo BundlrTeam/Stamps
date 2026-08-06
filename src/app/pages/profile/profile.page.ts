@@ -285,23 +285,24 @@ export class ProfilePage implements OnInit {
       services: this.newBusiness.services.filter(s => s.trim()),
       businessPhotos: validPhotos
     };
+
+    // 1. Guardar candidatura localmente e no Supabase (merchant_leads)
     localStorage.setItem(this.leadStorageKey, JSON.stringify(businessData));
     this.merchantLeadSubmitted = true;
-
-    // Sincronizar com o Supabase em background
     this.businessService.syncMerchantLeadToSupabase(businessData).subscribe({
-      next: () => {
-        console.log('Candidatura de negócio guardada com sucesso no Supabase.');
-        this.showToast('Solicitação recebida e gravada no Supabase!');
-      },
-      error: (err) => {
-        console.error('Erro ao sincronizar candidatura para o Supabase:', err);
-        this.showToast('Solicitação recebida com sucesso.');
-      }
+      next: () => console.log('Candidatura de negócio guardada com sucesso no Supabase.'),
+      error: (err) => console.error('Erro ao sincronizar candidatura para o Supabase:', err)
     });
 
+    // 2. Aprovação automática: cria o negócio em `businesses` e aparece na página principal
+    const approved = this.businessService.approveBusinessFromLead(businessData);
+    this.isBusinessApproved = true;
+    this.approvedBiz = approved;
+
     this.closeAddBusinessModal();
+    this.showToast('🎉 Negócio criado e visível na página principal!');
   }
+
 
   // ─── Demo Approval ────────────────────────────────────────────────────────
 

@@ -383,3 +383,42 @@ ion-tab-button {
 }
 
 
+// ─── Modal scroll fix (Android / Samsung) ───────────────────────────────────
+// ion-modal renderiza fora do shadow DOM do componente, por isso os estilos
+// do componente não chegam lá. Estes estilos globais são necessários.
+
+.add-business-modal,
+.edit-card-modal {
+  // Garante que o modal ocupa o ecrã todo em mobile
+  --height: 100%;
+  --width: 100%;
+
+  // Fix para scroll no Android Chrome (Samsung S21, etc.)
+  .ion-page {
+    overflow: hidden;
+  }
+
+  ion-content {
+    --overflow: auto;
+    // Ativa scroll suave por toque no Android
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Fix para o inner-scroll container do Ionic no Android
+  .inner-scroll {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  // Footer com padding seguro para Android gesture nav bar
+  ion-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+// Fix geral para ion-modal no mobile — garante scroll em qualquer modal
+ion-modal {
+  ion-content {
+    --overflow: auto;
+  }
+}
