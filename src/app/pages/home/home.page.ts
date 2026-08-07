@@ -169,7 +169,10 @@ export class HomePage implements OnInit {
     
     this.topActiveCards = sortedCards.slice(0, 3).map(c => {
       let color = this.businessService.DEFAULT_CARD_CUSTOMIZATION.backgroundColor;
-      if (c.businessId === 'my-business') {
+      const biz = this.businesses.find(b => b.id === c.businessId);
+      if (biz && biz.cardCustomization && biz.cardCustomization.backgroundColor) {
+        color = biz.cardCustomization.backgroundColor;
+      } else if (c.businessId === 'my-business') {
         const cust = this.businessService.getCardCustomization();
         if (cust && cust.backgroundColor) {
           color = cust.backgroundColor;

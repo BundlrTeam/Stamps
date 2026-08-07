@@ -1,11 +1,19 @@
 import { Component, inject, ViewChild, ElementRef, NgZone } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
-import { StampCard, Badge, UnlockedReward } from '../../models/business.model';
+import { StampCard, Badge, UnlockedReward, MerchantLead, ApprovedBusiness, CardCustomization, CustomReward } from '../../models/business.model';
 
 export type WalletTab = 'cards' | 'stamps' | 'rewards';
+
+export interface MerchantStore {
+  businessId: string;
+  name: string;
+  isApproved: boolean;
+  lead?: MerchantLead;
+  approvedDetails?: ApprovedBusiness;
+}
 
 interface ConfettiParticle {
   x: number; y: number; vx: number; vy: number;
@@ -24,6 +32,7 @@ export class WalletPage {
   private readonly businessService = inject(BusinessService);
   private readonly sessionService = inject(SessionService);
   private readonly alertController = inject(AlertController);
+  private readonly toastController = inject(ToastController);
   private readonly ngZone = inject(NgZone);
   private readonly route = inject(ActivatedRoute);
 
@@ -94,6 +103,8 @@ export class WalletPage {
     this.refreshCards();
     this.checkForNewBadges();
     this.appMode = this.sessionService.getMode();
+    this.loadMerchantStores();
+    this.activeApprovedBusiness = this.businessService.getApprovedBusiness();
   }
 
   ionViewWillLeave() {
@@ -339,5 +350,399 @@ export class WalletPage {
 
   getBadgeProgressPercent(badge: Badge): number {
     return Math.min(100, (badge.progress / badge.goal) * 100);
+  }
+
+  // --- Merchant Store/Card Methods ---
+  merchantStores: MerchantStore[] = [];
+  activeStoreIndex: number = 0;
+  approvedBiz: ApprovedBusiness | null = null;
+  activeApprovedBusiness: ApprovedBusiness | null = null;
+  activeBusinessCards: ApprovedBusiness[] = [];
+
+  showAddCardModal = false;
+  showEditCardModal = false;
+
+  cardDraft: CardCustomization = {
+    backgroundColor: '#e8652b',
+    backgroundStyle: 'color',
+    backgroundImageUrl: '',
+    stampStyle: 'color',
+    stampColor: '#ffffff',
+    stampImageUrl: '',
+    stampImageOffsetX: 50,
+    stampImageOffsetY: 50,
+    stampImageScale: 1.0,
+    customRewards: []
+  };
+  cardNameDraft = '';
+  stampImageConfirmed = false;
+  newRewardDraft: CustomReward = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
+  showAddRewardForm = false;
+  uploadingStamp = false;
+  uploadingBg = false;
+  uploadingRewardImg = false;
+
+  readonly BG_PRESETS = ['#e8652b', '#285a64', '#0f9f7a', '#d94b3d', '#d99a21', '#3b3b5c', '#1a1a2e', '#4a4e69', '#22333b'];
+  readonly STAMP_COLOR_PRESETS = ['#ffffff', '#FFE66D', '#4ECDC4', '#96CEB4', '#DDA0DD', '#F0B27A'];
+  readonly STEP_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  loadMerchantStores() {
+    const savedStores = localStorage.getItem('stamp-me-merchant-stores');
+    if (savedStores) {
+      try {
+        this.merchantStores = JSON.parse(savedStores);
+      } catch {}
+    }
+
+    if (this.merchantStores.length === 0) {
+      const approved = this.businessService.getApprovedBusiness();
+      this.merchantStores = [{
+        businessId: 'my-business',
+        name: approved ? approved.name : 'PedraMania',
+        isApproved: Boolean(approved),
+        approvedDetails: approved || undefined
+      }];
+      this.saveMerchantStores();
+    }
+
+    const activeBiz = this.businessService.getApprovedBusiness();
+    const activeId = activeBiz ? activeBiz.businessId : 'my-business';
+    const parentId = activeId.split('-card-')[0];
+
+    this.activeBusinessCards = this.merchantStores
+      .filter(s => s.isApproved && s.approvedDetails && (s.businessId === parentId || s.businessId.startsWith(parentId + '-')))
+      .map(s => s.approvedDetails!);
+
+    if (this.activeBusinessCards.length === 0 && activeBiz) {
+      this.activeBusinessCards = [activeBiz];
+    }
+  }
+
+  saveMerchantStores() {
+    localStorage.setItem('stamp-me-merchant-stores', JSON.stringify(this.merchantStores));
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
+
+  // --- Add Card Modal ---
+  openAddCardModal() {
+    this.cardNameDraft = '';
+    this.cardDraft = {
+      backgroundColor: '#e8652b',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#ffffff',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    };
+    this.stampImageConfirmed = false;
+    this.showAddRewardForm = false;
+    this.newRewardDraft = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
+    this.showAddCardModal = true;
+  }
+
+  closeAddCardModal() {
+    this.showAddCardModal = false;
+  }
+
+  async submitCreateCard() {
+    if (!this.cardNameDraft.trim()) {
+      this.showToast('O nome do cartão é obrigatório');
+      return;
+    }
+
+    const activeBiz = this.businessService.getApprovedBusiness();
+    const activeId = activeBiz ? activeBiz.businessId : 'my-business';
+    const parentId = activeId.split('-card-')[0];
+    const newId = parentId + '-card-' + Date.now();
+
+    const approved: ApprovedBusiness = {
+      businessId: newId,
+      name: this.cardNameDraft,
+      address: 'Rua do Comércio 123',
+      city: 'Porto',
+      category: 'Loja',
+      description: 'Cartão de fidelidade criado na carteira.',
+      services: ['Fidelização'],
+      photos: [
+        this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600', 'fallbacks/business-photo1.jpg'),
+        this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600', 'fallbacks/business-photo2.jpg'),
+        this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600', 'fallbacks/business-photo3.jpg')
+      ],
+      logoUrl: '',
+      cardCustomization: { ...this.cardDraft },
+      approvedAt: new Date().toISOString()
+    };
+
+    this.businessService.setApprovedBusiness(approved);
+    
+    const newStore: MerchantStore = {
+      businessId: newId,
+      name: this.cardNameDraft,
+      isApproved: true,
+      approvedDetails: approved
+    };
+
+    this.merchantStores.push(newStore);
+    this.saveMerchantStores();
+    this.loadMerchantStores();
+    this.activeApprovedBusiness = approved;
+    this.closeAddCardModal();
+    this.showToast(`Cartão "${this.cardNameDraft}" criado com sucesso!`);
+  }
+
+  async deleteStoreCard(card: ApprovedBusiness) {
+    const alert = await this.alertController.create({
+      header: 'Excluir Cartão',
+      message: `Tem certeza de que deseja remover o cartão "${card.name}"? Esta ação não pode ser desfeita.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Excluir',
+          role: 'destructive',
+          handler: () => {
+            let savedStores: MerchantStore[] = [];
+            const raw = localStorage.getItem('stamp-me-merchant-stores');
+            if (raw) {
+              try { savedStores = JSON.parse(raw); } catch {}
+            }
+            savedStores = savedStores.filter(s => s.businessId !== card.businessId);
+            localStorage.setItem('stamp-me-merchant-stores', JSON.stringify(savedStores));
+
+            if (this.activeApprovedBusiness?.businessId === card.businessId) {
+              const remaining = savedStores.find(s => s.isApproved && s.approvedDetails);
+              if (remaining && remaining.approvedDetails) {
+                this.businessService.setApprovedBusiness(remaining.approvedDetails);
+              } else {
+                this.businessService.resetBusinessDemoState();
+              }
+            }
+
+            this.loadMerchantStores();
+            this.activeApprovedBusiness = this.businessService.getApprovedBusiness();
+            this.showToast(`Cartão "${card.name}" removido.`);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // --- Edit Card Modal ---
+  openEditCardModal(store: ApprovedBusiness | null) {
+    if (!store) {
+      this.showToast('Nenhum cartão ativo para editar.');
+      return;
+    }
+    const idx = this.merchantStores.findIndex(s => s.businessId === store.businessId);
+    if (idx >= 0) this.activeStoreIndex = idx;
+
+    this.cardDraft = store.cardCustomization ? JSON.parse(JSON.stringify(store.cardCustomization)) : {
+      backgroundColor: '#e8652b',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#ffffff',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    };
+    if (!this.cardDraft.customRewards) this.cardDraft.customRewards = [];
+    this.stampImageConfirmed = this.cardDraft.stampStyle === 'image' && !!this.cardDraft.stampImageUrl;
+
+    this.showAddRewardForm = false;
+    this.newRewardDraft = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
+    this.showEditCardModal = true;
+  }
+
+  closeEditCardModal() {
+    this.showEditCardModal = false;
+  }
+
+  saveCardCustomization() {
+    const store = this.merchantStores[this.activeStoreIndex];
+    if (!store || !store.approvedDetails) return;
+
+    store.approvedDetails.cardCustomization = { ...this.cardDraft };
+    if (store.businessId === 'my-business') {
+      this.businessService.saveCardCustomization(this.cardDraft);
+    }
+    this.businessService.setApprovedBusiness(store.approvedDetails);
+
+    this.saveMerchantStores();
+    this.loadMerchantStores();
+    this.activeApprovedBusiness = store.approvedDetails;
+    this.showEditCardModal = false;
+    this.showToast('Cartão de fidelidade atualizado');
+  }
+
+  // --- Styling Helpers ---
+  selectBgColor(hex: string) { this.cardDraft = { ...this.cardDraft, backgroundColor: hex }; }
+  selectStampColor(hex: string) { this.cardDraft = { ...this.cardDraft, stampColor: hex }; }
+  setBackgroundStyle(style: 'color' | 'image') {
+    this.cardDraft = { ...this.cardDraft, backgroundStyle: style };
+  }
+  setStampStyle(style: 'color' | 'image') {
+    this.cardDraft = { ...this.cardDraft, stampStyle: style };
+    this.stampImageConfirmed = false;
+  }
+  confirmStampImage() {
+    this.stampImageConfirmed = true;
+  }
+
+  isRewardStepTaken(step: number): boolean {
+    return this.cardDraft.customRewards.some(r => r.step === step);
+  }
+
+  addCustomReward() {
+    if (!this.newRewardDraft.title.trim()) { this.showToast('O título do prémio é obrigatório'); return; }
+    if (this.isRewardStepTaken(this.newRewardDraft.step)) { this.showToast('Já existe um prémio nessa etapa'); return; }
+    this.cardDraft.customRewards = [...this.cardDraft.customRewards, { ...this.newRewardDraft }];
+    this.newRewardDraft = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
+    this.showAddRewardForm = false;
+    this.showToast('Prémio adicionado');
+  }
+
+  removeCustomReward(step: number) {
+    this.cardDraft.customRewards = this.cardDraft.customRewards.filter(r => r.step !== step);
+  }
+
+  getPreviewCardStyle(): object {
+    if (this.cardDraft.backgroundStyle === 'image' && this.cardDraft.backgroundImageUrl) {
+      return {
+        backgroundImage: `url(${this.cardDraft.backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+    }
+    return { background: this.cardDraft.backgroundColor };
+  }
+
+  getPreviewStampStyle(isStamped: boolean): object {
+    if (!isStamped) return {};
+    if (this.cardDraft.stampStyle === 'color') {
+      return { background: this.cardDraft.stampColor, borderColor: this.cardDraft.stampColor };
+    }
+    if (this.cardDraft.stampStyle === 'image' && this.cardDraft.stampImageUrl) {
+      return {
+        backgroundImage: `url(${this.cardDraft.stampImageUrl})`,
+        backgroundSize: `${this.cardDraft.stampImageScale * 100}%`,
+        backgroundPosition: `${this.cardDraft.stampImageOffsetX}% ${this.cardDraft.stampImageOffsetY}%`,
+        backgroundRepeat: 'no-repeat',
+        borderColor: 'rgba(255,255,255,0.6)'
+      };
+    }
+    return {};
+  }
+
+  getPreviewRewardLabel(slot: number): string | null {
+    const custom = this.cardDraft.customRewards.find(r => r.step === slot);
+    if (custom) return custom.title;
+    if (slot === 10) return 'Prémio Final';
+    return null;
+  }
+
+  previewHasReward(slot: number): boolean {
+    return slot === 3 || slot === 6 || slot === 10 || this.cardDraft.customRewards.some(r => r.step === slot);
+  }
+
+  async deleteCurrentStore() {
+    const store = this.activeApprovedBusiness;
+    if (!store) {
+      this.showToast('Nenhum estabelecimento ativo para remover.');
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Excluir Cartão',
+      message: `Tem certeza de que deseja remover o cartão "${store.name}"? Esta ação não pode ser desfeita.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Excluir',
+          role: 'destructive',
+          handler: () => {
+            let savedStores: MerchantStore[] = [];
+            const raw = localStorage.getItem('stamp-me-merchant-stores');
+            if (raw) {
+              try { savedStores = JSON.parse(raw); } catch {}
+            }
+            savedStores = savedStores.filter(s => s.businessId !== store.businessId);
+            localStorage.setItem('stamp-me-merchant-stores', JSON.stringify(savedStores));
+
+            this.businessService.resetBusinessDemoState();
+            
+            this.loadMerchantStores();
+            this.activeApprovedBusiness = this.businessService.getApprovedBusiness();
+            this.showToast(`Cartão "${store.name}" removido.`);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // File selection handlers
+  onCardBgFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploadingBg = true;
+    this.businessService.uploadFileToSupabase(file, 'card-backgrounds', file.name).subscribe({
+      next: (url) => {
+        this.cardDraft.backgroundImageUrl = url;
+        this.uploadingBg = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.uploadingBg = false;
+      }
+    });
+  }
+
+  onStampFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploadingStamp = true;
+    this.businessService.uploadFileToSupabase(file, 'stamps', file.name).subscribe({
+      next: (url) => {
+        this.cardDraft.stampImageUrl = url;
+        this.stampImageConfirmed = false;
+        this.uploadingStamp = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.uploadingStamp = false;
+      }
+    });
+  }
+
+  onRewardImgFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploadingRewardImg = true;
+    this.businessService.uploadFileToSupabase(file, 'rewards', file.name).subscribe({
+      next: (url) => {
+        this.newRewardDraft.imageUrl = url;
+        this.uploadingRewardImg = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.uploadingRewardImg = false;
+      }
+    });
   }
 }

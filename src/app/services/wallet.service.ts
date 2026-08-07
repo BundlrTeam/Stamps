@@ -65,19 +65,17 @@ export class WalletService {
       }
     }
 
-    return cards
-      .filter(card => Boolean(this.getBusinessById(card.businessId)))
-      .map(card => {
-        const biz = this.getBusinessById(card.businessId)!;
-        return {
-          ...card,
-          businessName: biz.name,
-          businessImage: biz.image,
-          businessLogo: biz.logo,
-          category: biz.category,
-          nextRewardAt: this.stampService.getNextRewardAt(card.stamps)
-        };
-      });
+    return cards.map(card => {
+      const biz = this.getBusinessById(card.businessId);
+      return {
+        ...card,
+        businessName: biz ? biz.name : card.businessName,
+        businessImage: biz ? biz.image : card.businessImage,
+        businessLogo: biz ? biz.logo : card.businessLogo,
+        category: biz ? biz.category : card.category,
+        nextRewardAt: this.stampService.getNextRewardAt(card.stamps)
+      };
+    });
   }
 
   private createSeedCards(): StampCard[] {

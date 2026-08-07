@@ -50,6 +50,30 @@ export class BusinessService {
     this.businessesSubject.next(this.businesses);
     this.approvedBusiness = this.loadApprovedBusiness();
 
+    // Sync local merchant stores to the backend database on startup
+    const savedStores = localStorage.getItem('stamp-me-merchant-stores');
+    if (savedStores) {
+      try {
+        const stores = JSON.parse(savedStores);
+        if (Array.isArray(stores)) {
+          for (const store of stores) {
+            if (store.isApproved && store.approvedDetails) {
+              const newBiz = this.buildBusinessFromApproved(store.approvedDetails);
+              const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
+              if (!alreadyExists) {
+                this.businesses = [newBiz, ...this.businesses];
+              }
+              this.syncApprovedBusinessToSupabase(store.approvedDetails).subscribe({
+                next: () => this.loadBusinessesFromBackend(),
+                error: (err) => console.error('Erro ao sincronizar loja local para o backend:', err)
+              });
+            }
+          }
+          this.businessesSubject.next(this.businesses);
+        }
+      } catch {}
+    }
+
     this.loadBusinessesFromBackend();
 
     this.fetchApprovedBusinessFromSupabase()
@@ -74,7 +98,11 @@ export class BusinessService {
     ).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          this.businesses = data;
+          const customLocalCards = this.businesses.filter(b => b.id.startsWith('my-business-') && !data.some(d => d.id === b.id));
+          this.businesses = [...customLocalCards, ...data];
+          for (const biz of this.businesses) {
+            this.walletService.registerBusiness(biz);
+          }
           this.businessesSubject.next(this.businesses);
         }
       },
@@ -192,6 +220,21 @@ export class BusinessService {
   setApprovedBusiness(approved: ApprovedBusiness): void {
     this.approvedBusiness = approved;
     localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
+
+    this.walletService.registerBusiness(this.buildBusinessFromApproved(approved));
+    const newBiz = this.buildBusinessFromApproved(approved);
+    const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
+    if (!alreadyExists) {
+      this.businesses = [newBiz, ...this.businesses];
+    } else {
+      this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
+    }
+    this.businessesSubject.next(this.businesses);
+
+    this.syncApprovedBusinessToSupabase(approved).subscribe({
+      next: () => this.loadBusinessesFromBackend(),
+      error: (err) => console.error('Erro ao sincronizar negócio para o Supabase:', err)
+    });
   }
 
   updateApprovedBusinessDetails(updates: Partial<Pick<ApprovedBusiness, 'description' | 'address' | 'services' | 'photos' | 'logoUrl'>>): void {
@@ -216,6 +259,10 @@ export class BusinessService {
     if (!this.approvedBusiness) return;
     this.approvedBusiness = { ...this.approvedBusiness, cardCustomization: { ...customization } };
     localStorage.setItem(this.approvedBusinessKey, JSON.stringify(this.approvedBusiness));
+
+    const newBiz = this.buildBusinessFromApproved(this.approvedBusiness);
+    this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
+    this.businessesSubject.next(this.businesses);
 
     this.syncApprovedBusinessToSupabase(this.approvedBusiness).subscribe({
       next: () => this.loadBusinessesFromBackend(),
@@ -266,7 +313,8 @@ export class BusinessService {
       services: approved.services,
       reward: 'Prémio especial',
       rewardDescription: 'Complete o cartão e ganhe um prémio especial.',
-      qrCodePattern: `STAMP_QR_${id.toUpperCase().replace(/-/g, '_')}`
+      qrCodePattern: `STAMP_QR_${id.toUpperCase().replace(/-/g, '_')}`,
+      cardCustomization: approved.cardCustomization
     };
   }
 
@@ -289,7 +337,7 @@ export class BusinessService {
   }
 
   getBusinessById(id: string): Business | undefined {
-    if (id === 'my-business' && this.approvedBusiness) {
+    if (this.approvedBusiness && this.approvedBusiness.businessId === id) {
       return this.buildBusinessFromApproved(this.approvedBusiness);
     }
     return this.businesses.find(business => business.id === id);

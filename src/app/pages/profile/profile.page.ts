@@ -102,19 +102,7 @@ export class ProfilePage implements OnInit {
   uploadingPhotos: boolean[] = [false, false, false, false, false];
   uploadingLeadPhotos: boolean[] = [false, false, false, false, false];
 
-  // ─── Edit Card Modal ──────────────────────────────────────────────────────
-  showEditCardModal: boolean = false;
-  cardDraft: CardCustomization = { ...this.businessService.DEFAULT_CARD_CUSTOMIZATION };
-  stampImageConfirmed: boolean = false;
-  newRewardDraft: CustomReward = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
-  showAddRewardForm: boolean = false;
-  uploadingStamp: boolean = false;
-  uploadingBg: boolean = false;
-  uploadingRewardImg: boolean = false;
 
-  readonly BG_PRESETS = ['#e8652b', '#285a64', '#0f9f7a', '#d94b3d', '#d99a21', '#3b3b5c', '#1a1a2e', '#4a4e69', '#22333b'];
-  readonly STAMP_COLOR_PRESETS = ['#ffffff', '#FFE66D', '#4ECDC4', '#96CEB4', '#DDA0DD', '#F0B27A'];
-  readonly STEP_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // ─── QR Generator ────────────────────────────────────────────────────────
   qrStampsCount: number = 1;
@@ -246,8 +234,7 @@ export class ProfilePage implements OnInit {
       this.activeProfile = 'business';
       setTimeout(() => this.openEditBusinessModal(), 150);
     } else if (editParam === 'card') {
-      this.activeProfile = 'business';
-      setTimeout(() => this.openEditCardModal(), 150);
+      this.router.navigate(['/tabs/wallet']);
     } else if (actionParam === 'addBusiness') {
       this.activeProfile = 'customer';
       setTimeout(() => this.openAddBusinessModal(), 150);
@@ -613,160 +600,9 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  onStampFileSelected(event: any) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    this.uploadingStamp = true;
-    this.businessService.uploadFileToSupabase(file, 'stamps', file.name).subscribe({
-      next: (url) => {
-        this.cardDraft.stampImageUrl = url;
-        this.stampImageConfirmed = false;
-        this.uploadingStamp = false;
-        this.showToast('Carimbo carregado');
-      },
-      error: (err) => {
-        console.error(err);
-        this.uploadingStamp = false;
-        this.showToast('Erro no envio do carimbo');
-      }
-    });
-  }
 
-  onCardBgFileSelected(event: any) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    this.uploadingBg = true;
-    this.businessService.uploadFileToSupabase(file, 'cards', file.name).subscribe({
-      next: (url) => {
-        this.cardDraft.backgroundImageUrl = url;
-        this.uploadingBg = false;
-        this.showToast('Fundo do cartão carregado');
-      },
-      error: (err) => {
-        console.error(err);
-        this.uploadingBg = false;
-        this.showToast('Erro no envio do fundo');
-      }
-    });
-  }
 
-  onRewardImgFileSelected(event: any) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    this.uploadingRewardImg = true;
-    this.businessService.uploadFileToSupabase(file, 'rewards', file.name).subscribe({
-      next: (url) => {
-        this.newRewardDraft.imageUrl = url;
-        this.uploadingRewardImg = false;
-        this.showToast('Imagem do prémio carregada');
-      },
-      error: (err) => {
-        console.error(err);
-        this.uploadingRewardImg = false;
-        this.showToast('Erro no envio da imagem');
-      }
-    });
-  }
 
-  // ─── Edit Card Modal ──────────────────────────────────────────────────────
-
-  openEditCardModal() {
-    const saved = this.businessService.getCardCustomization();
-    this.cardDraft = {
-      ...saved,
-      backgroundStyle: saved.backgroundStyle ?? 'color',
-      backgroundImageUrl: saved.backgroundImageUrl ?? '',
-      customRewards: [...saved.customRewards]
-    };
-    this.stampImageConfirmed = this.cardDraft.stampStyle === 'image' && !!this.cardDraft.stampImageUrl;
-    this.showAddRewardForm = false;
-    this.newRewardDraft = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
-    this.showEditCardModal = true;
-  }
-
-  closeEditCardModal() { this.showEditCardModal = false; }
-
-  selectBgColor(hex: string) { this.cardDraft = { ...this.cardDraft, backgroundColor: hex }; }
-  selectStampColor(hex: string) { this.cardDraft = { ...this.cardDraft, stampColor: hex }; }
-
-  setBackgroundStyle(style: 'color' | 'image') {
-    this.cardDraft = { ...this.cardDraft, backgroundStyle: style };
-  }
-
-  setStampStyle(style: 'color' | 'image') {
-    this.cardDraft = { ...this.cardDraft, stampStyle: style };
-    this.stampImageConfirmed = false;
-  }
-
-  confirmStampImage() {
-    this.stampImageConfirmed = true;
-  }
-
-  isRewardStepTaken(step: number): boolean {
-    return this.cardDraft.customRewards.some(r => r.step === step);
-  }
-
-  addCustomReward() {
-    if (!this.newRewardDraft.title.trim()) { this.showToast('O título do prémio é obrigatório'); return; }
-    if (this.isRewardStepTaken(this.newRewardDraft.step)) { this.showToast('Já existe um prémio nessa etapa'); return; }
-    this.cardDraft.customRewards = [...this.cardDraft.customRewards, { ...this.newRewardDraft }];
-    this.newRewardDraft = { step: 1, imageUrl: '', title: '', description: '', validityDays: 30 };
-    this.showAddRewardForm = false;
-    this.showToast('Prémio adicionado');
-  }
-
-  removeCustomReward(step: number) {
-    this.cardDraft.customRewards = this.cardDraft.customRewards.filter(r => r.step !== step);
-  }
-
-  saveCardCustomization() {
-    this.businessService.saveCardCustomization(this.cardDraft);
-    this.approvedBiz = this.businessService.getApprovedBusiness();
-    this.showEditCardModal = false;
-    this.showToast('Cartão de fidelidade atualizado');
-  }
-
-  getPreviewCardStyle(): object {
-    if (this.cardDraft.backgroundStyle === 'image' && this.cardDraft.backgroundImageUrl) {
-      return {
-        backgroundImage: `url(${this.cardDraft.backgroundImageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      };
-    }
-    return { background: this.cardDraft.backgroundColor };
-  }
-
-  getPreviewStampStyle(isStamped: boolean): object {
-    if (!isStamped) return {};
-    if (this.cardDraft.stampStyle === 'color') {
-      return { background: this.cardDraft.stampColor, borderColor: this.cardDraft.stampColor };
-    }
-    if (this.cardDraft.stampStyle === 'image' && this.cardDraft.stampImageUrl) {
-      return {
-        backgroundImage: `url(${this.cardDraft.stampImageUrl})`,
-        backgroundSize: `${this.cardDraft.stampImageScale * 100}%`,
-        backgroundPosition: `${this.cardDraft.stampImageOffsetX}% ${this.cardDraft.stampImageOffsetY}%`,
-        backgroundRepeat: 'no-repeat',
-        borderColor: 'rgba(255,255,255,0.6)'
-      };
-    }
-    return {};
-  }
-
-  getPreviewRewardLabel(slot: number): string | null {
-    const custom = this.cardDraft.customRewards.find(r => r.step === slot);
-    if (custom) return custom.title;
-    if (slot === 3) return '10% desc.';
-    if (slot === 6) return '20% desc.';
-    if (slot === 10) return 'Prémio';
-    return null;
-  }
-
-  previewHasReward(slot: number): boolean {
-    return slot === 3 || slot === 6 || slot === 10 || this.cardDraft.customRewards.some(r => r.step === slot);
-  }
 
   // ─── QR Code Generator ───────────────────────────────────────────────────
 

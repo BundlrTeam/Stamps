@@ -2,6 +2,7 @@ import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@an
 import { ActivatedRoute, Router } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { Business } from '../../models/business.model';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-business-detail',
@@ -15,6 +16,7 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly businessService = inject(BusinessService);
+  private readonly sessionService = inject(SessionService);
 
   business: Business | undefined;
   isFollowing: boolean = false;
@@ -94,7 +96,8 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
       this.business = this.businessService.getBusinessById(id);
       this.notFound = !this.business;
       this.isFollowing = this.businessService.isFollowing(id);
-      this.isOwnBusiness = id === 'my-business';
+      const mode = this.sessionService.getMode();
+      this.isOwnBusiness = mode === 'business' && (id === 'my-business' || id.startsWith('my-business-'));
     }
   }
 

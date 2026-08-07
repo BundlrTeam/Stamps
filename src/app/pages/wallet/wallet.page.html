@@ -58,8 +58,11 @@
       <div class="spotify-header">
       <h1 class="spotify-greeting">Carteira</h1>
       <div class="spotify-actions">
-        <button class="icon-action-btn" *ngIf="stampCards.length > 0 && activeTab === 'cards' && !isSelecting" (click)="startSelection()" aria-label="Remover">
+        <button class="icon-action-btn" *ngIf="stampCards.length > 0 && activeTab === 'cards' && !isSelecting && appMode === 'customer'" (click)="startSelection()" aria-label="Remover">
           <ion-icon name="trash-outline"></ion-icon>
+        </button>
+        <button class="icon-action-btn" *ngIf="appMode === 'business'" (click)="openAddCardModal()" aria-label="Adicionar">
+          <ion-icon name="add-outline"></ion-icon>
         </button>
         <button class="icon-action-btn" *ngIf="isSelecting" (click)="cancelSelection()" aria-label="Cancelar">
           <ion-icon name="close-outline"></ion-icon>
@@ -304,27 +307,38 @@
           <p style="color: var(--app-color-muted); margin: 0;">Faça a gestão dos seus cartões de fidelidade ativos.</p>
         </div>
 
-        <div class="business-card-preview" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 24px; backdrop-filter: blur(12px);">
-          <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-            <ion-icon name="card-outline" style="font-size: 2rem; color: var(--ion-color-primary);"></ion-icon>
-            <span style="font-size: 1.25rem; font-weight: 700;">Cartão Principal</span>
+        <div *ngFor="let card of activeBusinessCards" class="business-card-preview" [style.background]="card.cardCustomization?.backgroundColor || 'var(--ion-color-primary)'" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 24px; backdrop-filter: blur(12px); margin-bottom: 24px; position: relative;">
+          <!-- Absolutely positioned white delete button -->
+          <button *ngIf="activeBusinessCards.length > 1" (click)="deleteStoreCard(card)" aria-label="Remover" style="position: absolute; top: 20px; right: 20px; background: transparent; border: none; padding: 4px; margin: 0; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <ion-icon name="trash-outline" style="font-size: 1.4rem;"></ion-icon>
+          </button>
+
+          <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-right: 32px;">
+            <ion-icon name="card-outline" style="font-size: 2rem; color: #fff;"></ion-icon>
+            <span style="font-size: 1.25rem; font-weight: 700; color: #fff;">{{ card.name }}</span>
           </div>
           
           <div class="card-stats" style="display: flex; gap: 32px; margin-bottom: 32px;">
             <div>
-              <strong style="display: block; font-size: 1.5rem; color: var(--ion-color-primary);">1240</strong>
-              <span style="color: var(--app-color-muted); font-size: 0.85rem; text-transform: uppercase;">Selos</span>
+              <strong style="display: block; font-size: 1.5rem; color: #fff;">{{ card.businessId.includes('my-business') ? '1240' : '450' }}</strong>
+              <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem; text-transform: uppercase;">Selos</span>
             </div>
             <div>
-              <strong style="display: block; font-size: 1.5rem; color: var(--ion-color-secondary);">345</strong>
-              <span style="color: var(--app-color-muted); font-size: 0.85rem; text-transform: uppercase;">Clientes</span>
+              <strong style="display: block; font-size: 1.5rem; color: #fff;">{{ card.businessId.includes('my-business') ? '345' : '120' }}</strong>
+              <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem; text-transform: uppercase;">Clientes</span>
             </div>
           </div>
           
-          <ion-button expand="block" shape="round" routerLink="/tabs/profile" style="--background: var(--ion-color-primary); --color: white; font-weight: 700; height: 48px;">
+          <ion-button expand="block" shape="round" (click)="openEditCardModal(card)" style="--background: #fff; --color: var(--ion-color-primary); font-weight: 700; height: 48px; margin: 0;">
             <ion-icon name="create-outline" slot="start"></ion-icon>
-            Gerir Cartão (Perfil)
+            Editar Cartão
           </ion-button>
+        </div>
+
+        <div *ngIf="activeBusinessCards.length === 0" style="border: 2px dashed rgba(255,255,255,0.15); border-radius: 24px; padding: 32px; text-align: center; background: rgba(255,255,255,0.01);">
+          <ion-icon name="alert-circle-outline" style="font-size: 2.5rem; color: var(--app-color-muted); margin-bottom: 8px;"></ion-icon>
+          <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 700;">Nenhum estabelecimento ativo</h3>
+          <p style="margin: 0; font-size: 0.85rem; color: var(--app-color-muted);">Selecione ou aprove um estabelecimento na página inicial.</p>
         </div>
 
       </section>
@@ -332,3 +346,556 @@
 
   </main>
 </ion-content>
+
+<!-- Create Loyalty Card Modal -->
+<ion-modal [isOpen]="showAddCardModal" (didDismiss)="closeAddCardModal()" class="edit-card-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Novo Cartão</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeAddCardModal()" aria-label="Fechar">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
+      <div class="card-editor-scroll">
+
+        <!-- Card Name Field (Required) -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Nome do Cartão</h3>
+              <p>Dê um nome para identificar este cartão de fidelidade.</p>
+            </div>
+          </div>
+          <ion-item class="form-item" style="--background: transparent; margin-top: 12px; border: 1px solid var(--app-color-line); border-radius: var(--app-radius-md);">
+            <ion-input [(ngModel)]="cardNameDraft" name="cardName" placeholder="Ex: Cartão de Almoços, Cliente VIP" required style="color: var(--ion-text-color);"></ion-input>
+          </ion-item>
+        </div>
+
+        <!-- A — Background Color / Image -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="color-palette-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Fundo do Cartão</h3>
+              <p>Selecione cor sólida ou imagem personalizada.</p>
+            </div>
+          </div>
+
+          <ion-segment [(ngModel)]="cardDraft.backgroundStyle" (ionChange)="setBackgroundStyle(cardDraft.backgroundStyle || 'color')" class="stamp-style-segment" style="margin-bottom: 16px;">
+            <ion-segment-button value="color">
+              <ion-label>Cor Sólida</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="image">
+              <ion-label>Imagem</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <!-- Cor Sólida -->
+          <div *ngIf="cardDraft.backgroundStyle === 'color'" class="color-preset-grid" role="radiogroup" aria-label="Cores de fundo">
+            <button type="button"
+                    *ngFor="let color of BG_PRESETS"
+                    [style.background]="color"
+                    [class.selected]="cardDraft.backgroundColor === color"
+                    (click)="selectBgColor(color)"
+                    class="color-swatch"
+                    [attr.aria-label]="'Cor ' + color"
+                    [attr.aria-checked]="cardDraft.backgroundColor === color">
+              <ion-icon *ngIf="cardDraft.backgroundColor === color" name="checkmark" class="swatch-check" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Imagem de Fundo -->
+          <div *ngIf="cardDraft.backgroundStyle === 'image'" class="stamp-image-section">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div class="bg-preview-box" style="width: 80px; height: 50px; border-radius: var(--app-radius-md); border: 2px solid var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="cardDraft.backgroundImageUrl ? 'url(\'' + cardDraft.backgroundImageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingBg"></ion-spinner>
+                <ion-icon *ngIf="!cardDraft.backgroundImageUrl && !uploadingBg" name="image-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #bgFileInputAdd (change)="onCardBgFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="bgFileInputAdd.click()" [disabled]="uploadingBg">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Fundo
+                </ion-button>
+                <p style="margin: 4px 0 0; font-size: 0.75rem; color: var(--app-color-muted);">Formato JPG ou PNG.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B — Stamp Style -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="ellipse-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Estilo do Carimbo</h3>
+              <p>Cor sólida ou imagem personalizada.</p>
+            </div>
+          </div>
+
+          <ion-segment [(ngModel)]="cardDraft.stampStyle" (ionChange)="setStampStyle(cardDraft.stampStyle)" class="stamp-style-segment">
+            <ion-segment-button value="color">
+              <ion-label>Cor</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="image">
+              <ion-label>Imagem</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <div *ngIf="cardDraft.stampStyle === 'color'" class="color-preset-grid stamp-color-grid" style="margin-top: 16px;" role="radiogroup" aria-label="Cores do carimbo">
+            <button type="button"
+                    *ngFor="let color of STAMP_COLOR_PRESETS"
+                    [style.background]="color"
+                    [style.borderColor]="color === '#ffffff' ? 'var(--app-color-line)' : color"
+                    [class.selected]="cardDraft.stampColor === color"
+                    (click)="selectStampColor(color)"
+                    class="color-swatch"
+                    [attr.aria-label]="'Cor carimbo ' + color">
+              <ion-icon *ngIf="cardDraft.stampColor === color" name="checkmark" class="swatch-check" [style.color]="color === '#ffffff' ? '#333' : '#fff'" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <div *ngIf="cardDraft.stampStyle === 'image'" class="stamp-image-section">
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 12px; margin-bottom: 12px;">
+              <div class="stamp-preview-box" style="width: 60px; height: 60px; border-radius: 50%; border: 2px dashed var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="cardDraft.stampImageUrl ? 'url(\'' + cardDraft.stampImageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingStamp"></ion-spinner>
+                <ion-icon *ngIf="!cardDraft.stampImageUrl && !uploadingStamp" name="star-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #stampFileInputAdd (change)="onStampFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="stampFileInputAdd.click()" [disabled]="uploadingStamp">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Carimbo
+                </ion-button>
+              </div>
+            </div>
+
+            <div class="stamp-image-cropper" *ngIf="cardDraft.stampImageUrl && !stampImageConfirmed">
+              <p class="cropper-label">Ajuste a imagem no círculo:</p>
+              <div class="crop-preview-circle">
+                <img [src]="cardDraft.stampImageUrl"
+                     [style.transform]="'scale(' + cardDraft.stampImageScale + ') translate(' + (cardDraft.stampImageOffsetX - 50) + '%, ' + (cardDraft.stampImageOffsetY - 50) + '%)'"
+                     alt="Pré-visualização do carimbo" />
+              </div>
+              <div class="range-label">
+                <span>Zoom</span>
+                <ion-range min="1" max="3" step="0.1" [(ngModel)]="cardDraft.stampImageScale" aria-label="Zoom da imagem"></ion-range>
+              </div>
+              <div class="range-label">
+                <span>Posição X</span>
+                <ion-range min="0" max="100" [(ngModel)]="cardDraft.stampImageOffsetX" aria-label="Posição horizontal"></ion-range>
+              </div>
+              <div class="range-label">
+                <span>Posição Y</span>
+                <ion-range min="0" max="100" [(ngModel)]="cardDraft.stampImageOffsetY" aria-label="Posição vertical"></ion-range>
+              </div>
+              <ion-button expand="block" shape="round" color="primary" (click)="confirmStampImage()">
+                <ion-icon name="checkmark-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+                Confirmar imagem
+              </ion-button>
+            </div>
+
+            <div class="stamp-confirmed-preview" *ngIf="cardDraft.stampImageUrl && stampImageConfirmed">
+              <div class="stamp-confirmed-circle">
+                <img [src]="cardDraft.stampImageUrl"
+                     [style.transform]="'scale(' + cardDraft.stampImageScale + ') translate(' + (cardDraft.stampImageOffsetX - 50) + '%, ' + (cardDraft.stampImageOffsetY - 50) + '%)'"
+                     alt="Carimbo confirmado" />
+              </div>
+              <ion-button fill="clear" size="small" (click)="stampImageConfirmed = false">
+                <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
+                Reajustar
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- C — Custom Rewards -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Prémios</h3>
+              <p>Adicione prémios especiais em etapas à sua escolha.</p>
+            </div>
+          </div>
+
+          <div class="rewards-list" *ngIf="cardDraft.customRewards.length > 0">
+            <div class="reward-chip" *ngFor="let r of cardDraft.customRewards">
+              <div class="reward-chip-info">
+                <span class="reward-chip-step">Etapa {{ r.step }}</span>
+                <strong>{{ r.title }}</strong>
+                <span class="reward-chip-validity">Validade: {{ r.validityDays }} dias</span>
+              </div>
+              <ion-button fill="clear" color="danger" size="small" (click)="removeCustomReward(r.step)" aria-label="Remover prémio">
+                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <ion-button *ngIf="!showAddRewardForm" fill="clear" (click)="showAddRewardForm = true" class="add-reward-btn">
+            <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+            Adicionar prémio
+          </ion-button>
+
+          <div class="add-reward-form" *ngIf="showAddRewardForm">
+            <ion-item class="form-item">
+              <ion-select [(ngModel)]="newRewardDraft.step" name="rewardStep" label="Etapa *" labelPlacement="stacked" interface="action-sheet">
+                <ion-select-option *ngFor="let s of STEP_OPTIONS" [value]="s" [disabled]="isRewardStepTaken(s)">Etapa {{ s }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <div style="display: flex; align-items: center; gap: 16px; margin: 12px 16px;">
+              <div class="reward-preview-box" style="width: 60px; height: 60px; border-radius: var(--app-radius-md); border: 2px dashed var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="newRewardDraft.imageUrl ? 'url(\'' + newRewardDraft.imageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingRewardImg"></ion-spinner>
+                <ion-icon *ngIf="!newRewardDraft.imageUrl && !uploadingRewardImg" name="gift-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #rewardFileInputAdd (change)="onRewardImgFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="rewardFileInputAdd.click()" [disabled]="uploadingRewardImg">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Foto do Prémio
+                </ion-button>
+              </div>
+            </div>
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newRewardDraft.title" name="rewardTitle" label="Título do prémio *" labelPlacement="stacked" placeholder="Ex: Desconto especial"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-textarea [(ngModel)]="newRewardDraft.description" name="rewardDesc" label="Descrição" labelPlacement="stacked" placeholder="Descreva o prémio..." rows="2"></ion-textarea>
+            </ion-item>
+            <div class="range-label" style="padding: 0 16px 8px;">
+              <span>Validade: {{ newRewardDraft.validityDays }} dias</span>
+              <ion-range min="14" max="90" step="1" [(ngModel)]="newRewardDraft.validityDays" aria-label="Validade do prémio"></ion-range>
+            </div>
+            <div class="reward-form-actions">
+              <ion-button fill="clear" color="medium" (click)="showAddRewardForm = false">Cancelar</ion-button>
+              <ion-button shape="round" color="primary" (click)="addCustomReward()">
+                <ion-icon name="add-outline" slot="start" aria-hidden="true"></ion-icon>
+                Adicionar
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- D — Live Previewer -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Pré-visualização</h3>
+              <p>Veja como o cartão ficará para os clientes.</p>
+            </div>
+          </div>
+
+          <div class="card-preview" [ngStyle]="getPreviewCardStyle()" role="img" aria-label="Pré-visualização do cartão de fidelidade">
+            <div class="card-preview-header">
+              <div>
+                <span>Cartão de Fidelidade</span>
+                <strong>0 / 10 selos</strong>
+              </div>
+              <ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon>
+            </div>
+            <div class="card-preview-grid">
+              <div *ngFor="let slot of [1,2,3,4,5,6,7,8,9,10]"
+                   class="preview-slot"
+                   [class.preview-final]="slot === 10">
+                <div class="preview-circle" [ngStyle]="getPreviewStampStyle(false)">
+                  <ion-icon *ngIf="previewHasReward(slot)" name="gift-outline" class="preview-reward-icon" aria-hidden="true"></ion-icon>
+                  <span *ngIf="!previewHasReward(slot)" class="preview-slot-num">{{ slot }}</span>
+                </div>
+                <span *ngIf="previewHasReward(slot)" class="preview-reward-tag">{{ getPreviewRewardLabel(slot) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border modal-footer-actions">
+      <div class="step-actions-row">
+        <ion-button fill="clear" (click)="closeAddCardModal()" class="btn-prev">Cancelar</ion-button>
+        <ion-button shape="round" color="primary" (click)="submitCreateCard()" [disabled]="!cardNameDraft.trim()" class="btn-next">
+          <ion-icon name="checkmark-outline" slot="start" aria-hidden="true"></ion-icon>
+          Criar Cartão
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+
+<!-- Edit Loyalty Card Modal -->
+<ion-modal [isOpen]="showEditCardModal" (didDismiss)="closeEditCardModal()" class="edit-card-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Editar Cartão</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditCardModal()" aria-label="Fechar">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
+      <div class="card-editor-scroll">
+
+        <!-- A — Background Color / Image -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="color-palette-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Fundo do Cartão</h3>
+              <p>Selecione cor sólida ou imagem personalizada.</p>
+            </div>
+          </div>
+
+          <ion-segment [(ngModel)]="cardDraft.backgroundStyle" (ionChange)="setBackgroundStyle(cardDraft.backgroundStyle || 'color')" class="stamp-style-segment" style="margin-bottom: 16px;">
+            <ion-segment-button value="color">
+              <ion-label>Cor Sólida</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="image">
+              <ion-label>Imagem</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <!-- Cor Sólida -->
+          <div *ngIf="cardDraft.backgroundStyle === 'color'" class="color-preset-grid" role="radiogroup" aria-label="Cores de fundo">
+            <button type="button"
+                    *ngFor="let color of BG_PRESETS"
+                    [style.background]="color"
+                    [class.selected]="cardDraft.backgroundColor === color"
+                    (click)="selectBgColor(color)"
+                    class="color-swatch"
+                    [attr.aria-label]="'Cor ' + color"
+                    [attr.aria-checked]="cardDraft.backgroundColor === color">
+              <ion-icon *ngIf="cardDraft.backgroundColor === color" name="checkmark" class="swatch-check" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Imagem de Fundo -->
+          <div *ngIf="cardDraft.backgroundStyle === 'image'" class="stamp-image-section">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div class="bg-preview-box" style="width: 80px; height: 50px; border-radius: var(--app-radius-md); border: 2px solid var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="cardDraft.backgroundImageUrl ? 'url(\'' + cardDraft.backgroundImageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingBg"></ion-spinner>
+                <ion-icon *ngIf="!cardDraft.backgroundImageUrl && !uploadingBg" name="image-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #bgFileInputEdit (change)="onCardBgFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="bgFileInputEdit.click()" [disabled]="uploadingBg">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Fundo
+                </ion-button>
+                <p style="margin: 4px 0 0; font-size: 0.75rem; color: var(--app-color-muted);">Formato JPG ou PNG.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B — Stamp Style -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="ellipse-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Estilo do Carimbo</h3>
+              <p>Cor sólida ou imagem personalizada.</p>
+            </div>
+          </div>
+
+          <ion-segment [(ngModel)]="cardDraft.stampStyle" (ionChange)="setStampStyle(cardDraft.stampStyle)" class="stamp-style-segment">
+            <ion-segment-button value="color">
+              <ion-label>Cor</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="image">
+              <ion-label>Imagem</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <div *ngIf="cardDraft.stampStyle === 'color'" class="color-preset-grid stamp-color-grid" style="margin-top: 16px;" role="radiogroup" aria-label="Cores do carimbo">
+            <button type="button"
+                    *ngFor="let color of STAMP_COLOR_PRESETS"
+                    [style.background]="color"
+                    [style.borderColor]="color === '#ffffff' ? 'var(--app-color-line)' : color"
+                    [class.selected]="cardDraft.stampColor === color"
+                    (click)="selectStampColor(color)"
+                    class="color-swatch"
+                    [attr.aria-label]="'Cor carimbo ' + color">
+              <ion-icon *ngIf="cardDraft.stampColor === color" name="checkmark" class="swatch-check" [style.color]="color === '#ffffff' ? '#333' : '#fff'" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <div *ngIf="cardDraft.stampStyle === 'image'" class="stamp-image-section">
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 12px; margin-bottom: 12px;">
+              <div class="stamp-preview-box" style="width: 60px; height: 60px; border-radius: 50%; border: 2px dashed var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="cardDraft.stampImageUrl ? 'url(\'' + cardDraft.stampImageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingStamp"></ion-spinner>
+                <ion-icon *ngIf="!cardDraft.stampImageUrl && !uploadingStamp" name="star-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #stampFileInputEdit (change)="onStampFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="stampFileInputEdit.click()" [disabled]="uploadingStamp">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Carimbo
+                </ion-button>
+              </div>
+            </div>
+
+            <div class="stamp-image-cropper" *ngIf="cardDraft.stampImageUrl && !stampImageConfirmed">
+              <p class="cropper-label">Ajuste a imagem no círculo:</p>
+              <div class="crop-preview-circle">
+                <img [src]="cardDraft.stampImageUrl"
+                     [style.transform]="'scale(' + cardDraft.stampImageScale + ') translate(' + (cardDraft.stampImageOffsetX - 50) + '%, ' + (cardDraft.stampImageOffsetY - 50) + '%)'"
+                     alt="Pré-visualização do carimbo" />
+              </div>
+              <div class="range-label">
+                <span>Zoom</span>
+                <ion-range min="1" max="3" step="0.1" [(ngModel)]="cardDraft.stampImageScale" aria-label="Zoom da imagem"></ion-range>
+              </div>
+              <div class="range-label">
+                <span>Posição X</span>
+                <ion-range min="0" max="100" [(ngModel)]="cardDraft.stampImageOffsetX" aria-label="Posição horizontal"></ion-range>
+              </div>
+              <div class="range-label">
+                <span>Posição Y</span>
+                <ion-range min="0" max="100" [(ngModel)]="cardDraft.stampImageOffsetY" aria-label="Posição vertical"></ion-range>
+              </div>
+              <ion-button expand="block" shape="round" color="primary" (click)="confirmStampImage()">
+                <ion-icon name="checkmark-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+                Confirmar imagem
+              </ion-button>
+            </div>
+
+            <div class="stamp-confirmed-preview" *ngIf="cardDraft.stampImageUrl && stampImageConfirmed">
+              <div class="stamp-confirmed-circle">
+                <img [src]="cardDraft.stampImageUrl"
+                     [style.transform]="'scale(' + cardDraft.stampImageScale + ') translate(' + (cardDraft.stampImageOffsetX - 50) + '%, ' + (cardDraft.stampImageOffsetY - 50) + '%)'"
+                     alt="Carimbo confirmado" />
+              </div>
+              <ion-button fill="clear" size="small" (click)="stampImageConfirmed = false">
+                <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
+                Reajustar
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- C — Custom Rewards -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="gift-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Prémios</h3>
+              <p>Adicione prémios especiais em etapas à sua escolha.</p>
+            </div>
+          </div>
+
+          <div class="rewards-list" *ngIf="cardDraft.customRewards.length > 0">
+            <div class="reward-chip" *ngFor="let r of cardDraft.customRewards">
+              <div class="reward-chip-info">
+                <span class="reward-chip-step">Etapa {{ r.step }}</span>
+                <strong>{{ r.title }}</strong>
+                <span class="reward-chip-validity">Validade: {{ r.validityDays }} dias</span>
+              </div>
+              <ion-button fill="clear" color="danger" size="small" (click)="removeCustomReward(r.step)" aria-label="Remover prémio">
+                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <ion-button *ngIf="!showAddRewardForm" fill="clear" (click)="showAddRewardForm = true" class="add-reward-btn">
+            <ion-icon name="add-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+            Adicionar prémio
+          </ion-button>
+
+          <div class="add-reward-form" *ngIf="showAddRewardForm">
+            <ion-item class="form-item">
+              <ion-select [(ngModel)]="newRewardDraft.step" name="rewardStep" label="Etapa *" labelPlacement="stacked" interface="action-sheet">
+                <ion-select-option *ngFor="let s of STEP_OPTIONS" [value]="s" [disabled]="isRewardStepTaken(s)">Etapa {{ s }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <div style="display: flex; align-items: center; gap: 16px; margin: 12px 16px;">
+              <div class="reward-preview-box" style="width: 60px; height: 60px; border-radius: var(--app-radius-md); border: 2px dashed var(--app-color-line); background-size: cover; background-position: center; display: grid; place-items: center;" [style.background-image]="newRewardDraft.imageUrl ? 'url(\'' + newRewardDraft.imageUrl + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingRewardImg"></ion-spinner>
+                <ion-icon *ngIf="!newRewardDraft.imageUrl && !uploadingRewardImg" name="gift-outline" style="font-size: 1.5rem; color: var(--app-color-muted);"></ion-icon>
+              </div>
+              <div style="flex: 1;">
+                <input type="file" #rewardFileInputEdit (change)="onRewardImgFileSelected($event)" accept="image/*" style="display: none;" />
+                <ion-button size="small" shape="round" fill="outline" (click)="rewardFileInputEdit.click()" [disabled]="uploadingRewardImg">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Carregar Foto do Prémio
+                </ion-button>
+              </div>
+            </div>
+            <ion-item class="form-item">
+              <ion-input [(ngModel)]="newRewardDraft.title" name="rewardTitle" label="Título do prémio *" labelPlacement="stacked" placeholder="Ex: Desconto especial"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-textarea [(ngModel)]="newRewardDraft.description" name="rewardDesc" label="Descrição" labelPlacement="stacked" placeholder="Descreva o prémio..." rows="2"></ion-textarea>
+            </ion-item>
+            <div class="range-label" style="padding: 0 16px 8px;">
+              <span>Validade: {{ newRewardDraft.validityDays }} dias</span>
+              <ion-range min="14" max="90" step="1" [(ngModel)]="newRewardDraft.validityDays" aria-label="Validade do prémio"></ion-range>
+            </div>
+            <div class="reward-form-actions">
+              <ion-button fill="clear" color="medium" (click)="showAddRewardForm = false">Cancelar</ion-button>
+              <ion-button shape="round" color="primary" (click)="addCustomReward()">
+                <ion-icon name="add-outline" slot="start" aria-hidden="true"></ion-icon>
+                Adicionar
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- D — Live Previewer -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Pré-visualização</h3>
+              <p>Veja como o cartão ficará para os clientes.</p>
+            </div>
+          </div>
+
+          <div class="card-preview" [ngStyle]="getPreviewCardStyle()" role="img" aria-label="Pré-visualização do cartão de fidelidade">
+            <div class="card-preview-header">
+              <div>
+                <span>Cartão de Fidelidade</span>
+                <strong>0 / 10 selos</strong>
+              </div>
+              <ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon>
+            </div>
+            <div class="card-preview-grid">
+              <div *ngFor="let slot of [1,2,3,4,5,6,7,8,9,10]"
+                   class="preview-slot"
+                   [class.preview-final]="slot === 10">
+                <div class="preview-circle" [ngStyle]="getPreviewStampStyle(false)">
+                  <ion-icon *ngIf="previewHasReward(slot)" name="gift-outline" class="preview-reward-icon" aria-hidden="true"></ion-icon>
+                  <span *ngIf="!previewHasReward(slot)" class="preview-slot-num">{{ slot }}</span>
+                </div>
+                <span *ngIf="previewHasReward(slot)" class="preview-reward-tag">{{ getPreviewRewardLabel(slot) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border modal-footer-actions">
+      <div class="step-actions-row">
+        <ion-button fill="clear" (click)="closeEditCardModal()" class="btn-prev">Cancelar</ion-button>
+        <ion-button shape="round" color="primary" (click)="saveCardCustomization()" class="btn-next">
+          <ion-icon name="checkmark-outline" slot="start" aria-hidden="true"></ion-icon>
+          Guardar Cartão
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+

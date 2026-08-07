@@ -17,6 +17,7 @@ export interface Business {
   reward: string;
   rewardDescription: string;
   qrCodePattern: string;
+  cardCustomization?: CardCustomization;
 }
 
 export interface StampCard {
