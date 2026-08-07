@@ -1,0 +1,151 @@
+<ion-header class="ion-no-border plans-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn" aria-label="Voltar">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Planos &amp; Subscrições</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]="true">
+  <main class="plans-container app-fade-in">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  1. UPGRADE NOTICE BANNER                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="upgrade-notice-card app-slide-up">
+      <div class="notice-icon">
+        <ion-icon name="sparkles-outline"></ion-icon>
+      </div>
+      <div class="notice-content">
+        <h2>Expanda o Seu Negócio</h2>
+        <p>
+          Faça o upgrade do seu plano para adicionar uma <strong>2ª loja ou localização</strong> e ter <strong>cartões de fidelidade ilimitados</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  2. BILLING CYCLE SWITCHER                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="billing-switcher-section app-slide-up">
+      <div class="billing-pill-container" role="radiogroup" aria-label="Ciclo de Faturamento">
+        <button type="button"
+                class="billing-pill"
+                [class.active]="billingCycle === 'monthly'"
+                (click)="setBillingCycle('monthly')">
+          Mensal
+        </button>
+        <button type="button"
+                class="billing-pill"
+                [class.active]="billingCycle === 'annual'"
+                (click)="setBillingCycle('annual')">
+          Anual
+          <span class="discount-tag">Economize 20%</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  3. PRICING CARDS GRID                                           -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="pricing-cards-grid app-slide-up">
+
+      <div *ngFor="let plan of plans"
+           class="pricing-card"
+           [class.popular]="plan.popular"
+           [class.current]="plan.isCurrent">
+
+        <!-- Popular / Badge Tag -->
+        <div *ngIf="plan.badge" class="plan-badge-tag" [class.popular-tag]="plan.popular">
+          {{ plan.badge }}
+        </div>
+
+        <div class="plan-header">
+          <h2 class="plan-name">{{ plan.name }}</h2>
+          <p class="plan-desc">{{ plan.description }}</p>
+        </div>
+
+        <!-- Pricing Row -->
+        <div class="plan-price-row">
+          <div class="price-amount-wrapper">
+            <span class="price-value">{{ getPriceDisplay(plan) }}</span>
+            <span *ngIf="plan.monthlyPrice > 0" class="price-period">/mês</span>
+          </div>
+          <div *ngIf="getSavingsText(plan) as savings" class="savings-text">
+            {{ savings }}
+          </div>
+        </div>
+
+        <!-- Key Capacity Pill -->
+        <div class="plan-capacity-box">
+          <div class="capacity-item">
+            <ion-icon name="pin-outline"></ion-icon>
+            <span>{{ plan.locationsText }}</span>
+          </div>
+          <div class="capacity-item">
+            <ion-icon name="layers-outline"></ion-icon>
+            <span>{{ plan.cardsText }}</span>
+          </div>
+        </div>
+
+        <hr class="plan-divider" />
+
+        <!-- Feature List -->
+        <ul class="plan-features-list">
+          <li *ngFor="let feat of plan.features">
+            <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+            <span>{{ feat }}</span>
+          </li>
+        </ul>
+
+        <!-- Action Button -->
+        <div class="plan-action-wrapper">
+          <ion-button *ngIf="plan.isCurrent"
+                      expand="block"
+                      shape="round"
+                      fill="outline"
+                      color="medium"
+                      disabled="true"
+                      class="plan-btn">
+            {{ plan.ctaText }}
+          </ion-button>
+
+          <ion-button *ngIf="!plan.isCurrent"
+                      expand="block"
+                      shape="round"
+                      [color]="plan.popular ? 'primary' : 'dark'"
+                      (click)="selectPlan(plan)"
+                      class="plan-btn"
+                      [class.popular-btn]="plan.popular">
+            {{ plan.ctaText }}
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  4. TRUST & GUARANTEE FOOTER                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="trust-footer app-slide-up">
+      <div class="trust-item">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Garantia de 7 dias ou seu dinheiro de volta</span>
+      </div>
+      <div class="trust-item">
+        <ion-icon name="card-outline"></ion-icon>
+        <span>Pagamento seguro via Cartão de Crédito ou Pix</span>
+      </div>
+      <div class="trust-item">
+        <ion-icon name="refresh-outline"></ion-icon>
+        <span>Cancele a qualquer momento sem fidelidade</span>
+      </div>
+    </section>
+
+  </main>
+</ion-content>

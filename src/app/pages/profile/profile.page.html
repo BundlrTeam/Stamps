@@ -108,8 +108,61 @@
     <!--  BUSINESS PROFILE                                                -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <ng-container *ngIf="activeProfile === 'business'">
+      <!-- DEMO STATUS CARD ON PROFILE PAGE -->
+      <section class="demo-status-card app-slide-up" style="margin-bottom: 14px;">
+        <div class="demo-card-header">
+          <div class="demo-badge">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Teste Grátis (90 Dias)</span>
+          </div>
+          <span class="days-pill">78 dias restantes</span>
+        </div>
+
+        <div class="demo-progress-bar-wrapper">
+          <div class="demo-progress-bar">
+            <div class="demo-progress-fill" style="width: 13.3%;"></div>
+          </div>
+          <div class="demo-progress-labels">
+            <span>Dia 12 de 90</span>
+            <span>78 dias restantes</span>
+          </div>
+        </div>
+
+        <div class="demo-limits-grid">
+          <div class="limit-box">
+            <div class="limit-icon">
+              <ion-icon name="storefront-outline"></ion-icon>
+            </div>
+            <div>
+              <span class="limit-title">Localizações</span>
+              <strong class="limit-value">1 / 1 ativa</strong>
+            </div>
+          </div>
+
+          <div class="limit-box">
+            <div class="limit-icon">
+              <ion-icon name="card-outline"></ion-icon>
+            </div>
+            <div>
+              <span class="limit-title">Cartões de Loja</span>
+              <strong class="limit-value">2 / 3 ativos</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="deactivation-text">
+          Após os 90 dias, associe um método de pagamento para manter a loja ativa.
+        </div>
+      </section>
+
       <section class="profile-settings-list app-slide-up" aria-label="Ações do negócio">
         <ion-list lines="none">
+          <ion-item class="profile-list-item" button (click)="goToPlansPage()" detail="false">
+            <ion-icon name="ribbon-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
+            <ion-label>Planos de Subscrição &amp; Upgrade</ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+          </ion-item>
+
           <ion-item class="profile-list-item" button (click)="openEditBusinessModal()" detail="false">
             <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>Editar página da loja</ion-label>

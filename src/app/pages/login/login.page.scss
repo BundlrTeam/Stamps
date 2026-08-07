@@ -37,6 +37,13 @@
     height: 36px;
     animation: scaleIn var(--app-motion-slow) var(--app-easing-spring) both;
   }
+
+  .brand-accent {
+    background: linear-gradient(135deg, #e8652b 0%, #ff8c00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 950;
+  }
 }
 
 .login-copy {

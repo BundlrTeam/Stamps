@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, DestroyRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, ActionSheetController, ToastController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BusinessService } from '../../services/business.service';
@@ -34,6 +34,7 @@ export class ProfilePage implements OnInit {
   private readonly businessService = inject(BusinessService);
   private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly profileStorageKey = 'stamp-me-demo-profile';
   private readonly leadStorageKey = 'stamp-me-merchant-lead';
@@ -66,9 +67,9 @@ export class ProfilePage implements OnInit {
     services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
     googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
     businessPhotos: [
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+      this.businessService.resolveImageUrl('', 'default/pedramania.jpg'),
+      this.businessService.resolveImageUrl('', 'default/pedramania1.webp'),
+      this.businessService.resolveImageUrl('', 'default/pedramania2.webp')
     ],
     contactName: 'Wilson Pereira',
     contactEmail: 'pedramania@gmail.com',
@@ -135,10 +136,39 @@ export class ProfilePage implements OnInit {
     this.isDarkMode = localStorage.getItem('darkMode') === 'true';
     document.documentElement.classList.toggle('ion-palette-dark', this.isDarkMode);
 
+    const defaultPedraLogo = this.businessService.resolveImageUrl('', 'default/logo.jpeg');
+    const defaultPedraPhotos = [
+      this.businessService.resolveImageUrl('', 'default/pedramania.jpg'),
+      this.businessService.resolveImageUrl('', 'default/pedramania1.webp'),
+      this.businessService.resolveImageUrl('', 'default/pedramania2.webp')
+    ];
+
     this.merchantLeadSubmitted = Boolean(localStorage.getItem(this.leadStorageKey));
     this.isBusinessApproved = Boolean(localStorage.getItem('stamp-me-approved-business'));
     if (this.isBusinessApproved) {
       this.approvedBiz = this.businessService.getApprovedBusiness();
+    } else {
+      this.approvedBiz = {
+        businessId: 'my-business',
+        name: 'PedraMania',
+        category: 'Loja',
+        description: 'Especializada em retrosaria, aviamentos e artesanato. Vendemos linhas, tecidos, bijuterias e peças exclusivas para projetos de DIY.',
+        address: 'Retrosaria em Vila Velha, Brasil',
+        city: 'Vila Velha',
+        services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
+        photos: defaultPedraPhotos,
+        logoUrl: defaultPedraLogo,
+        cardCustomization: this.businessService.DEFAULT_CARD_CUSTOMIZATION,
+        approvedAt: new Date().toISOString()
+      };
+      this.businessService.setApprovedBusiness(this.approvedBiz);
+      this.isBusinessApproved = true;
+    }
+
+    if (this.approvedBiz && (this.approvedBiz.businessId === 'my-business' || this.approvedBiz.name.toLowerCase().includes('pedramania'))) {
+      this.approvedBiz.logoUrl = defaultPedraLogo;
+      this.approvedBiz.photos = defaultPedraPhotos;
+      this.businessService.setApprovedBusiness(this.approvedBiz);
     }
 
     // Carregar lista de estabelecimentos do comerciante
@@ -154,7 +184,7 @@ export class ProfilePage implements OnInit {
       this.merchantStores = [{
         businessId: 'my-business',
         name: this.approvedBiz ? this.approvedBiz.name : 'PedraMania',
-        isApproved: this.isBusinessApproved,
+        isApproved: true,
         approvedDetails: this.approvedBiz || undefined,
         lead: this.newBusiness
       }];
@@ -168,6 +198,8 @@ export class ProfilePage implements OnInit {
           this.activeStoreIndex = approvedStoreIdx;
           const store = this.merchantStores[approvedStoreIdx];
           if (store.approvedDetails) {
+            store.approvedDetails.logoUrl = defaultPedraLogo;
+            store.approvedDetails.photos = defaultPedraPhotos;
             this.approvedBiz = store.approvedDetails;
             this.businessService.setApprovedBusiness(store.approvedDetails);
           }
@@ -198,6 +230,32 @@ export class ProfilePage implements OnInit {
         } catch {}
       }
     }
+
+    this.checkQueryParams();
+  }
+
+  ionViewWillEnter() {
+    this.checkQueryParams();
+  }
+
+  private checkQueryParams() {
+    const editParam = this.route.snapshot.queryParamMap.get('edit');
+    const actionParam = this.route.snapshot.queryParamMap.get('action');
+
+    if (editParam === 'business') {
+      this.activeProfile = 'business';
+      setTimeout(() => this.openEditBusinessModal(), 150);
+    } else if (editParam === 'card') {
+      this.activeProfile = 'business';
+      setTimeout(() => this.openEditCardModal(), 150);
+    } else if (actionParam === 'addBusiness') {
+      this.activeProfile = 'customer';
+      setTimeout(() => this.openAddBusinessModal(), 150);
+    }
+  }
+
+  goToPlansPage() {
+    this.router.navigate(['/tabs/home/plans']);
   }
 
   saveMerchantStores() {
@@ -352,9 +410,9 @@ export class ProfilePage implements OnInit {
       services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
       googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
       businessPhotos: [
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+        this.businessService.resolveImageUrl('', 'default/pedramania.jpg'),
+        this.businessService.resolveImageUrl('', 'default/pedramania1.webp'),
+        this.businessService.resolveImageUrl('', 'default/pedramania2.webp')
       ],
       contactName: 'Wilson Pereira',
       contactEmail: 'pedramania@gmail.com',

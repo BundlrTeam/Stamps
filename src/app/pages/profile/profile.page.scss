@@ -247,6 +247,123 @@
   }
 }
 
+// ─── Demo Status Card (Compact & Small) ──────────────────────────────────────
+.demo-status-card {
+  background: linear-gradient(135deg, rgba(232, 101, 43, 0.06) 0%, rgba(40, 90, 100, 0.04) 100%);
+  border: 1px solid rgba(232, 101, 43, 0.18);
+  border-radius: 14px;
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+
+  .demo-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .demo-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #e8652b;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+  }
+
+  .days-pill {
+    background: rgba(232, 101, 43, 0.12);
+    color: #e8652b;
+    font-size: 0.65rem;
+    font-weight: 750;
+    padding: 2px 7px;
+    border-radius: 12px;
+  }
+
+  .demo-progress-bar-wrapper {
+    margin-bottom: 6px;
+
+    .demo-progress-bar {
+      height: 4px;
+      background: var(--app-color-line, rgba(0, 0, 0, 0.08));
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 3px;
+
+      .demo-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #e8652b 0%, #f0a04b 100%);
+        border-radius: 3px;
+      }
+    }
+
+    .demo-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--app-color-muted, #71717a);
+      font-weight: 600;
+    }
+  }
+
+  .demo-limits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    .limit-box {
+      background: var(--ion-card-background, #ffffff);
+      border: 1px solid var(--app-color-line, rgba(0, 0, 0, 0.06));
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .limit-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(232, 101, 43, 0.1);
+        color: #e8652b;
+        display: grid;
+        place-items: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+      }
+
+      .limit-title {
+        display: block;
+        font-size: 0.58rem;
+        color: var(--app-color-muted, #71717a);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .limit-value {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--ion-text-color, #1a1a1a);
+      }
+    }
+  }
+
+  .deactivation-text {
+    font-size: 0.65rem;
+    color: var(--app-color-muted, #71717a);
+    margin: 6px 0 2px 0;
+    line-height: 1.25;
+    text-align: center;
+  }
+}
+
 // ─── Borderless Settings List ────────────────────────────────────────────────────────
 
 .profile-settings-list {

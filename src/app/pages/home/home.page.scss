@@ -48,11 +48,36 @@
 
 .spotify-greeting {
   margin: 0;
-  font-size: 1.55rem;
-  font-weight: 800;
+  font-size: 1.65rem;
+  font-weight: 900;
   color: var(--ion-text-color);
   letter-spacing: -0.04em;
   animation: slideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  display: flex;
+  align-items: center;
+
+  .brand-accent {
+    background: linear-gradient(135deg, #e8652b 0%, #ff8c00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 950;
+    margin-left: 2px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(135deg, #e8652b 0%, #ff8c00 100%);
+      border-radius: 50%;
+      margin-left: 4px;
+      box-shadow: 0 0 10px rgba(232, 101, 43, 0.7);
+      vertical-align: middle;
+    }
+  }
 }
 
 .header-search-wrapper {

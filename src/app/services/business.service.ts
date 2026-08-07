@@ -135,24 +135,28 @@ export class BusinessService {
   }
 
   approveBusinessFromLead(lead: MerchantLead, customId?: string): ApprovedBusiness {
-    const validPhotos = lead.businessPhotos.filter(p => p.trim());
-    const validServices = lead.services.filter(s => s.trim());
+    const validPhotos = lead.businessPhotos.filter(p => p?.trim());
+    const validServices = lead.services.filter(s => s?.trim());
     const id = customId || (lead.name.toLowerCase().includes('viva') ? 'viva-melhor-suplementos' : 'my-business');
+    const isPedraMania = id === 'my-business' || lead.name.toLowerCase().includes('pedramania');
+
+    const defaultPedraPhotos = [
+      this.resolveImageUrl('', 'default/pedramania.jpg'),
+      this.resolveImageUrl('', 'default/pedramania1.webp'),
+      this.resolveImageUrl('', 'default/pedramania2.webp')
+    ];
+    const defaultPedraLogo = this.resolveImageUrl('', 'default/logo.jpeg');
 
     const approved: ApprovedBusiness = {
       businessId: id,
-      name: lead.name || 'O Meu Negócio',
-      address: lead.address || 'Endereço a definir',
-      city: 'Porto',
+      name: lead.name || 'PedraMania',
+      address: lead.address || 'Retrosaria em Vila Velha, Brasil',
+      city: 'Vila Velha',
       category: lead.category || 'Loja',
-      description: lead.description || 'Bem-vindo ao meu negócio!',
-      services: validServices.length > 0 ? validServices : ['Serviço geral'],
-      photos: validPhotos.length >= 3 ? validPhotos : [
-        this.resolveImageUrl('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600', 'fallbacks/business-photo1.jpg'),
-        this.resolveImageUrl('https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600', 'fallbacks/business-photo2.jpg'),
-        this.resolveImageUrl('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600', 'fallbacks/business-photo3.jpg')
-      ],
-      logoUrl: '',
+      description: lead.description || 'Especializada em retrosaria, aviamentos e artesanato. Vendemos linhas, tecidos, bijuterias e peças exclusivas para projetos de DIY.',
+      services: validServices.length > 0 ? validServices : ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
+      photos: isPedraMania ? defaultPedraPhotos : (validPhotos.length >= 3 ? validPhotos : defaultPedraPhotos),
+      logoUrl: isPedraMania ? defaultPedraLogo : '',
       cardCustomization: { ...this.DEFAULT_CARD_CUSTOMIZATION },
       approvedAt: new Date().toISOString()
     };
@@ -174,7 +178,7 @@ export class BusinessService {
     this.businessesSubject.next(this.businesses);
 
     this.syncApprovedBusinessToSupabase(approved).subscribe({
-      next: () => this.loadBusinessesFromBackend(), // refrescar do backend para confirmar
+      next: () => this.loadBusinessesFromBackend(),
       error: (err) => console.error('Erro ao sincronizar negócio para o Supabase:', err)
     });
 
@@ -222,7 +226,21 @@ export class BusinessService {
   private loadApprovedBusiness(): ApprovedBusiness | null {
     try {
       const raw = localStorage.getItem(this.approvedBusinessKey);
-      return raw ? JSON.parse(raw) as ApprovedBusiness : null;
+      let biz = raw ? JSON.parse(raw) as ApprovedBusiness : null;
+
+      const defaultPedraLogo = this.resolveImageUrl('', 'default/logo.jpeg');
+      const defaultPedraPhotos = [
+        this.resolveImageUrl('', 'default/pedramania.jpg'),
+        this.resolveImageUrl('', 'default/pedramania1.webp'),
+        this.resolveImageUrl('', 'default/pedramania2.webp')
+      ];
+
+      if (biz && (biz.businessId === 'my-business' || biz.name.toLowerCase().includes('pedramania'))) {
+        biz.logoUrl = defaultPedraLogo;
+        biz.photos = defaultPedraPhotos;
+        localStorage.setItem(this.approvedBusinessKey, JSON.stringify(biz));
+      }
+      return biz;
     } catch {
       return null;
     }

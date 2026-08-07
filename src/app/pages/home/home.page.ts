@@ -415,27 +415,46 @@ export class HomePage implements OnInit {
     return this.cardDraft.customRewards.some(r => r.step === step);
   }
 
-  getPreviewCardStyle() {
+  getPreviewCardStyle(): object {
     if (this.cardDraft.backgroundStyle === 'image' && this.cardDraft.backgroundImageUrl) {
-      return { 'background-image': `url('${this.cardDraft.backgroundImageUrl}')`, 'background-size': 'cover', 'background-position': 'center' };
+      return {
+        backgroundImage: `url(${this.cardDraft.backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
     }
-    return { 'background-color': this.cardDraft.backgroundColor || '#e8652b' };
+    return { background: this.cardDraft.backgroundColor || '#e8652b' };
   }
 
-  getPreviewStampStyle(isStamped: boolean) {
+  getPreviewStampStyle(isStamped: boolean): object {
+    if (!isStamped) return {};
+    if (this.cardDraft.stampStyle === 'color') {
+      return { background: this.cardDraft.stampColor || '#ffffff', borderColor: this.cardDraft.stampColor || '#ffffff' };
+    }
     if (this.cardDraft.stampStyle === 'image' && this.cardDraft.stampImageUrl) {
-      return { 'background-image': `url('${this.cardDraft.stampImageUrl}')`, 'background-size': 'cover', 'background-position': 'center' };
+      return {
+        backgroundImage: `url(${this.cardDraft.stampImageUrl})`,
+        backgroundSize: `${(this.cardDraft.stampImageScale || 1) * 100}%`,
+        backgroundPosition: `${this.cardDraft.stampImageOffsetX || 50}% ${this.cardDraft.stampImageOffsetY || 50}%`,
+        backgroundRepeat: 'no-repeat',
+        borderColor: 'rgba(255,255,255,0.6)'
+      };
     }
-    return { 'background-color': this.cardDraft.stampColor || '#ffffff' };
+    return {};
   }
 
-  previewHasReward(step: number): boolean {
-    return this.cardDraft.customRewards.some(r => r.step === step);
+  getPreviewRewardLabel(slot: number): string | null {
+    const custom = this.cardDraft.customRewards?.find(r => r.step === slot);
+    if (custom) return custom.title;
+    if (slot === 3) return '10% desc.';
+    if (slot === 6) return '20% desc.';
+    if (slot === 10) return 'Prémio';
+    return null;
   }
 
-  getPreviewRewardLabel(step: number): string {
-    const r = this.cardDraft.customRewards.find(item => item.step === step);
-    return r ? r.title : '';
+  previewHasReward(slot: number): boolean {
+    return slot === 3 || slot === 6 || slot === 10 || (this.cardDraft.customRewards?.some(r => r.step === slot) ?? false);
   }
 
   // ─── Merchant Stores & Business Actions (Home Business Mode) ──────────────
@@ -479,30 +498,15 @@ export class HomePage implements OnInit {
   }
 
   openAddBusinessModal() {
-    this.showAddBusinessModal = true;
-    this.currentStep = 1;
-    this.resetBusinessForm();
+    if (this.appMode === 'business' || Boolean(this.approvedBiz)) {
+      this.router.navigate(['/tabs/home/plans']);
+    } else {
+      this.router.navigate(['/tabs/profile'], { queryParams: { action: 'addBusiness' } });
+    }
   }
 
   openAddSecondBusinessModal() {
-    const photo1 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600', 'businesses/viva-melhor-suplementos/1.jpg');
-    const photo2 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600', 'businesses/viva-melhor-suplementos/2.jpg');
-    const photo3 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=600', 'businesses/viva-melhor-suplementos/3.jpg');
-
-    this.newBusiness = {
-      name: 'Viva Melhor Suplementos',
-      address: 'Rua das Flores 123, Lisboa',
-      category: 'Loja',
-      description: 'Loja especializada em suplementos alimentares, vitaminas, nutrição desportiva e produtos naturais para o seu bem-estar.',
-      services: ['Venda de Suplementos', 'Aconselhamento Nutricional', 'Entrega ao Domicílio'],
-      googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
-      businessPhotos: [photo1, photo2, photo3],
-      contactName: 'Wilson Pereira',
-      contactEmail: 'pedramania@gmail.com',
-      contactPhone: '+351 912 345 678'
-    };
-    this.currentStep = 1;
-    this.showAddBusinessModal = true;
+    this.router.navigate(['/tabs/home/plans']);
   }
 
   closeAddBusinessModal() {
@@ -618,64 +622,15 @@ export class HomePage implements OnInit {
     this.showToast(`🎉 Estabelecimento ${store.name} aprovado com sucesso!`);
   }
 
-  // Edit Business Modal handlers
+  // Edit Business & Card actions -> Redirect to Profile page edit forms
   openEditBusinessModal() {
-    const current = this.currentStore?.approvedDetails || this.approvedBiz;
-    if (!current) return;
-    this.editDescription = current.description;
-    this.editAddress = current.address;
-    this.editServices = [...current.services];
-    this.editPhotos = [...current.photos];
-    this.editLogoUrl = current.logoUrl ?? '';
-    this.showEditBusinessModal = true;
+    this.sessionService.setMode('business');
+    this.router.navigate(['/tabs/profile'], { queryParams: { edit: 'business' } });
   }
 
-  closeEditBusinessModal() { this.showEditBusinessModal = false; }
-  addEditServiceField() { this.editServices.push(''); }
-  removeEditServiceField(i: number) { if (this.editServices.length > 1) this.editServices.splice(i, 1); }
-  addEditPhotoField() { if (this.editPhotos.length < 5) this.editPhotos.push(''); }
-  removeEditPhotoField(i: number) { if (this.editPhotos.length > 3) this.editPhotos.splice(i, 1); }
-
-  get isEditBusinessValid(): boolean {
-    return this.editPhotos.filter(p => p.trim()).length >= 3;
-  }
-
-  saveBusinessEdits() {
-    const validPhotos = this.editPhotos.filter(p => p.trim());
-    const validServices = this.editServices.filter(s => s.trim());
-    this.businessService.updateApprovedBusinessDetails({
-      description: this.editDescription,
-      address: this.editAddress,
-      services: validServices.length > 0 ? validServices : ['Serviço geral'],
-      photos: validPhotos,
-      logoUrl: this.editLogoUrl
-    });
-    this.approvedBiz = this.businessService.getApprovedBusiness();
-    if (this.currentStore) {
-      this.currentStore.approvedDetails = this.approvedBiz || undefined;
-      this.saveMerchantStores();
-    }
-    this.showEditBusinessModal = false;
-    this.showToast('Loja atualizada com sucesso');
-  }
-
-  // Edit Card Modal handlers
   openEditCardModal() {
-    this.cardDraft = this.businessService.getCardCustomization();
-    this.showEditCardModal = true;
-  }
-
-  closeEditCardModal() { this.showEditCardModal = false; }
-  setBackgroundStyle(style: 'color' | 'image') { this.cardDraft.backgroundStyle = style; }
-  selectBgColor(color: string) { this.cardDraft.backgroundColor = color; }
-  setStampStyle(style: 'color' | 'image') { this.cardDraft.stampStyle = style; }
-  selectStampColor(color: string) { this.cardDraft.stampColor = color; }
-  confirmStampImage() { this.stampImageConfirmed = true; }
-
-  saveCardCustomization() {
-    this.businessService.saveCardCustomization(this.cardDraft);
-    this.showEditCardModal = false;
-    this.showToast('Personalização do cartão gravada!');
+    this.sessionService.setMode('business');
+    this.router.navigate(['/tabs/profile'], { queryParams: { edit: 'card' } });
   }
 
   // QR Code logic
