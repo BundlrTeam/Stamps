@@ -134,12 +134,13 @@ export class BusinessService {
     );
   }
 
-  approveBusinessFromLead(lead: MerchantLead): ApprovedBusiness {
+  approveBusinessFromLead(lead: MerchantLead, customId?: string): ApprovedBusiness {
     const validPhotos = lead.businessPhotos.filter(p => p.trim());
     const validServices = lead.services.filter(s => s.trim());
+    const id = customId || (lead.name.toLowerCase().includes('viva') ? 'viva-melhor-suplementos' : 'my-business');
 
     const approved: ApprovedBusiness = {
-      businessId: 'my-business',
+      businessId: id,
       name: lead.name || 'O Meu Negócio',
       address: lead.address || 'Endereço a definir',
       city: 'Porto',
@@ -156,15 +157,17 @@ export class BusinessService {
       approvedAt: new Date().toISOString()
     };
 
-    this.approvedBusiness = approved;
-    localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
+    if (id === 'my-business') {
+      this.approvedBusiness = approved;
+      localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
+    }
     this.walletService.registerBusiness(this.buildBusinessFromApproved(approved));
 
     // Atualizar imediatamente a lista de negócios para a homepage reagir sem esperar pelo Supabase
     const newBiz = this.buildBusinessFromApproved(approved);
     const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
     if (!alreadyExists) {
-      this.businesses = [...this.businesses, newBiz];
+      this.businesses = [newBiz, ...this.businesses];
     } else {
       this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
     }
@@ -180,6 +183,11 @@ export class BusinessService {
 
   getApprovedBusiness(): ApprovedBusiness | null {
     return this.approvedBusiness;
+  }
+
+  setApprovedBusiness(approved: ApprovedBusiness): void {
+    this.approvedBusiness = approved;
+    localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
   }
 
   updateApprovedBusinessDetails(updates: Partial<Pick<ApprovedBusiness, 'description' | 'address' | 'services' | 'photos' | 'logoUrl'>>): void {
@@ -221,25 +229,26 @@ export class BusinessService {
   }
 
   private buildBusinessFromApproved(approved: ApprovedBusiness): Business {
+    const id = approved.businessId || 'my-business';
     return {
-      id: 'my-business',
+      id: id,
       name: approved.name,
       image: approved.photos[0] ?? '',
       images: approved.photos,
-      logo: approved.logoUrl ?? approved.photos[0] ?? '',
+      logo: approved.logoUrl || approved.photos[0] || '',
       description: approved.description,
       category: approved.category,
       address: approved.address,
-      city: approved.city,
-      distanceKm: 0,
+      city: approved.city || 'Porto',
+      distanceKm: 0.5,
       rating: 5.0,
-      reviewCount: 0,
+      reviewCount: 1,
       isOpen: true,
-      closesAt: '22:00',
+      closesAt: '20:00',
       services: approved.services,
       reward: 'Prémio especial',
       rewardDescription: 'Complete o cartão e ganhe um prémio especial.',
-      qrCodePattern: 'STAMP_QR_MYBUSINESS'
+      qrCodePattern: `STAMP_QR_${id.toUpperCase().replace(/-/g, '_')}`
     };
   }
 
@@ -335,19 +344,22 @@ export class BusinessService {
   resetBusinessDemoState(userEmail?: string): void {
     this.approvedBusiness = null;
     localStorage.removeItem(this.approvedBusinessKey);
+    localStorage.removeItem('stamp-me-merchant-stores');
+    localStorage.removeItem('stamp-me-merchant-lead');
+
     this.walletService.unregisterBusiness('my-business');
+    this.walletService.unregisterBusiness('viva-melhor-suplementos');
 
     const backendUrl = environment.backendUrl;
 
     this.http.delete(`${backendUrl}/approved-businesses/my-business`).subscribe({
-      next: () => {
-        console.log('Negócio my-business removido do backend.');
-        this.loadBusinessesFromBackend();
-      },
-      error: (err) => {
-        console.error('Erro ao eliminar negócio do backend:', err);
-        this.loadBusinessesFromBackend();
-      }
+      next: () => this.loadBusinessesFromBackend(),
+      error: () => this.loadBusinessesFromBackend()
+    });
+
+    this.http.delete(`${backendUrl}/approved-businesses/viva-melhor-suplementos`).subscribe({
+      next: () => this.loadBusinessesFromBackend(),
+      error: () => {}
     });
 
     if (userEmail) {

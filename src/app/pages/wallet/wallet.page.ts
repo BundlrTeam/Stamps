@@ -1,5 +1,6 @@
 import { Component, inject, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
 import { StampCard, Badge, UnlockedReward } from '../../models/business.model';
@@ -24,6 +25,7 @@ export class WalletPage {
   private readonly sessionService = inject(SessionService);
   private readonly alertController = inject(AlertController);
   private readonly ngZone = inject(NgZone);
+  private readonly route = inject(ActivatedRoute);
 
   @ViewChild('walletConfettiCanvas') confettiCanvasRef!: ElementRef<HTMLCanvasElement>;
 

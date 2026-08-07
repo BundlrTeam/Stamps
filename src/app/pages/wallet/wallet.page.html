@@ -183,11 +183,11 @@
     </section>
 
     <!-- Empty state — cards -->
-    <div *ngIf="activeTab === 'cards' && stampCards.length === 0" class="app-empty-state">
+    <div *ngIf="activeTab === 'cards' && stampCards.length === 0" class="app-empty-state" (click)="setTab('stamps')" style="cursor: pointer;">
       <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
       <h3>Carteira vazia</h3>
       <p>Siga estabelecimentos para receber cartões de fidelidade.</p>
-      <ion-button routerLink="/tabs/home" fill="outline" shape="round">Explorar estabelecimentos</ion-button>
+      <ion-button fill="outline" shape="round" (click)="setTab('stamps'); $event.stopPropagation()">Ver Selos e Conquistas</ion-button>
     </div>
 
     <!-- ═══════════════════════════════════════════ -->

@@ -60,30 +60,23 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <ng-container *ngIf="activeProfile === 'customer'">
 
-      <section class="profile-settings-list app-slide-up" aria-labelledby="preferences-title">
+      <section class="profile-settings-list app-slide-up" aria-label="Ações do utilizador">
         <ion-list lines="none">
-          <ion-item class="profile-list-item">
-            <ion-icon name="moon-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>Modo escuro</ion-label>
-            <ion-toggle [checked]="isDarkMode" (ionChange)="toggleTheme()" slot="end" aria-label="Alternar modo escuro"></ion-toggle>
-          </ion-item>
-
-          <ion-item class="profile-list-item" button (click)="resetDemoState()" detail="false">
-            <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>Redefinir demonstração</ion-label>
+          <ion-item class="profile-list-item" button (click)="startEditingName()" detail="false">
+            <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>Editar nome de perfil</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
-
-          <ion-item class="profile-list-item" button (click)="logout()" detail="false">
-            <ion-icon name="log-out-outline" slot="start" color="danger" aria-hidden="true"></ion-icon>
-            <ion-label color="danger">Sair</ion-label>
+          <ion-item class="profile-list-item" button (click)="changePhoto()" detail="false">
+            <ion-icon name="camera-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>Alterar foto de perfil</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
         </ion-list>
       </section>
 
       <!-- Premium-style Merchant Banner -->
-      <section class="premium-merchant-banner app-slide-up" [class.submitted]="merchantLeadSubmitted" aria-labelledby="merchant-title">
+      <section *ngIf="!isBusinessApproved" class="premium-merchant-banner app-slide-up" [class.submitted]="merchantLeadSubmitted" aria-labelledby="merchant-title">
         <div class="banner-content">
           <div class="banner-header">
             <span>Para Empresas</span>
@@ -101,9 +94,10 @@
           </ion-button>
           
           <ion-button *ngIf="merchantLeadSubmitted && !isBusinessApproved"
-                      expand="block" shape="round" fill="solid" color="warning"
+                      expand="block" shape="round" fill="solid" color="success"
                       (click)="approveBusinessDemo()" class="demo-approve-btn premium-btn">
-            Aprovar automaticamente (demo)
+            <ion-icon name="checkmark-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+            Simular Aprovação Stamp Me
           </ion-button>
         </div>
       </section>
@@ -113,19 +107,12 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!--  BUSINESS PROFILE                                                -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <ng-container *ngIf="activeProfile === 'business' && isBusinessApproved">
-
+    <ng-container *ngIf="activeProfile === 'business'">
       <section class="profile-settings-list app-slide-up" aria-label="Ações do negócio">
         <ion-list lines="none">
-          <ion-item class="profile-list-item" button [routerLink]="['/tabs/home/business/my-business']" detail="false">
-            <ion-icon name="eye-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>Ver página de negócio</ion-label>
-            <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
-          </ion-item>
-
           <ion-item class="profile-list-item" button (click)="openEditBusinessModal()" detail="false">
             <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>Editar página de negócio</ion-label>
+            <ion-label>Editar página da loja</ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
           </ion-item>
 
@@ -136,55 +123,32 @@
           </ion-item>
         </ion-list>
       </section>
-
-      <!-- QR Code Generator -->
-      <section class="qr-generator-section app-slide-up" aria-label="Gerador de QR Code">
-        <div class="qr-header">
-          <div class="qr-header-icon">
-            <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
-          </div>
-          <div>
-            <h3>Gerar QR Code</h3>
-            <p>Escolha quantos selos quer dar através deste QR.</p>
-          </div>
-        </div>
-
-        <div class="qr-stamp-picker" aria-label="Seletor de selos">
-          <ion-button fill="clear" class="qr-control-btn" (click)="decrementQrStamps()" [disabled]="qrStampsCount <= 1" aria-label="Diminuir">
-            <ion-icon name="remove-circle-outline" aria-hidden="true"></ion-icon>
-          </ion-button>
-          <div class="qr-stamp-display">
-            <span class="qr-stamp-count">{{ qrStampsCount }}</span>
-            <span class="qr-stamp-label">{{ qrStampsCount === 1 ? 'selo' : 'selos' }}</span>
-          </div>
-          <ion-button fill="clear" class="qr-control-btn" (click)="incrementQrStamps()" [disabled]="qrStampsCount >= 10" aria-label="Aumentar">
-            <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
-          </ion-button>
-        </div>
-
-        <div class="qr-code-display" *ngIf="qrCodeVisible" role="img" aria-label="QR Code gerado">
-          <div class="qr-visual">
-            <ion-icon name="qr-code" class="qr-icon-large" aria-hidden="true"></ion-icon>
-            <div class="qr-scan-line"></div>
-          </div>
-          <p class="qr-label">{{ qrStampsCount }} {{ qrStampsCount === 1 ? 'selo' : 'selos' }}</p>
-          <ion-button size="small" fill="outline" shape="round" (click)="simulateQrScan()">
-            <ion-icon name="phone-portrait-outline" slot="start" aria-hidden="true"></ion-icon>
-            Simular leitura (demo)
-          </ion-button>
-        </div>
-
-        <ion-button *ngIf="!qrCodeVisible" expand="block" shape="round" (click)="generateQrCode()">
-          <ion-icon name="qr-code-outline" slot="start" aria-hidden="true"></ion-icon>
-          Confirmar e gerar QR
-        </ion-button>
-        <ion-button *ngIf="qrCodeVisible" expand="block" shape="round" fill="outline" color="medium" (click)="qrCodeVisible = false" style="margin-top: 10px;">
-          <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
-          Gerar novo QR
-        </ion-button>
-      </section>
-
     </ng-container>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!--  COMMON SETTINGS (Modo escuro, Redefinir demonstração, Sair)   -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="profile-settings-list app-slide-up" aria-labelledby="preferences-title" style="margin-top: 16px;">
+      <ion-list lines="none">
+        <ion-item class="profile-list-item">
+          <ion-icon name="moon-outline" slot="start" aria-hidden="true"></ion-icon>
+          <ion-label>Modo escuro</ion-label>
+          <ion-toggle [checked]="isDarkMode" (ionChange)="toggleTheme()" slot="end" aria-label="Alternar modo escuro"></ion-toggle>
+        </ion-item>
+
+        <ion-item class="profile-list-item" button (click)="resetDemoState()" detail="false">
+          <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
+          <ion-label>Redefinir demonstração</ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
+
+        <ion-item class="profile-list-item" button (click)="logout()" detail="false">
+          <ion-icon name="log-out-outline" slot="start" color="danger" aria-hidden="true"></ion-icon>
+          <ion-label color="danger">Sair</ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </section>
 
   </main>
 </ion-content>

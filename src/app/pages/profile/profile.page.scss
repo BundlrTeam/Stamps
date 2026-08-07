@@ -162,6 +162,91 @@
   }
 }
 
+// ─── Store Switcher Bar (Multiple Locations) ──────────────────────────────
+
+.store-switcher-bar {
+  margin: 16px 16px 12px;
+}
+
+.store-tabs-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.store-tab-pill {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-line);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--app-color-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+
+  &.active {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+
+  .pending-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: rgba(var(--ion-color-warning-rgb), 0.2);
+    color: var(--ion-color-warning);
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-left: 2px;
+  }
+}
+
+.add-store-btn-icon {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border: 1px dashed var(--ion-color-primary);
+  color: var(--ion-color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
 // ─── Borderless Settings List ────────────────────────────────────────────────────────
 
 .profile-settings-list {

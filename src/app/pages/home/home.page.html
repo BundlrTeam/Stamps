@@ -47,7 +47,11 @@
             <ion-icon name="chevron-back-outline"></ion-icon>
           </button>
 
-          <div class="wallet-3d-viewport">
+          <div class="wallet-3d-viewport"
+               (touchstart)="onTouchStart($event)"
+               (touchend)="onTouchEnd($event)"
+               (mousedown)="onMouseDown($event)"
+               (mouseup)="onMouseUp($event)">
             <div 
               *ngFor="let card of topActiveCards; let i = index; trackBy: trackByCardId" 
               class="wallet-3d-card-wrapper"
@@ -69,7 +73,6 @@
                     <strong>{{ card.stamps }} / 10</strong>
                     <span>Selos Acumulados</span>
                   </div>
-                  <div class="card-chip"></div>
                   <div class="card-footer-info">
                     <span>{{ card.category }}</span>
                     <span>FIDELIDADE</span>
@@ -117,15 +120,15 @@
       <section class="wallet-3d-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && topActiveCards.length === 0">
         <div class="wallet-3d-carousel">
           <div class="wallet-3d-viewport">
-            <div class="wallet-3d-card-wrapper active" routerLink="/tabs/wallet" button>
+            <div class="wallet-3d-card-wrapper active" [routerLink]="['/tabs/wallet']" [queryParams]="{ tab: 'stamps' }" button>
               <div class="card-inner">
-                <div class="card-face card-front empty-wallet-card" style="background: linear-gradient(135deg, #2a2a2a, #1a1a1a);">
+                <div class="card-face card-front empty-wallet-card">
                   <div class="card-face-glass"></div>
                   <div class="empty-card-content">
                     <ion-icon name="wallet-outline"></ion-icon>
                     <h3>Sua Carteira está vazia</h3>
                     <p>Siga estabelecimentos para ver cartões de fidelidade aqui.</p>
-                    <span class="empty-card-action">VER CARTEIRA</span>
+                    <span class="empty-card-action">VER SELOS &amp; CONQUISTAS</span>
                   </div>
                 </div>
               </div>
@@ -243,38 +246,423 @@
     <!-- Business Mode UI -->
     <ng-template #businessHome>
       <section class="business-dashboard">
-        <h2 class="section-title">Visão Geral</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <ion-icon name="people-outline"></ion-icon>
-            <h3>{{ mockAnalytics.activeUsers }}</h3>
-            <p>Clientes Ativos</p>
-          </div>
-          <div class="stat-card">
-            <ion-icon name="albums-outline"></ion-icon>
-            <h3>{{ mockAnalytics.issuedStamps }}</h3>
-            <p>Selos Distribuídos</p>
-          </div>
-          <div class="stat-card">
-            <ion-icon name="gift-outline"></ion-icon>
-            <h3>{{ mockAnalytics.redeemedRewards }}</h3>
-            <p>Prémios Resgatados</p>
+
+        <!-- Store Switcher Bar ("Menu de lojas") -->
+        <div class="store-switcher-bar app-slide-up" style="margin-bottom: 20px;">
+          <div class="store-tabs-wrapper">
+            <button 
+              *ngFor="let store of merchantStores; let idx = index"
+              class="store-tab-pill"
+              [class.active]="idx === activeStoreIndex"
+              (click)="selectStore(idx)"
+            >
+              <ion-icon [name]="store.isApproved ? 'storefront-outline' : 'time-outline'"></ion-icon>
+              <span>{{ store.name }}</span>
+              <span *ngIf="!store.isApproved" class="pending-tag">Pendente</span>
+            </button>
+
+            <button class="add-store-btn-icon" (click)="openAddSecondBusinessModal()" aria-label="Adicionar segundo negócio">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Nova Loja</span>
+            </button>
           </div>
         </div>
 
-        <h2 class="section-title">Atividade Recente</h2>
-        <ion-list class="recent-activity-list" lines="none">
-          <ion-item class="activity-item" *ngFor="let activity of mockAnalytics.recentActivity">
-            <ion-icon name="scan-outline" slot="start"></ion-icon>
-            <ion-label>
-              <h3>{{ activity.user }}</h3>
-              <p>{{ activity.action }}</p>
-            </ion-label>
-            <ion-note slot="end">{{ activity.time }}</ion-note>
-          </ion-item>
-        </ion-list>
+        <!-- If selected store is PENDING approval -->
+        <section *ngIf="currentStore && !currentStore.isApproved" class="premium-merchant-banner app-slide-up submitted" style="margin-bottom: 24px;">
+          <div class="banner-content">
+            <div class="banner-header">
+              <span>Para Empresas</span>
+              <ion-icon name="time-outline" aria-hidden="true" color="warning"></ion-icon>
+            </div>
+            <h2>Solicitação enviada: {{ currentStore.name }}</h2>
+            <p>A equipe do Stamp Me está a analisar o pedido de adesão deste novo estabelecimento.</p>
+            
+            <ion-button expand="block" shape="round" fill="solid" color="success"
+                        (click)="approveSelectedStoreDemo()" class="demo-approve-btn premium-btn">
+              <ion-icon name="checkmark-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+              Simular Aprovação Stamp Me
+            </ion-button>
+          </div>
+        </section>
+
+        <!-- If selected store is APPROVED -->
+        <ng-container *ngIf="currentStore && currentStore.isApproved">
+          <!-- Business Actions List -->
+          <section class="profile-settings-list app-slide-up" style="padding: 0; margin-bottom: 24px;" aria-label="Ações da Loja">
+            <ion-list lines="none">
+              <ion-item class="profile-list-item" button [routerLink]="['/tabs/home/business', currentStore.businessId]" detail="false">
+                <ion-icon name="eye-outline" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>Ver minha página de negócio</ion-label>
+                <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+              </ion-item>
+
+              <ion-item class="profile-list-item" button (click)="openEditBusinessModal()" detail="false">
+                <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>Editar página da loja</ion-label>
+                <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+              </ion-item>
+
+              <ion-item class="profile-list-item" button (click)="openEditCardModal()" detail="false">
+                <ion-icon name="card-outline" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>Editar cartão de fidelidade</ion-label>
+                <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+              </ion-item>
+
+              <ion-item class="profile-list-item" button (click)="showQrModal = !showQrModal" detail="false">
+                <ion-icon name="qr-code-outline" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>Gerar QR Code</ion-label>
+                <ion-icon name="chevron-forward-outline" slot="end" aria-hidden="true"></ion-icon>
+              </ion-item>
+            </ion-list>
+          </section>
+
+          <!-- QR Code Generator Section -->
+          <section *ngIf="showQrModal" class="qr-generator-section app-slide-up" aria-label="Gerador de QR Code" style="margin-bottom: 24px;">
+            <div class="qr-header">
+              <div class="qr-header-icon">
+                <ion-icon name="qr-code-outline" aria-hidden="true"></ion-icon>
+              </div>
+              <div>
+                <h3>Gerar QR Code ({{ currentStore.name }})</h3>
+                <p>Escolha quantos selos quer dar através deste QR.</p>
+              </div>
+            </div>
+
+            <div class="qr-stamp-picker" aria-label="Seletor de selos">
+              <ion-button fill="clear" class="qr-control-btn" (click)="decrementQrStamps()" [disabled]="qrStampsCount <= 1" aria-label="Diminuir">
+                <ion-icon name="remove-circle-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+              <div class="qr-stamp-display">
+                <span class="qr-stamp-count">{{ qrStampsCount }}</span>
+                <span class="qr-stamp-label">{{ qrStampsCount === 1 ? 'selo' : 'selos' }}</span>
+              </div>
+              <ion-button fill="clear" class="qr-control-btn" (click)="incrementQrStamps()" [disabled]="qrStampsCount >= 10" aria-label="Aumentar">
+                <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+            </div>
+
+            <div class="qr-code-display" *ngIf="qrCodeVisible" role="img" aria-label="QR Code gerado">
+              <div class="qr-visual">
+                <ion-icon name="qr-code" class="qr-icon-large" aria-hidden="true"></ion-icon>
+                <div class="qr-scan-line"></div>
+              </div>
+              <p class="qr-label">{{ qrStampsCount }} {{ qrStampsCount === 1 ? 'selo' : 'selos' }}</p>
+              <ion-button size="small" fill="outline" shape="round" (click)="simulateQrScan()">
+                <ion-icon name="phone-portrait-outline" slot="start" aria-hidden="true"></ion-icon>
+                Simular leitura (demo)
+              </ion-button>
+            </div>
+
+            <ion-button *ngIf="!qrCodeVisible" expand="block" shape="round" (click)="generateQrCode()">
+              <ion-icon name="qr-code-outline" slot="start" aria-hidden="true"></ion-icon>
+              Confirmar e gerar QR
+            </ion-button>
+            <ion-button *ngIf="qrCodeVisible" expand="block" shape="round" fill="outline" color="medium" (click)="qrCodeVisible = false" style="margin-top: 10px;">
+              <ion-icon name="refresh-outline" slot="start" aria-hidden="true"></ion-icon>
+              Gerar novo QR
+            </ion-button>
+          </section>
+
+          <!-- Analytics Dashboard -->
+          <h2 class="section-title">Visão Geral</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <ion-icon name="people-outline"></ion-icon>
+              <h3>{{ mockAnalytics.activeUsers }}</h3>
+              <p>Clientes Ativos</p>
+            </div>
+            <div class="stat-card">
+              <ion-icon name="albums-outline"></ion-icon>
+              <h3>{{ mockAnalytics.issuedStamps }}</h3>
+              <p>Selos Distribuídos</p>
+            </div>
+            <div class="stat-card">
+              <ion-icon name="gift-outline"></ion-icon>
+              <h3>{{ mockAnalytics.redeemedRewards }}</h3>
+              <p>Prémios Resgatados</p>
+            </div>
+          </div>
+
+          <h2 class="section-title">Atividade Recente</h2>
+          <ion-list class="recent-activity-list" lines="none">
+            <ion-item class="activity-item" *ngFor="let activity of mockAnalytics.recentActivity">
+              <ion-icon name="scan-outline" slot="start"></ion-icon>
+              <ion-label>
+                <h3>{{ activity.user }}</h3>
+                <p>{{ activity.action }}</p>
+              </ion-label>
+              <ion-note slot="end">{{ activity.time }}</ion-note>
+            </ion-item>
+          </ion-list>
+        </ng-container>
+
       </section>
     </ng-template>
 
   </main>
 </ion-content>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!--  ADD BUSINESS WIZARD MODAL                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="showAddBusinessModal" (didDismiss)="closeAddBusinessModal()" class="add-business-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Novo Estabelecimento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeAddBusinessModal()" aria-label="Fechar formulário">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
+      <div class="step-progress-wrapper">
+        <div class="step-progress-bar">
+          <div class="step-progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+        <div class="step-labels">
+          <span [class.active]="currentStep >= 1" [class.current]="currentStep === 1">Detalhes</span>
+          <span [class.active]="currentStep >= 2" [class.current]="currentStep === 2">Serviços</span>
+          <span [class.active]="currentStep >= 3" [class.current]="currentStep === 3">Contato</span>
+        </div>
+      </div>
+
+      <div class="step-card-container">
+        <!-- STEP 1 -->
+        <ion-card class="step-card app-slide-up" *ngIf="currentStep === 1">
+          <ion-card-header>
+            <ion-card-title>Dados Básicos</ion-card-title>
+            <ion-card-subtitle>Insira as principais informações do seu negócio.</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.name" name="businessName" label="Nome do Estabelecimento *" labelPlacement="stacked" placeholder="Ex: Pizza Bella" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.address" name="businessAddress" label="Endereço" labelPlacement="stacked" placeholder="Rua, número, cidade"></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-select [(ngModel)]="newBusiness.category" name="businessCategory" label="Categoria *" labelPlacement="stacked" placeholder="Selecione uma categoria" interface="action-sheet" required>
+                  <ion-select-option value="Pizzaria">Pizzaria</ion-select-option>
+                  <ion-select-option value="Restaurante">Restaurante</ion-select-option>
+                  <ion-select-option value="Café">Café</ion-select-option>
+                  <ion-select-option value="Barbearia">Barbearia</ion-select-option>
+                  <ion-select-option value="Beleza">Beleza</ion-select-option>
+                  <ion-select-option value="Bar">Bar</ion-select-option>
+                  <ion-select-option value="Hotel">Hotel</ion-select-option>
+                  <ion-select-option value="Loja">Loja</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-textarea [(ngModel)]="newBusiness.description" name="businessDescription" label="Descrição" labelPlacement="stacked" placeholder="Conte um pouco sobre o estabelecimento..." rows="3"></ion-textarea>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- STEP 2 -->
+        <ion-card class="step-card app-slide-up" *ngIf="currentStep === 2">
+          <ion-card-header>
+            <ion-card-title>Serviços &amp; Fotos</ion-card-title>
+            <ion-card-subtitle>Adicione serviços e fotos para destacar o seu negócio.</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="photos-section-header" style="margin-top: 0; border-top: none; padding-top: 0; margin-bottom: 12px;">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 850; color: var(--ion-text-color);">Serviços Oferecidos</h3>
+            </div>
+            <div class="service-input-row" *ngFor="let service of newBusiness.services; let i = index; trackBy: trackByIndex">
+              <ion-input [(ngModel)]="newBusiness.services[i]" [name]="'service' + i" placeholder="Serviço {{ i + 1 }}" class="service-input"></ion-input>
+              <ion-button *ngIf="newBusiness.services.length > 1" fill="clear" color="danger" size="small" (click)="removeServiceField(i)" aria-label="Remover serviço">
+                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+            </div>
+            <ion-button fill="clear" size="small" (click)="addServiceField()" class="add-service-btn" style="margin-bottom: 24px;">
+              <ion-icon name="add-outline" slot="start" aria-hidden="true"></ion-icon>
+              Adicionar serviço
+            </ion-button>
+
+            <div class="photos-section-header" style="margin-top: 20px; border-top: 1px solid var(--app-color-line); padding-top: 16px; margin-bottom: 12px;">
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 850; color: var(--ion-text-color);">Fotos do Estabelecimento (3–5) *</h3>
+              <p style="margin: 4px 0 8px; font-size: 0.8rem; color: var(--app-color-muted);">Faça o upload de fotos reais do seu negócio.</p>
+            </div>
+
+            <div class="gallery-upload-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+              <div *ngFor="let p of newBusiness.businessPhotos; let i = index; trackBy: trackByIndex" 
+                   style="position: relative; aspect-ratio: 1.3; border-radius: var(--app-radius-md); border: 2px dashed var(--app-color-line); display: grid; place-items: center; background-size: cover; background-position: center; overflow: visible;"
+                   [style.background-image]="p ? 'url(\'' + p + '\')' : 'none'">
+                <ion-spinner *ngIf="uploadingLeadPhotos[i]"></ion-spinner>
+                
+                <div *ngIf="!p && !uploadingLeadPhotos[i]" style="display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; width: 100%; height: 100%;" (click)="leadFileInput.click()">
+                  <input type="file" #leadFileInput (change)="onLeadPhotoFileSelected($event, i)" accept="image/*" style="display: none;" />
+                  <ion-icon name="image-outline" style="font-size: 1.5rem; color: var(--app-color-muted); margin-bottom: 4px;"></ion-icon>
+                  <span style="font-size: 0.65rem; color: var(--app-color-muted); font-weight: 700;">Carregar {{ i + 1 }}</span>
+                </div>
+
+                <ion-button *ngIf="p && !uploadingLeadPhotos[i] && newBusiness.businessPhotos.length > 3" 
+                            fill="solid" color="danger" size="small" 
+                            style="position: absolute; top: -8px; right: -8px; --padding-start: 0; --padding-end: 0; height: 22px; width: 22px; --border-radius: 50%;" 
+                            (click)="removePhotoField(i)" aria-label="Remover foto">
+                  <ion-icon name="close" slot="icon-only" style="font-size: 14px;"></ion-icon>
+                </ion-button>
+              </div>
+
+              <div *ngIf="newBusiness.businessPhotos.length < 5" 
+                   style="aspect-ratio: 1.3; border-radius: var(--app-radius-md); border: 2px dashed var(--ion-color-primary); display: grid; place-items: center; cursor: pointer;"
+                   (click)="addPhotoField()">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <ion-icon name="add-outline" style="font-size: 1.5rem; color: var(--ion-color-primary); margin-bottom: 4px;"></ion-icon>
+                  <span style="font-size: 0.65rem; color: var(--ion-color-primary); font-weight: 700;">Nova Foto</span>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- STEP 3 -->
+        <ion-card class="step-card app-slide-up" *ngIf="currentStep === 3">
+          <ion-card-header>
+            <ion-card-title>Informações de Contato</ion-card-title>
+            <ion-card-subtitle>Insira seus dados para entrarmos em contato.</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.googleBusinessProfileUrl" name="googleBusinessProfileUrl" type="url" inputmode="url" label="Link do Google Business Profile" labelPlacement="stacked" placeholder="https://business.google.com/..."></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.contactName" name="contactName" label="Seu Nome *" labelPlacement="stacked" placeholder="Nome e sobrenome" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.contactEmail" name="contactEmail" type="email" inputmode="email" label="Seu E-mail *" labelPlacement="stacked" placeholder="nome@exemplo.com" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="newBusiness.contactPhone" name="contactPhone" type="tel" inputmode="tel" label="Telefone de Contato" labelPlacement="stacked" placeholder="+351 912 345 678"></ion-input>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border modal-footer-actions">
+      <div class="step-actions-row">
+        <ion-button fill="clear" (click)="prevStep()" [disabled]="currentStep === 1" class="btn-prev">
+          <ion-icon name="arrow-back" slot="start" aria-hidden="true"></ion-icon>
+          Anterior
+        </ion-button>
+        <ion-button *ngIf="currentStep < 3" shape="round" color="primary" (click)="nextStep()" [disabled]="!isStepValid(currentStep)" class="btn-next">
+          Seguinte
+          <ion-icon name="arrow-forward" slot="end" aria-hidden="true"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="currentStep === 3" shape="round" color="success" (click)="submitBusiness()" [disabled]="!isStepValid(currentStep)" class="btn-submit">
+          Enviar Proposta
+          <ion-icon name="checkmark-circle-outline" slot="end" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+
+<!-- EDIT BUSINESS MODAL -->
+<ion-modal [isOpen]="showEditBusinessModal" (didDismiss)="closeEditBusinessModal()" class="add-business-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Editar Negócio</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditBusinessModal()" aria-label="Fechar">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
+      <div class="step-card-container">
+        <ion-card class="step-card">
+          <ion-card-header>
+            <ion-card-title>Informações da Loja</ion-card-title>
+            <ion-card-subtitle>Edite os dados exibidos na sua página de negócio.</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item class="form-item">
+                <ion-textarea [(ngModel)]="editDescription" name="editDescription" label="Descrição" labelPlacement="stacked" placeholder="Descrição do seu negócio..." rows="3"></ion-textarea>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-input [(ngModel)]="editAddress" name="editAddress" label="Endereço" labelPlacement="stacked" placeholder="Rua, número, cidade"></ion-input>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border modal-footer-actions">
+      <div class="step-actions-row">
+        <ion-button fill="clear" (click)="closeEditBusinessModal()" class="btn-prev">Cancelar</ion-button>
+        <ion-button shape="round" color="primary" (click)="saveBusinessEdits()" [disabled]="!isEditBusinessValid" class="btn-next">
+          <ion-icon name="checkmark-outline" slot="start" aria-hidden="true"></ion-icon>
+          Guardar
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+
+<!-- EDIT LOYALTY CARD MODAL -->
+<ion-modal [isOpen]="showEditCardModal" (didDismiss)="closeEditCardModal()" class="edit-card-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Editar Cartão</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditCardModal()" aria-label="Fechar">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content-with-footer" [scrollY]="true">
+      <div class="card-editor-scroll">
+        <!-- Background Color / Image -->
+        <div class="card-editor-section">
+          <div class="card-editor-section-header">
+            <ion-icon name="color-palette-outline" aria-hidden="true"></ion-icon>
+            <div>
+              <h3>Fundo do Cartão</h3>
+              <p>Selecione cor sólida ou imagem personalizada.</p>
+            </div>
+          </div>
+          <div class="color-preset-grid" role="radiogroup" aria-label="Cores de fundo">
+            <button type="button"
+                    *ngFor="let color of BG_PRESETS"
+                    [style.background]="color"
+                    [class.selected]="cardDraft.backgroundColor === color"
+                    (click)="selectBgColor(color)"
+                    class="color-swatch"
+                    [attr.aria-label]="'Cor ' + color">
+              <ion-icon *ngIf="cardDraft.backgroundColor === color" name="checkmark" class="swatch-check" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border modal-footer-actions">
+      <div class="step-actions-row">
+        <ion-button fill="clear" (click)="closeEditCardModal()" class="btn-prev">Cancelar</ion-button>
+        <ion-button shape="round" color="primary" (click)="saveCardCustomization()" class="btn-next">
+          <ion-icon name="checkmark-outline" slot="start" aria-hidden="true"></ion-icon>
+          Guardar Cartão
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

@@ -6,6 +6,14 @@ import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
 import { MerchantLead, ApprovedBusiness, CardCustomization, CustomReward } from '../../models/business.model';
 
+export interface MerchantStore {
+  businessId: string;
+  name: string;
+  isApproved: boolean;
+  lead?: MerchantLead;
+  approvedDetails?: ApprovedBusiness;
+}
+
 interface UserProfile {
   name: string;
   email: string;
@@ -29,11 +37,12 @@ export class ProfilePage implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly profileStorageKey = 'stamp-me-demo-profile';
   private readonly leadStorageKey = 'stamp-me-merchant-lead';
+  private readonly storesStorageKey = 'stamp-me-merchant-stores';
   private readonly sessionStorageKey = 'stamp-me-demo-session';
 
   user: UserProfile = {
-    name: 'João Silva',
-    email: 'joao.silva@email.com',
+    name: 'Wilson Pereira',
+    email: 'pedramania@gmail.com',
     phone: '+351 912 345 678',
     photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face'
   };
@@ -42,16 +51,27 @@ export class ProfilePage implements OnInit {
   isEditingName: boolean = false;
   tempName: string = '';
 
+  merchantStores: MerchantStore[] = [];
+  activeStoreIndex: number = 0;
+
+  get currentStore(): MerchantStore | null {
+    return this.merchantStores[this.activeStoreIndex] || null;
+  }
+
   newBusiness: MerchantLead = {
-    name: '',
-    address: '',
-    category: '',
-    description: '',
-    services: [''],
-    googleBusinessProfileUrl: '',
-    businessPhotos: ['', '', ''],
-    contactName: '',
-    contactEmail: '',
+    name: 'PedraMania',
+    address: 'Retrosaria em Vila Velha, Brasil',
+    category: 'Loja',
+    description: 'Especializada em retrosaria, aviamentos e artesanato. Vendemos linhas, tecidos, bijuterias e peças exclusivas para projetos de DIY.',
+    services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
+    googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
+    businessPhotos: [
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
+      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+    ],
+    contactName: 'Wilson Pereira',
+    contactEmail: 'pedramania@gmail.com',
     contactPhone: ''
   };
 
@@ -121,6 +141,40 @@ export class ProfilePage implements OnInit {
       this.approvedBiz = this.businessService.getApprovedBusiness();
     }
 
+    // Carregar lista de estabelecimentos do comerciante
+    const savedStores = localStorage.getItem(this.storesStorageKey);
+    if (savedStores) {
+      try {
+        this.merchantStores = JSON.parse(savedStores);
+      } catch {}
+    }
+
+    // Se a lista estiver vazia, inicializa com a loja principal (PedraMania)
+    if (this.merchantStores.length === 0) {
+      this.merchantStores = [{
+        businessId: 'my-business',
+        name: this.approvedBiz ? this.approvedBiz.name : 'PedraMania',
+        isApproved: this.isBusinessApproved,
+        approvedDetails: this.approvedBiz || undefined,
+        lead: this.newBusiness
+      }];
+      this.saveMerchantStores();
+    } else {
+      // Ajustar estado de aprovação geral se alguma das lojas estiver aprovada
+      if (this.merchantStores.some(s => s.isApproved)) {
+        this.isBusinessApproved = true;
+        const approvedStoreIdx = this.merchantStores.findIndex(s => s.isApproved);
+        if (approvedStoreIdx >= 0) {
+          this.activeStoreIndex = approvedStoreIdx;
+          const store = this.merchantStores[approvedStoreIdx];
+          if (store.approvedDetails) {
+            this.approvedBiz = store.approvedDetails;
+            this.businessService.setApprovedBusiness(store.approvedDetails);
+          }
+        }
+      }
+    }
+
     // Se o lead não estiver submetido localmente, tentar carregar do Supabase usando o e-mail do utilizador
     if (!this.merchantLeadSubmitted && !this.isBusinessApproved && this.user.email) {
       this.businessService.fetchMerchantLeadFromSupabase(this.user.email)
@@ -143,6 +197,19 @@ export class ProfilePage implements OnInit {
           this.newBusiness = JSON.parse(rawLead);
         } catch {}
       }
+    }
+  }
+
+  saveMerchantStores() {
+    localStorage.setItem(this.storesStorageKey, JSON.stringify(this.merchantStores));
+  }
+
+  selectStore(index: number) {
+    this.activeStoreIndex = index;
+    const store = this.merchantStores[index];
+    if (store && store.isApproved && store.approvedDetails) {
+      this.approvedBiz = store.approvedDetails;
+      this.businessService.setApprovedBusiness(store.approvedDetails);
     }
   }
 
@@ -224,6 +291,27 @@ export class ProfilePage implements OnInit {
     this.resetBusinessForm();
   }
 
+  openAddSecondBusinessModal() {
+    const photo1 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600', 'businesses/viva-melhor-suplementos/1.jpg');
+    const photo2 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600', 'businesses/viva-melhor-suplementos/2.jpg');
+    const photo3 = this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=600', 'businesses/viva-melhor-suplementos/3.jpg');
+
+    this.newBusiness = {
+      name: 'Viva Melhor Suplementos',
+      address: 'Rua das Flores 123, Lisboa',
+      category: 'Loja',
+      description: 'Loja especializada em suplementos alimentares, vitaminas, nutrição desportiva e produtos naturais para o seu bem-estar.',
+      services: ['Venda de Suplementos', 'Aconselhamento Nutricional', 'Entrega ao Domicílio'],
+      googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
+      businessPhotos: [photo1, photo2, photo3],
+      contactName: 'Wilson Pereira',
+      contactEmail: 'pedramania@gmail.com',
+      contactPhone: '+351 912 345 678'
+    };
+    this.currentStep = 1;
+    this.showAddBusinessModal = true;
+  }
+
   closeAddBusinessModal() {
     this.showAddBusinessModal = false;
     this.currentStep = 1;
@@ -257,11 +345,20 @@ export class ProfilePage implements OnInit {
 
   resetBusinessForm() {
     this.newBusiness = {
-      name: '', address: '', category: '', description: '',
-      services: [''],
-      googleBusinessProfileUrl: '',
-      businessPhotos: ['', '', ''],
-      contactName: '', contactEmail: '', contactPhone: ''
+      name: 'PedraMania',
+      address: 'Retrosaria em Vila Velha, Brasil',
+      category: 'Loja',
+      description: 'Especializada em retrosaria, aviamentos e artesanato. Vendemos linhas, tecidos, bijuterias e peças exclusivas para projetos de DIY.',
+      services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
+      googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
+      businessPhotos: [
+        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
+        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
+        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+      ],
+      contactName: 'Wilson Pereira',
+      contactEmail: 'pedramania@gmail.com',
+      contactPhone: ''
     };
   }
 
@@ -286,6 +383,9 @@ export class ProfilePage implements OnInit {
       businessPhotos: validPhotos
     };
 
+    const isViva = businessData.name.toLowerCase().includes('viva');
+    const storeId = isViva ? 'viva-melhor-suplementos' : 'my-business';
+
     // 1. Guardar candidatura localmente e no Supabase (merchant_leads)
     localStorage.setItem(this.leadStorageKey, JSON.stringify(businessData));
     this.merchantLeadSubmitted = true;
@@ -294,31 +394,50 @@ export class ProfilePage implements OnInit {
       error: (err) => console.error('Erro ao sincronizar candidatura para o Supabase:', err)
     });
 
-    // 2. Aprovação automática: cria o negócio em `businesses` e aparece na página principal
-    const approved = this.businessService.approveBusinessFromLead(businessData);
-    this.isBusinessApproved = true;
-    this.approvedBiz = approved;
+    // 2. Adicionar/Atualizar na lista de lojas em estado pendente
+    const newStore: MerchantStore = {
+      businessId: storeId,
+      name: businessData.name,
+      isApproved: false,
+      lead: businessData
+    };
 
+    const existingIdx = this.merchantStores.findIndex(s => s.businessId === storeId);
+    if (existingIdx >= 0) {
+      this.merchantStores[existingIdx] = newStore;
+      this.activeStoreIndex = existingIdx;
+    } else {
+      this.merchantStores.push(newStore);
+      this.activeStoreIndex = this.merchantStores.length - 1;
+    }
+
+    this.saveMerchantStores();
     this.closeAddBusinessModal();
-    this.showToast('🎉 Negócio criado e visível na página principal!');
+    this.showToast(`Solicitação enviada para ${businessData.name}!`);
   }
 
 
   // ─── Demo Approval ────────────────────────────────────────────────────────
 
-  async approveBusinessDemo() {
-    const rawLead = localStorage.getItem(this.leadStorageKey);
-    const lead: MerchantLead = rawLead ? JSON.parse(rawLead) : this.newBusiness;
-    const approved = this.businessService.approveBusinessFromLead(lead);
-    this.isBusinessApproved = true;
-    this.approvedBiz = approved;
+  async approveSelectedStoreDemo() {
+    const store = this.merchantStores[this.activeStoreIndex];
+    if (!store) return;
 
-    const alert = await this.alertController.create({
-      header: '🎉 Negócio Aprovado!',
-      message: 'O seu negócio foi aprovado com sucesso! Pode agora mudar de perfil clicando no círculo de negócio junto ao seu avatar.',
-      buttons: [{ text: 'Entendido', role: 'confirm' }]
-    });
-    await alert.present();
+    const lead = store.lead || this.newBusiness;
+    const approved = this.businessService.approveBusinessFromLead(lead, store.businessId);
+
+    store.isApproved = true;
+    store.approvedDetails = approved;
+    this.approvedBiz = approved;
+    this.isBusinessApproved = true;
+
+    this.saveMerchantStores();
+    this.selectProfile('business');
+    this.showToast(`🎉 Estabelecimento ${store.name} aprovado com sucesso!`);
+  }
+
+  async approveBusinessDemo() {
+    await this.approveSelectedStoreDemo();
   }
 
   // ─── Profile Switcher ─────────────────────────────────────────────────────
@@ -620,30 +739,23 @@ export class ProfilePage implements OnInit {
           text: 'Redefinir',
           role: 'destructive',
           handler: () => {
-            // 1. Limpar os dados no serviço (carteira, negócio de ID my-business e candidatura no backend)
+            // 1. Limpar os dados no serviço (carteira, negócio de ID my-business, viva-melhor-suplementos e candidaturas)
             const emailToDelete = this.newBusiness.contactEmail || this.user.email;
             this.businessService.resetDemoState(emailToDelete);
             
-            // 2. Limpar os dados locais da proposta de negócio/lead e redefinir o estado da UI
+            // 2. Limpar os dados locais das lojas e redefinir o estado da UI
             localStorage.removeItem(this.leadStorageKey);
+            localStorage.removeItem(this.storesStorageKey);
+            this.merchantStores = [];
+            this.activeStoreIndex = 0;
             this.merchantLeadSubmitted = false;
             this.isBusinessApproved = false;
             this.approvedBiz = null;
+            this.activeProfile = 'customer';
             this.currentStep = 1;
-            this.newBusiness = {
-              name: '',
-              address: '',
-              category: '',
-              description: '',
-              services: [''],
-              googleBusinessProfileUrl: '',
-              businessPhotos: ['', '', ''],
-              contactName: '',
-              contactEmail: '',
-              contactPhone: ''
-            };
+            this.resetBusinessForm();
             
-            this.showToast('Dados de demonstração redefinidos');
+            this.showToast('Demonstração e lojas redefinidas com sucesso');
           }
         }
       ]
