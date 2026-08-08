@@ -56,7 +56,7 @@ ion-toolbar {
 }
 
 ion-button {
-  min-height: 44px;
+  min-height: 44px; /* Touch target mínimo Apple HIG / Google */
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -85,13 +85,13 @@ ion-tab-button {
 .app-page {
   width: min(100%, var(--app-page-max-width));
   margin: 0 auto;
-  padding: 0 16px 96px;
+  padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 .app-page--flush {
   width: min(100%, var(--app-page-max-width));
   margin: 0 auto;
-  padding-bottom: 96px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 .app-section {
@@ -273,8 +273,8 @@ ion-tab-button {
 .app-empty-state {
   display: grid;
   place-items: center;
-  min-height: 56vh;
-  padding: 52px 24px;
+  min-height: clamp(280px, 50vh, 56vh);
+  padding: clamp(32px, 8vw, 52px) 24px;
   text-align: center;
   color: var(--app-color-muted);
   animation: fadeSlideUp var(--app-motion-slow) var(--app-easing) both;

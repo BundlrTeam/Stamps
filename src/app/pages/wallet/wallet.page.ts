@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
@@ -14,6 +14,18 @@ export interface MerchantStore {
   isApproved: boolean;
   lead?: MerchantLead;
   approvedDetails?: ApprovedBusiness;
+}
+
+export interface TopActiveCard {
+  cardId: string;
+  businessId: string;
+  businessName: string;
+  businessLogo: string;
+  category: string;
+  stamps: number;
+  reward: string;
+  isFlipped: boolean;
+  cardCustomization?: CardCustomization;
 }
 
 interface ConfettiParticle {
@@ -36,10 +48,13 @@ export class WalletPage implements OnInit, OnDestroy {
   private readonly toastController = inject(ToastController);
   private readonly ngZone = inject(NgZone);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   @ViewChild('walletConfettiCanvas') confettiCanvasRef!: ElementRef<HTMLCanvasElement>;
 
   stampCards: StampCard[] = [];
+  topActiveCards: TopActiveCard[] = [];
+  activeCardIndex = 0;
   totalStamps = 0;
   badges: Badge[] = [];
   unlockedRewards: UnlockedReward[] = [];
@@ -131,6 +146,10 @@ export class WalletPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     this.appMode = this.sessionService.getMode();
+    // Em modo cliente, sempre volta à lista de cartões ao entrar na tab
+    if (this.appMode === 'customer') {
+      this.activeTab = 'cards';
+    }
     this.updateWalletForMode(this.appMode);
   }
 
@@ -144,6 +163,100 @@ export class WalletPage implements OnInit, OnDestroy {
     this.totalStamps = this.stampCards.reduce((sum, card) => sum + card.stamps, 0);
     this.badges = this.businessService.getBadges(this.stampCards);
     this.unlockedRewards = this.businessService.getUnlockedRewards(this.stampCards);
+
+    this.topActiveCards = this.stampCards.map((c, idx) => {
+      const biz = this.businessService.getBusinessById(c.businessId);
+      return {
+        cardId: `${c.businessId}-${idx}`,
+        businessId: c.businessId,
+        businessName: c.businessName,
+        businessLogo: c.businessLogo || biz?.logo || '',
+        category: c.category || biz?.category || 'Fidelidade',
+        stamps: c.stamps,
+        reward: c.reward || biz?.reward || 'Recompensa especial',
+        isFlipped: false,
+        cardCustomization: biz?.cardCustomization
+      };
+    });
+
+    if (this.activeCardIndex >= this.topActiveCards.length) {
+      this.activeCardIndex = Math.max(0, this.topActiveCards.length - 1);
+    }
+  }
+
+  // ─── 3D Card Carousel Methods ───────────────────────────────────────────
+  get3DCardStyle(card: TopActiveCard): object {
+    const cust = card.cardCustomization;
+    if (cust?.backgroundStyle === 'image' && cust.backgroundImageUrl) {
+      return {
+        backgroundImage: `url(${cust.backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+    }
+    return { background: cust?.backgroundColor || '#e8652b' };
+  }
+
+  private touchStartX = 0;
+  private touchEndX = 0;
+
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.changedTouches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].clientX;
+    this.handleSwipeGesture();
+  }
+
+  onMouseDown(event: MouseEvent) {
+    this.touchStartX = event.clientX;
+  }
+
+  onMouseUp(event: MouseEvent) {
+    this.touchEndX = event.clientX;
+    this.handleSwipeGesture();
+  }
+
+  private handleSwipeGesture() {
+    const swipeThreshold = 40;
+    const diff = this.touchStartX - this.touchEndX;
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        if (this.activeCardIndex < this.topActiveCards.length - 1) {
+          this.activeCardIndex++;
+        }
+      } else {
+        if (this.activeCardIndex > 0) {
+          this.activeCardIndex--;
+        }
+      }
+    }
+  }
+
+  nextCard(event: Event) {
+    event.stopPropagation();
+    if (this.activeCardIndex < this.topActiveCards.length - 1) {
+      this.activeCardIndex++;
+    }
+  }
+
+  prevCard(event: Event) {
+    event.stopPropagation();
+    if (this.activeCardIndex > 0) {
+      this.activeCardIndex--;
+    }
+  }
+
+  selectCard(index: number, card: TopActiveCard) {
+    // Se o cartão não está ativo, apenas o ativa (efeito carrossel)
+    if (index !== this.activeCardIndex) {
+      this.activeCardIndex = index;
+      return;
+    }
+    // Se já é o cartão ativo, navega para a página do cartão
+    this.router.navigate(['/tabs/wallet/stamp-card', card.businessId]);
   }
 
   private checkForNewBadges(): void {
@@ -352,7 +465,7 @@ export class WalletPage implements OnInit, OnDestroy {
     return new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: 'short' }).format(date);
   }
 
-  trackByCardId(_index: number, card: StampCard): string { return card.businessId; }
+  trackByCardId(_index: number, card: any): string { return card.cardId || card.businessId || String(_index); }
   trackByBadgeId(_index: number, badge: Badge): string { return badge.id; }
   trackByRewardId(_index: number, reward: UnlockedReward): string { return reward.id; }
   trackByIndex(index: number): number { return index; }

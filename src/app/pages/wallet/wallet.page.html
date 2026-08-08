@@ -74,6 +74,12 @@
     <!-- Customer Mode UI -->
     <ng-container *ngIf="appMode === 'customer'; else businessWallet">
 
+      <!-- 3D Physical Cards Carousel -->
+      <app-wallet-3d-carousel 
+        *ngIf="stampCards.length > 0" 
+        style="margin-bottom: 20px;">
+      </app-wallet-3d-carousel>
+
     <!-- ── 3 clickable tab tiles ── -->
     <section
       class="wallet-summary app-slide-up"

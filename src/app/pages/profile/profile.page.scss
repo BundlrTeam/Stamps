@@ -8,7 +8,8 @@
 // ─── Profile Header (Spotify Style) ─────────────────────────────────────────
 
 .profile-header-section {
-  padding: 80px 16px 20px;
+  /* padding-top: safe-area + espaco para nao ficar tapado por notch/Dynamic Island */
+  padding: calc(max(80px, env(safe-area-inset-top) + 24px)) 16px 20px;
   background: linear-gradient(to bottom, var(--app-gradient-brand-soft), var(--app-color-background));
   display: flex;
   justify-content: center;
@@ -88,7 +89,7 @@
   
   h1 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: clamp(1.45rem, 5vw, 1.8rem);
     font-weight: 900;
     color: var(--ion-text-color);
     letter-spacing: -0.02em;
@@ -96,7 +97,7 @@
   
   .profile-subtitle {
     margin: 4px 0 0;
-    font-size: 0.9rem;
+    font-size: clamp(0.82rem, 2.5vw, 0.9rem);
     color: var(--app-color-muted);
     font-weight: 500;
   }
@@ -142,9 +143,10 @@
   button {
     all: unset;
     box-sizing: border-box;
-    padding: 8px 20px;
+    padding: 10px 20px; /* Min touch target */
+    min-height: 44px;
     border-radius: 999px;
-    font-size: 0.85rem;
+    font-size: clamp(0.78rem, 2.5vw, 0.85rem);
     font-weight: 700;
     color: var(--app-color-muted);
     cursor: pointer;
@@ -1169,5 +1171,36 @@
 
   .color-preset-grid {
     gap: 12px;
+  }
+}
+
+/* Ecrãs muito pequenos: <= 360px */
+@media (max-width: 360px) {
+  .profile-header-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .photo-container-large {
+    width: 100px;
+    height: 100px;
+  }
+
+  .avatar-business-large {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-main-info h1 {
+    font-size: 1.35rem;
+  }
+
+  .profile-switcher-pill button {
+    padding: 8px 14px;
+    font-size: 0.75rem;
+  }
+
+  .premium-merchant-banner h2 {
+    font-size: 1.2rem;
   }
 }

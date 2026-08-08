@@ -39,84 +39,12 @@
     <ng-container *ngIf="appMode === 'customer'; else businessHome">
 
       <!-- 3D Wallet Card Carousel -->
-      <section class="wallet-3d-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && topActiveCards.length > 0">
-        <div class="app-section-header">
-          <h2>Cartões ativos</h2>
-        </div>
-
-        <div class="wallet-3d-carousel">
-          <button class="nav-arrow-btn prev" (click)="prevCard($event)" [disabled]="activeCardIndex === 0">
-            <ion-icon name="chevron-back-outline"></ion-icon>
-          </button>
-
-          <div class="wallet-3d-viewport"
-               (touchstart)="onTouchStart($event)"
-               (touchend)="onTouchEnd($event)"
-               (mousedown)="onMouseDown($event)"
-               (mouseup)="onMouseUp($event)">
-            <div 
-              *ngFor="let card of topActiveCards; let i = index; trackBy: trackByCardId" 
-              class="wallet-3d-card-wrapper"
-              [class.active]="i === activeCardIndex"
-              [class.prev]="i < activeCardIndex"
-              [class.next]="i > activeCardIndex"
-              [class.flipped]="card.isFlipped"
-              (click)="selectCard(i, card)"
-            >
-              <div class="card-inner">
-                 <!-- FRONT: Real Physical Loyalty Card look -->
-                <div class="card-face card-front" [ngStyle]="get3DCardStyle(card)">
-                  <div class="card-face-glass"></div>
-                  <div class="card-brand">
-                    <img [src]="card.businessLogo || 'assets/default-logo.jpg'" [alt]="card.businessName" />
-                    <span>{{ card.businessName }}</span>
-                  </div>
-                  <div class="card-stamps-summary">
-                    <strong>{{ card.stamps }} / 10</strong>
-                    <span>Selos Acumulados</span>
-                  </div>
-                  <div class="card-footer-info">
-                    <span>{{ card.category }}</span>
-                    <span>FIDELIDADE</span>
-                  </div>
-                </div>
-
-                <!-- BACK: Stamp Grid preview -->
-                <div class="card-face card-back" [ngStyle]="get3DCardStyle(card)">
-                  <div class="card-face-glass"></div>
-                  <div class="stamp-dots-grid">
-                    <div 
-                      *ngFor="let dot of [1,2,3,4,5,6,7,8,9,10]" 
-                      class="stamp-dot" 
-                      [class.active]="dot <= card.stamps"
-                    >
-                      <ion-icon *ngIf="dot <= card.stamps" name="checkmark"></ion-icon>
-                      <span *ngIf="dot > card.stamps">{{ dot }}</span>
-                    </div>
-                  </div>
-                  <div class="card-back-reward">
-                    <ion-icon name="gift-outline"></ion-icon>
-                    <span>{{ card.reward }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button class="nav-arrow-btn next" (click)="nextCard($event)" [disabled]="activeCardIndex === topActiveCards.length - 1">
-            <ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-        </div>
-
-        <div class="carousel-indicators">
-          <span 
-            *ngFor="let dot of topActiveCards; let idx = index; trackBy: trackByCardId" 
-            class="indicator-dot" 
-            [class.active]="idx === activeCardIndex"
-            (click)="activeCardIndex = idx"
-          ></span>
-        </div>
-      </section>
+      <app-wallet-3d-carousel 
+        *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && walletCardCount > 0" 
+        [maxCards]="3" 
+        [showTitle]="true" 
+        title="Cartões ativos">
+      </app-wallet-3d-carousel>
 
       <!-- Fallback empty wallet card when no active cards exist -->
       <section class="wallet-3d-section" *ngIf="!selectedCategory && (!isSearchActive || !searchQuery) && topActiveCards.length === 0">

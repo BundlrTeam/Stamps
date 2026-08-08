@@ -85,7 +85,7 @@
 .celebration-card {
   position: relative;
   width: min(88%, 360px);
-  padding: 36px 28px 28px;
+  padding: clamp(24px, 6vw, 36px) clamp(18px, 5vw, 28px) clamp(18px, 5vw, 28px);
   border-radius: 28px;
   background: var(--app-color-surface);
   box-shadow:
@@ -174,7 +174,7 @@
 
 .celebration-heading {
   margin: 0 0 8px;
-  font-size: 1.55rem;
+  font-size: clamp(1.25rem, 5vw, 1.55rem);
   font-weight: 800;
   color: var(--ion-text-color);
   letter-spacing: -0.01em;
@@ -183,7 +183,7 @@
 
 .celebration-sub {
   margin: 0 0 24px;
-  font-size: 1rem;
+  font-size: clamp(0.88rem, 3vw, 1rem);
   color: var(--app-color-muted);
   font-weight: 600;
   line-height: 1.44;
@@ -402,7 +402,7 @@
   h1 {
     margin: 8px 0 4px;
     color: var(--ion-text-color);
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 4.5vw, 1.5rem);
     line-height: 1.1;
     font-weight: 800;
   }
@@ -551,8 +551,8 @@
 }
 
 .stamp-circle {
-  width: 54px;
-  height: 54px;
+  width: clamp(44px, 14vw, 54px);
+  height: clamp(44px, 14vw, 54px);
   border: 2px dashed rgba(255, 255, 255, 0.38);
   border-radius: 50%;
   display: grid;
@@ -793,5 +793,35 @@ ion-modal {
 
   .loyalty-card {
     padding: 26px 22px;
+  }
+}
+
+/* Ecrãs muito pequenos: <= 360px */
+@media (max-width: 360px) {
+  .celebration-card {
+    padding: 20px 16px;
+  }
+
+  .celebration-icon-wrap {
+    width: 68px;
+    height: 68px;
+  }
+
+  .celebration-heading {
+    font-size: 1.2rem;
+  }
+
+  .loyalty-card {
+    padding: 16px 14px;
+    margin: 12px 0 10px;
+  }
+
+  .stamp-grid {
+    gap: 12px 8px;
+  }
+
+  .stamp-slot.final-slot .stamp-circle {
+    width: 56px;
+    height: 56px;
   }
 }

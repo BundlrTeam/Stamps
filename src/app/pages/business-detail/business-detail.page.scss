@@ -1,5 +1,5 @@
 .detail-page {
-  padding-bottom: 126px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
 }
 
 .own-business-badge {
@@ -28,7 +28,7 @@
 
 .detail-hero {
   position: relative;
-  height: 380px;
+  height: clamp(260px, 55vw, 380px);
   overflow: hidden;
   background: var(--app-color-surface-soft);
 
@@ -105,7 +105,7 @@
   h1 {
     max-width: 18rem;
     margin: 12px 0 10px;
-    font-size: 1.85rem;
+    font-size: clamp(1.4rem, 5.5vw, 1.85rem);
     line-height: 1.06;
     font-weight: 700;
   }
@@ -284,7 +284,7 @@
 
 @media (min-width: 700px) {
   .detail-hero {
-    height: 380px;
+    height: 420px;
   }
 
   .detail-body {
@@ -293,5 +293,29 @@
 
   .info-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Ecrãs muito pequenos: <= 360px */
+@media (max-width: 360px) {
+  .detail-hero {
+    height: clamp(220px, 55vw, 260px);
+  }
+
+  .hero-content h1 {
+    font-size: 1.3rem;
+  }
+
+  .hero-logo-badge {
+    width: 60px;
+    height: 60px;
+  }
+
+  .quick-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-facts > div:last-child {
+    grid-column: span 2;
   }
 }
