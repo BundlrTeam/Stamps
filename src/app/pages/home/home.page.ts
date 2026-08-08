@@ -487,13 +487,14 @@ export class HomePage implements OnInit {
     const savedStores = localStorage.getItem('stamp-me-merchant-stores');
     if (savedStores) {
       try {
-        this.merchantStores = JSON.parse(savedStores);
+        const parsed: MerchantStore[] = JSON.parse(savedStores);
+        this.merchantStores = parsed.filter(s => s && s.businessId && !s.businessId.includes('-card-'));
       } catch {}
     }
 
     if (this.merchantStores.length === 0) {
       const approved = this.businessService.getApprovedBusiness();
-      if (approved) {
+      if (approved && !approved.businessId.includes('-card-')) {
         this.merchantStores = [{
           businessId: approved.businessId,
           name: approved.name,

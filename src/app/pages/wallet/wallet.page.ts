@@ -1,6 +1,7 @@
-import { Component, inject, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BusinessService } from '../../services/business.service';
 import { SessionService, AppMode } from '../../services/session.service';
 import { StampCard, Badge, UnlockedReward, MerchantLead, ApprovedBusiness, CardCustomization, CustomReward } from '../../models/business.model';
@@ -28,7 +29,7 @@ interface ConfettiParticle {
   styleUrls: ['./wallet.page.scss'],
   standalone: false,
 })
-export class WalletPage {
+export class WalletPage implements OnInit, OnDestroy {
   private readonly businessService = inject(BusinessService);
   private readonly sessionService = inject(SessionService);
   private readonly alertController = inject(AlertController);
@@ -99,12 +100,38 @@ export class WalletPage {
     return this.newBadge.tier === 'gold' ? 'tier-gold' : 'tier-orange';
   }
 
+  private modeSub?: Subscription;
+  private bizSub?: Subscription;
+
+  ngOnInit() {
+    this.modeSub = this.sessionService.mode$.subscribe(mode => {
+      this.appMode = mode;
+      this.updateWalletForMode(mode);
+    });
+
+    this.bizSub = this.businessService.businesses$.subscribe(() => {
+      this.updateWalletForMode(this.appMode);
+    });
+  }
+
+  ngOnDestroy() {
+    this.modeSub?.unsubscribe();
+    this.bizSub?.unsubscribe();
+  }
+
+  updateWalletForMode(mode: AppMode) {
+    if (mode === 'business') {
+      this.activeApprovedBusiness = this.businessService.getApprovedBusiness();
+      this.loadMerchantStores();
+    } else {
+      this.refreshCards();
+      this.checkForNewBadges();
+    }
+  }
+
   ionViewWillEnter() {
-    this.refreshCards();
-    this.checkForNewBadges();
     this.appMode = this.sessionService.getMode();
-    this.loadMerchantStores();
-    this.activeApprovedBusiness = this.businessService.getApprovedBusiness();
+    this.updateWalletForMode(this.appMode);
   }
 
   ionViewWillLeave() {
@@ -394,27 +421,34 @@ export class WalletPage {
       } catch {}
     }
 
-    if (this.merchantStores.length === 0) {
-      const approved = this.businessService.getApprovedBusiness();
-      if (approved) {
-        this.merchantStores = [{
-          businessId: approved.businessId,
-          name: approved.name,
-          isApproved: true,
-          approvedDetails: approved
-        }];
-        this.saveMerchantStores();
-      } else {
-        this.merchantStores = [];
+    // Deduplicate merchantStores by businessId
+    const uniqueMap = new Map<string, MerchantStore>();
+    for (const store of this.merchantStores) {
+      if (store && store.businessId) {
+        uniqueMap.set(store.businessId, store);
       }
     }
+    this.merchantStores = Array.from(uniqueMap.values());
 
     const activeBiz = this.businessService.getApprovedBusiness();
-    const activeId = activeBiz ? activeBiz.businessId : 'my-business';
-    const parentId = activeId.split('-card-')[0];
+    if (activeBiz) {
+      const idx = this.merchantStores.findIndex(s => s.businessId === activeBiz.businessId);
+      if (idx >= 0) {
+        this.merchantStores[idx].approvedDetails = activeBiz;
+        this.merchantStores[idx].isApproved = true;
+      } else {
+        this.merchantStores.unshift({
+          businessId: activeBiz.businessId,
+          name: activeBiz.name,
+          isApproved: true,
+          approvedDetails: activeBiz
+        });
+      }
+      this.saveMerchantStores();
+    }
 
     this.activeBusinessCards = this.merchantStores
-      .filter(s => s.isApproved && s.approvedDetails && (s.businessId === parentId || s.businessId.startsWith(parentId + '-')))
+      .filter(s => s.isApproved && s.approvedDetails)
       .map(s => s.approvedDetails!);
 
     if (this.activeBusinessCards.length === 0 && activeBiz) {
@@ -474,22 +508,23 @@ export class WalletPage {
     const approved: ApprovedBusiness = {
       businessId: newId,
       name: this.cardNameDraft,
-      address: 'Rua do Comércio 123',
-      city: 'Porto',
-      category: 'Loja',
+      address: activeBiz?.address || 'Retrosaria em Vila Velha, Brasil',
+      city: activeBiz?.city || 'Vila Velha',
+      category: activeBiz?.category || 'Loja',
       description: 'Cartão de fidelidade criado na carteira.',
-      services: ['Fidelização'],
-      photos: [
+      services: activeBiz?.services || ['Fidelização'],
+      photos: activeBiz?.photos || [
         this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600', 'fallbacks/business-photo1.jpg'),
         this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600', 'fallbacks/business-photo2.jpg'),
         this.businessService.resolveImageUrl('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600', 'fallbacks/business-photo3.jpg')
       ],
-      logoUrl: '',
+      logoUrl: activeBiz?.logoUrl || '',
       cardCustomization: { ...this.cardDraft },
       approvedAt: new Date().toISOString()
     };
 
-    this.businessService.setApprovedBusiness(approved);
+    // Pass false to setApprovedBusiness so sub-card templates do NOT register as commercial stores on the Home Page
+    this.businessService.setApprovedBusiness(approved, false);
     
     const newStore: MerchantStore = {
       businessId: newId,
@@ -498,8 +533,12 @@ export class WalletPage {
       approvedDetails: approved
     };
 
-    this.merchantStores.push(newStore);
-    this.saveMerchantStores();
+    const exists = this.merchantStores.some(s => s.businessId === newId);
+    if (!exists) {
+      this.merchantStores.push(newStore);
+      this.saveMerchantStores();
+    }
+
     this.loadMerchantStores();
     this.activeApprovedBusiness = approved;
     this.closeAddCardModal();

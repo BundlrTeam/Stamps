@@ -87,6 +87,26 @@ export class ProfilePage implements OnInit {
   set activeProfile(mode: AppMode) {
     this.sessionService.setMode(mode);
   }
+  get activeMerchantCardsCount(): number {
+    const savedStores = localStorage.getItem(this.storesStorageKey);
+    if (savedStores) {
+      try {
+        const stores = JSON.parse(savedStores);
+        if (Array.isArray(stores) && stores.length > 0) {
+          return stores.length;
+        }
+      } catch {}
+    }
+    if (this.merchantStores && this.merchantStores.length > 0) {
+      return this.merchantStores.length;
+    }
+    return this.isBusinessApproved ? 1 : 0;
+  }
+
+  get activeLocationsCount(): number {
+    return this.isBusinessApproved ? 1 : 0;
+  }
+
   isBusinessApproved: boolean = false;
   profileSwitcherAnimating: boolean = false;
   approvedBiz: ApprovedBusiness | null = null;
@@ -150,7 +170,8 @@ export class ProfilePage implements OnInit {
     const savedStores = localStorage.getItem(this.storesStorageKey);
     if (savedStores) {
       try {
-        this.merchantStores = JSON.parse(savedStores);
+        const parsed: MerchantStore[] = JSON.parse(savedStores);
+        this.merchantStores = parsed.filter(s => s && s.businessId && !s.businessId.includes('-card-'));
       } catch {}
     }
 

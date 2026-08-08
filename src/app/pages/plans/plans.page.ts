@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AlertController, ToastController, NavController } from '@ionic/angular';
 import { Location } from '@angular/common';
+import { BusinessService } from '../../services/business.service';
 
 export interface Plan {
   id: 'demo' | 'pro' | 'business';
@@ -31,6 +32,7 @@ export class PlansPage implements OnInit {
   private readonly toastController = inject(ToastController);
   private readonly navCtrl = inject(NavController);
   private readonly location = inject(Location);
+  private readonly businessService = inject(BusinessService);
 
   billingCycle: 'monthly' | 'annual' = 'annual';
 
@@ -40,7 +42,20 @@ export class PlansPage implements OnInit {
   demoDaysRemaining = 78;
   currentLocationsCount = 1;
   maxDemoLocations = 1;
-  currentCardsCount = 2;
+
+  get currentCardsCount(): number {
+    const savedStores = localStorage.getItem('stamp-me-merchant-stores');
+    if (savedStores) {
+      try {
+        const stores = JSON.parse(savedStores);
+        if (Array.isArray(stores) && stores.length > 0) {
+          return stores.length;
+        }
+      } catch {}
+    }
+    const approved = this.businessService.getApprovedBusiness();
+    return approved ? 1 : 0;
+  }
   maxDemoCards = 3;
 
   plans: Plan[] = [
@@ -139,6 +154,13 @@ export class PlansPage implements OnInit {
     if (plan.id !== 'demo') return null;
     const val = this.billingCycle === 'annual' ? plan.postTrialAnnualPriceMonthly : plan.postTrialMonthlyPrice;
     return `Após 90 dias: R$ ${val?.toFixed(2).replace('.', ',')}/mês`;
+  }
+
+  getCardsText(plan: Plan): string {
+    if (plan.id === 'demo') {
+      return `Até 3 cartões (${this.currentCardsCount}/3 criados)`;
+    }
+    return plan.cardsText;
   }
 
   getSavingsText(plan: Plan): string | null {

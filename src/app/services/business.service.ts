@@ -98,8 +98,7 @@ export class BusinessService {
     ).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          const customLocalCards = this.businesses.filter(b => b.id.startsWith('my-business-') && !data.some(d => d.id === b.id));
-          this.businesses = [...customLocalCards, ...data];
+          this.businesses = data.filter(b => !b.id.includes('-card-'));
           for (const biz of this.businesses) {
             this.walletService.registerBusiness(biz);
           }
@@ -217,24 +216,27 @@ export class BusinessService {
     return this.approvedBusiness;
   }
 
-  setApprovedBusiness(approved: ApprovedBusiness): void {
+  setApprovedBusiness(approved: ApprovedBusiness, addToGlobalCatalog: boolean = false): void {
     this.approvedBusiness = approved;
     localStorage.setItem(this.approvedBusinessKey, JSON.stringify(approved));
 
     this.walletService.registerBusiness(this.buildBusinessFromApproved(approved));
-    const newBiz = this.buildBusinessFromApproved(approved);
-    const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
-    if (!alreadyExists) {
-      this.businesses = [newBiz, ...this.businesses];
-    } else {
-      this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
-    }
-    this.businessesSubject.next(this.businesses);
 
-    this.syncApprovedBusinessToSupabase(approved).subscribe({
-      next: () => this.loadBusinessesFromBackend(),
-      error: (err) => console.error('Erro ao sincronizar negócio para o Supabase:', err)
-    });
+    if (addToGlobalCatalog) {
+      const newBiz = this.buildBusinessFromApproved(approved);
+      const alreadyExists = this.businesses.some(b => b.id === newBiz.id);
+      if (!alreadyExists) {
+        this.businesses = [newBiz, ...this.businesses];
+      } else {
+        this.businesses = this.businesses.map(b => b.id === newBiz.id ? newBiz : b);
+      }
+      this.businessesSubject.next(this.businesses);
+
+      this.syncApprovedBusinessToSupabase(approved).subscribe({
+        next: () => this.loadBusinessesFromBackend(),
+        error: (err) => console.error('Erro ao sincronizar negócio para o Supabase:', err)
+      });
+    }
   }
 
   updateApprovedBusinessDetails(updates: Partial<Pick<ApprovedBusiness, 'description' | 'address' | 'services' | 'photos' | 'logoUrl'>>): void {
