@@ -65,7 +65,7 @@
             >
               <div class="card-inner">
                  <!-- FRONT: Real Physical Loyalty Card look -->
-                <div class="card-face card-front" [ngStyle]="{'background': 'linear-gradient(135deg, ' + card.backgroundColor + ' 0%, #111827 100%)'}">
+                <div class="card-face card-front" [ngStyle]="get3DCardStyle(card)">
                   <div class="card-face-glass"></div>
                   <div class="card-brand">
                     <img [src]="card.businessLogo || 'assets/default-logo.jpg'" [alt]="card.businessName" />
@@ -82,7 +82,7 @@
                 </div>
 
                 <!-- BACK: Stamp Grid preview -->
-                <div class="card-face card-back" [ngStyle]="{'background': 'linear-gradient(135deg, ' + card.backgroundColor + ' 0%, #111827 100%)'}">
+                <div class="card-face card-back" [ngStyle]="get3DCardStyle(card)">
                   <div class="card-face-glass"></div>
                   <div class="stamp-dots-grid">
                     <div 

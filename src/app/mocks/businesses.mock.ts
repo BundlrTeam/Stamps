@@ -23,7 +23,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Pizzas artesanais', 'Massas frescas', 'Sobremesas italianas', 'Retirada e delivery'],
     reward: 'Pizza média gratuita',
     rewardDescription: 'Ganhe uma pizza média de sua escolha ao completar o cartão.',
-    qrCodePattern: 'STAMP_QR_PIZZA123'
+    qrCodePattern: 'STAMP_QR_PIZZA123',
+    cardCustomization: {
+      backgroundColor: '#d94b3d',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&fit=crop',
+      stampStyle: 'image',
+      stampColor: '#ffffff',
+      stampImageUrl: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=200&h=200&fit=crop',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.2,
+      customRewards: []
+    }
   },
   {
     id: 'forno-do-bairro',
@@ -47,7 +59,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Menu de almoço', 'Jantares de grupo', 'Vinhos selecionados', 'Sobremesas caseiras'],
     reward: 'Almoço executivo gratuito',
     rewardDescription: 'No 10º selo, o próximo almoço executivo é por nossa conta.',
-    qrCodePattern: 'STAMP_QR_FORNO888'
+    qrCodePattern: 'STAMP_QR_FORNO888',
+    cardCustomization: {
+      backgroundColor: '#e8652b',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#FFE66D',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'ramen-lisboa',
@@ -71,7 +95,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Ramen artesanal', 'Gyozas', 'Opções vegetarianas', 'Reservas online'],
     reward: 'Ramen especial gratuito',
     rewardDescription: 'Complete o cartão e ganhe uma tigela de ramen especial.',
-    qrCodePattern: 'STAMP_QR_RAMEN321'
+    qrCodePattern: 'STAMP_QR_RAMEN321',
+    cardCustomization: {
+      backgroundColor: '#1a1a2e',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&fit=crop',
+      stampStyle: 'color',
+      stampColor: '#d94b3d',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'cafe-aroma',
@@ -95,7 +131,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Café de especialidade', 'Confeitaria artesanal', 'Brunch', 'Eventos privados'],
     reward: 'Café e doce gratuito',
     rewardDescription: 'O 10º selo desbloqueia um café de especialidade e um doce do dia.',
-    qrCodePattern: 'STAMP_QR_CAFE456'
+    qrCodePattern: 'STAMP_QR_CAFE456',
+    cardCustomization: {
+      backgroundColor: '#285a64',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'image',
+      stampColor: '#ffffff',
+      stampImageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.1,
+      customRewards: []
+    }
   },
   {
     id: 'slow-bean',
@@ -119,7 +167,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Café filtrado', 'Sanduíches naturais', 'Mesas para trabalho', 'Produtos locais'],
     reward: 'Brunch individual gratuito',
     rewardDescription: 'Ao completar o cartão, ganhe um brunch individual.',
-    qrCodePattern: 'STAMP_QR_SLOWBEAN'
+    qrCodePattern: 'STAMP_QR_SLOWBEAN',
+    cardCustomization: {
+      backgroundColor: '#d99a21',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#ffffff',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'barbearia-classic',
@@ -143,7 +203,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Corte de cabelo', 'Barba clássica', 'Tratamento de barba', 'Coloração'],
     reward: 'Corte gratuito',
     rewardDescription: 'Complete 10 visitas e ganhe um corte gratuito.',
-    qrCodePattern: 'STAMP_QR_BARBER123'
+    qrCodePattern: 'STAMP_QR_BARBER123',
+    cardCustomization: {
+      backgroundColor: '#3b3b5c',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&fit=crop',
+      stampStyle: 'image',
+      stampColor: '#ffffff',
+      stampImageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=200&h=200&fit=crop',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.25,
+      customRewards: []
+    }
   },
   {
     id: 'studio-luz',
@@ -167,7 +239,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Manicure', 'Styling', 'Tratamentos capilares', 'Sobrancelhas'],
     reward: 'Tratamento express gratuito',
     rewardDescription: 'O 10º selo oferece um tratamento express de sua escolha.',
-    qrCodePattern: 'STAMP_QR_LUZ202'
+    qrCodePattern: 'STAMP_QR_LUZ202',
+    cardCustomization: {
+      backgroundColor: '#DDA0DD',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#4ECDC4',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'bar-do-cais',
@@ -191,7 +275,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Coquetéis de autor', 'Música ao vivo', 'Petiscos', 'Eventos privados'],
     reward: 'Coquetel de autor gratuito',
     rewardDescription: 'Ganhe um coquetel de autor ao completar o cartão.',
-    qrCodePattern: 'STAMP_QR_CAIS777'
+    qrCodePattern: 'STAMP_QR_CAIS777',
+    cardCustomization: {
+      backgroundColor: '#0f9f7a',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&fit=crop',
+      stampStyle: 'image',
+      stampColor: '#ffffff',
+      stampImageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=200&h=200&fit=crop',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.1,
+      customRewards: []
+    }
   },
   {
     id: 'vinyl-room',
@@ -215,7 +311,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Cerveja artesanal', 'DJ sets', 'Coquetéis', 'Reservas de mesa'],
     reward: 'Degustação gratuita',
     rewardDescription: 'Complete o cartão e ganhe uma degustação de cervejas artesanais.',
-    qrCodePattern: 'STAMP_QR_VINYL55'
+    qrCodePattern: 'STAMP_QR_VINYL55',
+    cardCustomization: {
+      backgroundColor: '#4a4e69',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#FFE66D',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'hostel-atlas',
@@ -239,7 +347,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Quartos privativos', 'Cowork', 'Passeios locais', 'Café da manhã'],
     reward: 'Diária com 50% de desconto',
     rewardDescription: 'Ao completar o cartão, ganhe 50% de desconto em uma diária.',
-    qrCodePattern: 'STAMP_QR_ATLAS910'
+    qrCodePattern: 'STAMP_QR_ATLAS910',
+    cardCustomization: {
+      backgroundColor: '#22333b',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&fit=crop',
+      stampStyle: 'color',
+      stampColor: '#F0B27A',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'casa-azul-guesthouse',
@@ -263,7 +383,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Café da manhã', 'Jardim interno', 'Check-in digital', 'Parcerias locais'],
     reward: 'Upgrade de quarto',
     rewardDescription: 'Complete o cartão e ganhe um upgrade sujeito a disponibilidade.',
-    qrCodePattern: 'STAMP_QR_AZUL228'
+    qrCodePattern: 'STAMP_QR_AZUL228',
+    cardCustomization: {
+      backgroundColor: '#285a64',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#96CEB4',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'mercearia-nova',
@@ -287,7 +419,19 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Produtos frescos', 'Cestas semanais', 'Produtos orgânicos', 'Entrega local'],
     reward: 'Cesta local com desconto',
     rewardDescription: 'O 10º selo desbloqueia 15% de desconto em uma cesta local.',
-    qrCodePattern: 'STAMP_QR_MERCEARIA76'
+    qrCodePattern: 'STAMP_QR_MERCEARIA76',
+    cardCustomization: {
+      backgroundColor: '#0f9f7a',
+      backgroundStyle: 'color',
+      backgroundImageUrl: '',
+      stampStyle: 'color',
+      stampColor: '#ffffff',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   },
   {
     id: 'livraria-pagina',
@@ -311,6 +455,18 @@ export const MOCK_BUSINESSES: Business[] = [
     services: ['Livros independentes', 'Clube de leitura', 'Café', 'Eventos com autores'],
     reward: 'Livro com 20% de desconto',
     rewardDescription: 'Complete o cartão e ganhe 20% de desconto no próximo livro.',
-    qrCodePattern: 'STAMP_QR_PAGINA18'
+    qrCodePattern: 'STAMP_QR_PAGINA18',
+    cardCustomization: {
+      backgroundColor: '#3b3b5c',
+      backgroundStyle: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&fit=crop',
+      stampStyle: 'color',
+      stampColor: '#F0B27A',
+      stampImageUrl: '',
+      stampImageOffsetX: 50,
+      stampImageOffsetY: 50,
+      stampImageScale: 1.0,
+      customRewards: []
+    }
   }
 ];

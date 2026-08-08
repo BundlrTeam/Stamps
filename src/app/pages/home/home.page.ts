@@ -169,19 +169,27 @@ export class HomePage implements OnInit {
     
     this.topActiveCards = sortedCards.slice(0, 3).map(c => {
       let color = this.businessService.DEFAULT_CARD_CUSTOMIZATION.backgroundColor;
+      let backgroundStyle = 'color';
+      let backgroundImageUrl = '';
       const biz = this.businesses.find(b => b.id === c.businessId);
-      if (biz && biz.cardCustomization && biz.cardCustomization.backgroundColor) {
-        color = biz.cardCustomization.backgroundColor;
+      if (biz && biz.cardCustomization) {
+        color = biz.cardCustomization.backgroundColor || color;
+        backgroundStyle = biz.cardCustomization.backgroundStyle || 'color';
+        backgroundImageUrl = biz.cardCustomization.backgroundImageUrl || '';
       } else if (c.businessId === 'my-business') {
         const cust = this.businessService.getCardCustomization();
-        if (cust && cust.backgroundColor) {
-          color = cust.backgroundColor;
+        if (cust) {
+          color = cust.backgroundColor || color;
+          backgroundStyle = cust.backgroundStyle || 'color';
+          backgroundImageUrl = cust.backgroundImageUrl || '';
         }
       }
       return {
         ...c,
         isFlipped: false,
-        backgroundColor: color
+        backgroundColor: color,
+        backgroundStyle,
+        backgroundImageUrl
       };
     });
     this.activeCardIndex = 0;
@@ -259,6 +267,19 @@ export class HomePage implements OnInit {
         }, 500);
       }, 800);
     }
+  }
+
+  get3DCardStyle(card: any) {
+    if (card && card.backgroundStyle === 'image' && card.backgroundImageUrl) {
+      return {
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${card.backgroundImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      };
+    }
+    return {
+      background: `linear-gradient(135deg, ${card?.backgroundColor || '#e8652b'} 0%, #111827 100%)`
+    };
   }
 
   private computeGreeting(): string {

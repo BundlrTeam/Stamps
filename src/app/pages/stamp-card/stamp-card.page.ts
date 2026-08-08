@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BusinessService } from '../../services/business.service';
 import { Business, StampCard, CardCustomization } from '../../models/business.model';
 import { AlertController, ToastController, IonContent } from '@ionic/angular';
@@ -35,7 +36,7 @@ interface StampSlotData {
   styleUrls: ['./stamp-card.page.scss'],
   standalone: false,
 })
-export class StampCardPage implements OnInit {
+export class StampCardPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly businessService = inject(BusinessService);
   private readonly alertController = inject(AlertController);
@@ -75,8 +76,17 @@ export class StampCardPage implements OnInit {
     '#F7DC6F', '#BB8FCE', '#85C1E9', '#F0B27A'
   ];
 
+  private businessesSub?: Subscription;
+
   ngOnInit() {
     this.loadCardData();
+    this.businessesSub = this.businessService.businesses$.subscribe(() => {
+      this.loadCardData();
+    });
+  }
+
+  ngOnDestroy() {
+    this.businessesSub?.unsubscribe();
   }
 
   ionViewWillEnter() {
@@ -93,7 +103,9 @@ export class StampCardPage implements OnInit {
     if (businessId) {
       this.stampCard = this.businessService.getStampCard(businessId);
       this.business = this.businessService.getBusinessById(businessId);
-      if (businessId === 'my-business') {
+      if (this.business && this.business.cardCustomization) {
+        this.cardCustomization = this.business.cardCustomization;
+      } else if (businessId === 'my-business') {
         this.cardCustomization = this.businessService.getCardCustomization();
       } else {
         this.cardCustomization = this.businessService.DEFAULT_CARD_CUSTOMIZATION;

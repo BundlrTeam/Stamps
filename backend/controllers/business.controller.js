@@ -5,6 +5,13 @@ const { MOCK_BUSINESSES } = require('../seeds');
 
 // Helper para converter colunas da base de dados (snake_case) da tabela 'businesses' para o modelo Business do frontend
 function mapRowToBusiness(row) {
+  let cardCustomization = null;
+  if (row.card_customization) {
+    cardCustomization = typeof row.card_customization === 'string'
+      ? JSON.parse(row.card_customization)
+      : row.card_customization;
+  }
+
   return {
     id: row.id,
     name: row.name,
@@ -24,13 +31,20 @@ function mapRowToBusiness(row) {
     reward: row.reward || 'Prémio especial',
     rewardDescription: row.reward_description || 'Complete o cartão e ganhe um prémio especial.',
     qrCodePattern: row.qr_code_pattern || 'STAMP_QR_MYBUSINESS',
-    cardCustomization: row.card_customization || null,
+    cardCustomization: cardCustomization,
     approvedAt: row.approved_at
   };
 }
 
 // Helper para converter colunas da base de dados da tabela 'businesses' para o modelo ApprovedBusiness do frontend
 function mapRowToApprovedBusiness(row) {
+  let cardCustomization = null;
+  if (row.card_customization) {
+    cardCustomization = typeof row.card_customization === 'string'
+      ? JSON.parse(row.card_customization)
+      : row.card_customization;
+  }
+
   return {
     businessId: row.id,
     name: row.name,
@@ -41,7 +55,7 @@ function mapRowToApprovedBusiness(row) {
     services: Array.isArray(row.services) ? row.services : [],
     photos: Array.isArray(row.images) ? row.images : [], // photos mapeia para images no banco
     logoUrl: row.logo || '',
-    cardCustomization: row.card_customization || null,
+    cardCustomization: cardCustomization,
     approvedAt: row.approved_at
   };
 }

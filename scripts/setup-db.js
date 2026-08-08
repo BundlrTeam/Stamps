@@ -471,15 +471,23 @@ client.connect()
           biz.reward || '',
           biz.rewardDescription || '',
           biz.qrCodePattern || '',
-          JSON.stringify(null),
+          JSON.stringify(biz.cardCustomization || null),
           new Date().toISOString()
         ];
         
         await client.query(insertSql, values);
       }
-      console.log('Seeding concluído com sucesso. 13 negócios inseridos.');
-    } else {
-      console.log(`A tabela businesses já contém ${count} negócios. Seeding ignorado.`);
+      console.log(`A tabela businesses contém ${count} negócios. A sincronizar card_customization de todos os negócios no Supabase...`);
+      const { MOCK_BUSINESSES } = require('../backend/seeds');
+      for (const biz of MOCK_BUSINESSES) {
+        if (biz.cardCustomization) {
+          await client.query(
+            `UPDATE businesses SET card_customization = $1 WHERE id = $2;`,
+            [JSON.stringify(biz.cardCustomization), biz.id]
+          );
+        }
+      }
+      console.log('Sincronização de card_customization no Supabase concluída com sucesso!');
     }
     return client.end();
   })
