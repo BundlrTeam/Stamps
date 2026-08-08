@@ -29,8 +29,8 @@ describe('WalletService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('seeds demo cards on first load', () => {
-    expect(service.getStampCards().length).toBeGreaterThan(0);
+  it('starts with empty wallet cards on first load', () => {
+    expect(service.getStampCards().length).toBe(0);
   });
 
   it('follows a business and adds a stamp card', () => {

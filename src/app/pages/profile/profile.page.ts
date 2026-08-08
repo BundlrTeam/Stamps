@@ -136,21 +136,8 @@ export class ProfilePage implements OnInit {
     if (this.isBusinessApproved) {
       this.approvedBiz = this.businessService.getApprovedBusiness();
     } else {
-      this.approvedBiz = {
-        businessId: 'my-business',
-        name: 'PedraMania',
-        category: 'Loja',
-        description: 'Especializada em retrosaria, aviamentos e artesanato. Vendemos linhas, tecidos, bijuterias e peças exclusivas para projetos de DIY.',
-        address: 'Retrosaria em Vila Velha, Brasil',
-        city: 'Vila Velha',
-        services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
-        photos: defaultPedraPhotos,
-        logoUrl: defaultPedraLogo,
-        cardCustomization: this.businessService.DEFAULT_CARD_CUSTOMIZATION,
-        approvedAt: new Date().toISOString()
-      };
-      this.businessService.setApprovedBusiness(this.approvedBiz);
-      this.isBusinessApproved = true;
+      this.approvedBiz = null;
+      this.isBusinessApproved = false;
     }
 
     if (this.approvedBiz && (this.approvedBiz.businessId === 'my-business' || this.approvedBiz.name.toLowerCase().includes('pedramania'))) {
@@ -167,13 +154,13 @@ export class ProfilePage implements OnInit {
       } catch {}
     }
 
-    // Se a lista estiver vazia, inicializa com a loja principal (PedraMania)
-    if (this.merchantStores.length === 0) {
+    // Se a lista estiver vazia e existir loja aprovada
+    if (this.merchantStores.length === 0 && this.approvedBiz) {
       this.merchantStores = [{
-        businessId: 'my-business',
-        name: this.approvedBiz ? this.approvedBiz.name : 'PedraMania',
+        businessId: this.approvedBiz.businessId || 'my-business',
+        name: this.approvedBiz.name,
         isApproved: true,
-        approvedDetails: this.approvedBiz || undefined,
+        approvedDetails: this.approvedBiz,
         lead: this.newBusiness
       }];
       this.saveMerchantStores();

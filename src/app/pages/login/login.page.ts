@@ -12,14 +12,14 @@ export class LoginPage {
   private readonly sessionKey = 'stamp-me-demo-session';
 
   showSplash = true;
-  username = '';
-  password = '';
+  username = 'admin';
+  password = 'admin';
   errorMessage = '';
 
   ionViewWillEnter(): void {
     this.showSplash = true;
-    this.username = '';
-    this.password = '';
+    this.username = 'admin';
+    this.password = 'admin';
     this.errorMessage = '';
   }
 

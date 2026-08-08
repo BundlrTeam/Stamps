@@ -71,9 +71,9 @@ export class HomePage implements OnInit {
     services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
     googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
     businessPhotos: [
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
-      'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+      this.businessService.resolveImageUrl('', 'default/pedramania.jpg'),
+      this.businessService.resolveImageUrl('', 'default/pedramania1.webp'),
+      this.businessService.resolveImageUrl('', 'default/pedramania2.webp')
     ],
     contactName: 'Wilson Pereira',
     contactEmail: 'pedramania@gmail.com',
@@ -472,17 +472,23 @@ export class HomePage implements OnInit {
 
     if (this.merchantStores.length === 0) {
       const approved = this.businessService.getApprovedBusiness();
-      this.merchantStores = [{
-        businessId: 'my-business',
-        name: approved ? approved.name : 'PedraMania',
-        isApproved: Boolean(approved),
-        approvedDetails: approved || undefined
-      }];
-      this.saveMerchantStores();
+      if (approved) {
+        this.merchantStores = [{
+          businessId: approved.businessId,
+          name: approved.name,
+          isApproved: true,
+          approvedDetails: approved
+        }];
+        this.saveMerchantStores();
+      } else {
+        this.merchantStores = [];
+      }
     } else {
       const approvedStore = this.merchantStores.find(s => s.isApproved);
       if (approvedStore && approvedStore.approvedDetails) {
         this.approvedBiz = approvedStore.approvedDetails;
+      } else {
+        this.approvedBiz = null;
       }
     }
   }
@@ -552,9 +558,9 @@ export class HomePage implements OnInit {
       services: ['Venda de Linhas e Tecidos', 'Suprimentos para DIY', 'Peças e Acessórios para Bijuterias'],
       googleBusinessProfileUrl: 'https://share.google/SRV0o9NmLz8auA8bu',
       businessPhotos: [
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw',
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlKSvuYDG5B8cTWXTYa7fDIOX2xwSf8w5EmhrjKsTAOOZcFzvnCLai_mrduZpV38W71o7-7v0sSSWHDf2wvjQefUFFi2ZTvvUw-JpZjZy5j0BpVk8QB9euKzaXSKy68o7H-85Fp=s1360-w1360-h1020-rw',
-        'https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmP5mNkpQy9Fc0z763XkVL-H8QmKdSPI5pduuEpKzSfLj6t0-nYsXL-WKJNO_pdvp7UGhvMClbjbm6B-83QAY-czPLRRXuqdDZcLnmwPsrfgg-Ln9b4CvNL98RMejVInV_UYwyP=s1360-w1360-h1020-rw'
+        this.businessService.resolveImageUrl('', 'default/pedramania.jpg'),
+        this.businessService.resolveImageUrl('', 'default/pedramania1.webp'),
+        this.businessService.resolveImageUrl('', 'default/pedramania2.webp')
       ],
       contactName: 'Wilson Pereira',
       contactEmail: 'pedramania@gmail.com',

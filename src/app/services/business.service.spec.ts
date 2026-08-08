@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { BusinessService } from './business.service';
 
@@ -7,7 +9,9 @@ describe('BusinessService', () => {
 
   beforeEach(() => {
     localStorage.clear();
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()]
+    });
   });
 
   afterEach(() => {
@@ -18,11 +22,10 @@ describe('BusinessService', () => {
     return TestBed.inject(BusinessService);
   }
 
-  it('seeds wallet with realistic demo cards when storage is empty', () => {
+  it('starts with empty wallet cards when storage is empty', () => {
     const service = createService();
     const cards = service.getStampCards();
-    expect(cards.length).toBeGreaterThanOrEqual(2);
-    expect(cards.every(card => card.stamps > 0)).toBeTrue();
+    expect(cards.length).toBe(0);
   });
 
   it('persists followed businesses in localStorage', () => {

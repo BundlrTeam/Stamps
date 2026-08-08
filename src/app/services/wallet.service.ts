@@ -51,17 +51,17 @@ export class WalletService {
     const stored = localStorage.getItem(this.storageKey);
     let cards: StampCard[] = [];
     if (!stored) {
-      cards = this.createSeedCards();
+      cards = [];
     } else {
       try {
         const parsed = JSON.parse(stored) as DemoState;
         if (!Array.isArray(parsed.stampCards)) {
-          cards = this.createSeedCards();
+          cards = [];
         } else {
           cards = parsed.stampCards;
         }
       } catch {
-        cards = this.createSeedCards();
+        cards = [];
       }
     }
 

@@ -396,13 +396,17 @@ export class WalletPage {
 
     if (this.merchantStores.length === 0) {
       const approved = this.businessService.getApprovedBusiness();
-      this.merchantStores = [{
-        businessId: 'my-business',
-        name: approved ? approved.name : 'PedraMania',
-        isApproved: Boolean(approved),
-        approvedDetails: approved || undefined
-      }];
-      this.saveMerchantStores();
+      if (approved) {
+        this.merchantStores = [{
+          businessId: approved.businessId,
+          name: approved.name,
+          isApproved: true,
+          approvedDetails: approved
+        }];
+        this.saveMerchantStores();
+      } else {
+        this.merchantStores = [];
+      }
     }
 
     const activeBiz = this.businessService.getApprovedBusiness();

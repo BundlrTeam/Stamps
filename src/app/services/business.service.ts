@@ -416,6 +416,9 @@ export class BusinessService {
     this.walletService.unregisterBusiness('my-business');
     this.walletService.unregisterBusiness('viva-melhor-suplementos');
 
+    this.businesses = this.businesses.filter(b => b.id !== 'my-business' && b.id !== 'viva-melhor-suplementos' && !b.id.startsWith('my-business-'));
+    this.businessesSubject.next(this.businesses);
+
     const backendUrl = environment.backendUrl;
 
     this.http.delete(`${backendUrl}/approved-businesses/my-business`).subscribe({
