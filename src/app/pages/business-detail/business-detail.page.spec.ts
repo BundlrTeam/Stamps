@@ -64,13 +64,13 @@ describe('BusinessDetailPage', () => {
     expect(component.notFound).toBeTrue();
   });
 
-  it('should follow business and navigate to wallet', () => {
+  it('should follow business and remain on store page', () => {
     component.business = mockBusiness as any;
     component.followBusiness();
-    
+
     expect(businessServiceSpy.followBusiness).toHaveBeenCalledWith('test-id');
     expect(component.isFollowing).toBeTrue();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/tabs/wallet']);
+    expect(routerSpy.navigate).not.toHaveBeenCalledWith(['/tabs/wallet']);
   });
 
   it('should open stamp card', () => {

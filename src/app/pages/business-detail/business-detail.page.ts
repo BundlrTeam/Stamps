@@ -123,7 +123,6 @@ export class BusinessDetailPage implements OnInit, OnDestroy {
     if (!this.business) return;
     this.businessService.followBusiness(this.business.id);
     this.isFollowing = true;
-    this.router.navigate(['/tabs/wallet']);
   }
 
   openStampCard() {

@@ -196,6 +196,25 @@
           font-size: 0.85rem;
           font-weight: 600;
           color: var(--app-color-muted, #71717a);
+
+          &.trial-tag {
+            color: #0f9f7a;
+            font-weight: 750;
+          }
+        }
+      }
+
+      .post-trial-text {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #e8652b;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        ion-icon {
+          font-size: 0.95rem;
         }
       }
 
@@ -204,6 +223,27 @@
         font-weight: 750;
         color: #0f9f7a;
         margin-top: 2px;
+      }
+    }
+
+    .plan-eco-box {
+      background: rgba(15, 159, 122, 0.08);
+      border: 1px dashed rgba(15, 159, 122, 0.3);
+      border-radius: var(--app-radius-md, 12px);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #0f9f7a;
+      font-weight: 650;
+      line-height: 1.35;
+
+      ion-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
       }
     }
 

@@ -8,13 +8,16 @@ export interface Plan {
   badge?: string;
   description: string;
   monthlyPrice: number;
-  annualPriceMonthly: number; // discounted monthly price when billed annually
+  annualPriceMonthly: number;
+  postTrialMonthlyPrice?: number;
+  postTrialAnnualPriceMonthly?: number;
   locationsText: string;
   cardsText: string;
   features: string[];
   ctaText: string;
   isCurrent?: boolean;
   popular?: boolean;
+  ecoNote?: string;
 }
 
 @Component({
@@ -43,21 +46,26 @@ export class PlansPage implements OnInit {
   plans: Plan[] = [
     {
       id: 'demo',
-      name: 'Teste (90 Dias)',
-      badge: 'Período de Teste',
-      description: 'Acesso completo durante 90 dias. Após o teste, associar um meio de pagamento para manter a loja ativa.',
+      name: 'Starter Eco',
+      badge: '90 Dias Grátis 🌿',
+      description: 'Experimente 100% grátis durante 90 dias. Após o teste, continua por um valor simbólico que substitui a pegada ecológica de papéis e autocolantes.',
       monthlyPrice: 0,
       annualPriceMonthly: 0,
-      locationsText: '1 Localização',
-      cardsText: 'Até 3 Cartões de Loja',
+      postTrialMonthlyPrice: 19.90,
+      postTrialAnnualPriceMonthly: 14.90,
+      locationsText: '1 Localização comercial',
+      cardsText: 'Cartões Digitais Sustentáveis',
+      ecoNote: 'Elimina o custo e o impacto de cartões impressos, inclui impostos (Brasil) e taxa de serviço StampMe.',
       features: [
-        '1 Estabelecimento comercial',
-        'Até 3 cartões de fidelidade ativos',
+        '90 Dias de teste totalmente gratuito',
+        '1 Estabelecimento comercial ativo',
+        'Cartões de fidelidade digitais',
+        'Economia total de papéis e adesivos físicos',
         'Leitor de QR Code para carimbos',
-        'Estatísticas básicas de resgate',
-        'Após 90 dias: Requer assinatura para manter ativa'
+        'Métricas básicas de clientes e retenção',
+        'Após 90 dias: apenas R$ 14,90/mês no plano anual'
       ],
-      ctaText: 'Período Ativo (78 dias)',
+      ctaText: 'Período Grátis Ativo (78 dias)',
       isCurrent: true
     },
     {
@@ -65,9 +73,9 @@ export class PlansPage implements OnInit {
       name: 'Plano Pro',
       badge: 'Mais Popular ⭐',
       popular: true,
-      description: 'Ideal para lojas em crescimento que precisam de mais localizações e flexibilidade.',
+      description: 'Ideal para negócios em crescimento que precisam de mais localizações e personalização avançada.',
       monthlyPrice: 69.90,
-      annualPriceMonthly: 54.90,
+      annualPriceMonthly: 49.90,
       locationsText: 'Até 3 Localizações',
       cardsText: 'Cartões Ilimitados',
       features: [
@@ -84,7 +92,7 @@ export class PlansPage implements OnInit {
       id: 'business',
       name: 'Plano Business',
       badge: 'Para Franquias & Redes',
-      description: 'Solução completa para redes de lojas com operadores dedicados e integração PDV.',
+      description: 'Solução corporativa completa para redes de lojas com múltiplos operadores e integração PDV.',
       monthlyPrice: 149.90,
       annualPriceMonthly: 119.90,
       locationsText: 'Localizações Ilimitadas',
@@ -122,9 +130,15 @@ export class PlansPage implements OnInit {
   }
 
   getPriceDisplay(plan: Plan): string {
-    if (plan.monthlyPrice === 0) return 'R$ 0,00 (90 Dias)';
+    if (plan.id === 'demo') return 'R$ 0,00';
     const val = this.billingCycle === 'annual' ? plan.annualPriceMonthly : plan.monthlyPrice;
     return `R$ ${val.toFixed(2).replace('.', ',')}`;
+  }
+
+  getPostTrialPrice(plan: Plan): string | null {
+    if (plan.id !== 'demo') return null;
+    const val = this.billingCycle === 'annual' ? plan.postTrialAnnualPriceMonthly : plan.postTrialMonthlyPrice;
+    return `Após 90 dias: R$ ${val?.toFixed(2).replace('.', ',')}/mês`;
   }
 
   getSavingsText(plan: Plan): string | null {

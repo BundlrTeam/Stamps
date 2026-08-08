@@ -17,12 +17,12 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <section class="upgrade-notice-card app-slide-up">
       <div class="notice-icon">
-        <ion-icon name="sparkles-outline"></ion-icon>
+        <ion-icon name="leaf-outline"></ion-icon>
       </div>
       <div class="notice-content">
-        <h2>Expanda o Seu Negócio</h2>
+        <h2>Sustentabilidade &amp; Economia Digital</h2>
         <p>
-          Faça o upgrade do seu plano para adicionar uma <strong>2ª loja ou localização</strong> e ter <strong>cartões de fidelidade ilimitados</strong>.
+          Substitua a impressão de cartões de papel e autocolantes. <strong>90 dias grátis</strong> para testar na sua loja e depois um valor simbólico de manutenção ecológica.
         </p>
       </div>
     </section>
@@ -73,10 +73,19 @@
           <div class="price-amount-wrapper">
             <span class="price-value">{{ getPriceDisplay(plan) }}</span>
             <span *ngIf="plan.monthlyPrice > 0" class="price-period">/mês</span>
+            <span *ngIf="plan.id === 'demo'" class="price-period trial-tag">(90 dias grátis)</span>
+          </div>
+          <div *ngIf="getPostTrialPrice(plan) as postTrial" class="post-trial-text">
+            <ion-icon name="time-outline"></ion-icon> {{ postTrial }}
           </div>
           <div *ngIf="getSavingsText(plan) as savings" class="savings-text">
             {{ savings }}
           </div>
+        </div>
+
+        <div *ngIf="plan.ecoNote" class="plan-eco-box">
+          <ion-icon name="leaf-outline"></ion-icon>
+          <span>{{ plan.ecoNote }}</span>
         </div>
 
         <!-- Key Capacity Pill -->
